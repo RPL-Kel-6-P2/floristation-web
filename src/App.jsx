@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 // Pages Pelanggan
 import Katalog from "./pages/Katalog";
 import KatalogDetailArtificial from "./pages/KatalogDetailArtificial"; 
+import ProductDetailAsteria from "./pages/ProductDetailAsteria"; // Tambahkan ini
 import ProductDetailCeline from "./pages/ProductDetailCeline";
 import ProductDetailSnack from "./pages/ProductDetailSnack";
 import ProductDetailOrela from "./pages/ProductDetailOrela";
@@ -11,7 +12,7 @@ import ProductDetailOrela from "./pages/ProductDetailOrela";
 import OrderForm from "./pages/OrderForm";
 import OrderFormBca from "./pages/OrderFormBca";
 import InvoiceBcaGosend from "./pages/InvoiceBcaGosend";
-import InvoiceQrisAmbil from "./pages/InvoiceQrisAmbil"; // Pastikan ini sudah diimport
+import InvoiceQrisAmbil from "./pages/InvoiceQrisAmbil";
 
 // Pages Admin
 import LoginAwal from "./pages/admin/LoginAwal";
@@ -28,6 +29,7 @@ function App() {
       <Route path="/katalog-detail-artificial" element={<KatalogDetailArtificial />} />
       
       {/* Rute Detail Produk Mobile */}
+      <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> {/* Tambahkan ini */}
       <Route path="/detail-celine" element={<ProductDetailCeline />} />
       <Route path="/detail-snack" element={<ProductDetailSnack />} />
       <Route path="/detail-orela" element={<ProductDetailOrela />} />

@@ -15,7 +15,7 @@ function Katalog() {
 
         <section className="bg-[#e9ddcf] px-4 py-7 text-center">
           <h2 className="text-base font-medium text-[#2f435e]">Keindahan untuk Setiap Momen</h2>
-          <p className="mt-3 text-sm text-slate-500">Buket segar & artificial di Bogor</p>
+          <p className="mt-3 text-sm text-slate-500 font-light">Buket segar & artificial di Bogor</p>
         </section>
 
         <section className="border-t-2 border-dashed border-slate-200 bg-white px-4 py-4">
@@ -41,6 +41,8 @@ function Katalog() {
             <div 
               key={product.id} 
               onClick={() => {
+                // Logika navigasi berdasarkan nama produk
+                if (product.name === "ASTERIA XS") navigate("/detail-asteria");
                 if (product.name === "CELLINE WHITE") navigate("/detail-celine");
                 if (product.name === "ORELA S") navigate("/detail-orela");
                 if (product.category === "Snack Bouquet") navigate("/detail-snack");
@@ -61,11 +63,11 @@ function Katalog() {
             <span className="text-xl opacity-60">📦</span>
             <span>Katalog</span>
           </div>
-          <div className="flex flex-col items-center text-slate-400 cursor-pointer">
+          <div className="flex flex-col items-center text-slate-400">
             <span className="text-xl opacity-60">🛒</span>
             <span>Pesan</span>
           </div>
-          <div className="flex flex-col items-center text-slate-400 cursor-pointer">
+          <div className="flex flex-col items-center text-slate-400">
             <span className="text-xl opacity-60">ℹ️</span>
             <span>Info</span>
           </div>
