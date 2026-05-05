@@ -19,8 +19,8 @@ import LoginAwal from "./pages/admin/LoginAwal";
 import LoginError from "./pages/admin/LoginError";
 import Dashboard from "./pages/admin/Dashboard";
 import KelolaProduk from "./pages/admin/KelolaProduk";
-import KelolaPesanan from "./pages/admin/KelolaPesanan";
-import Rekap from "./pages/admin/Rekap"; // <-- Pastikan ini sudah di-import
+import KelolaPesanan from "./pages/admin/KelolaPesanan"; // Modal Detail ada di dalam sini
+import Rekap from "./pages/admin/Rekap"; 
 
 // Filter Pages Admin
 import FilterPesananDiproses from "./pages/admin/FilterPesananDiproses"; 
@@ -50,8 +50,6 @@ function App() {
       <Route path="/admin/dashboard" element={<Dashboard />} />
       <Route path="/admin/kelola-produk" element={<KelolaProduk />} />
       <Route path="/admin/kelola-pesanan" element={<KelolaPesanan />} />
-      
-      {/* Rute Rekap (INI YANG PENTING) */}
       <Route path="/admin/rekap" element={<Rekap />} /> 
       
       {/* Rute Filter Pesanan */}

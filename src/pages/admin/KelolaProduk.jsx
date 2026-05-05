@@ -54,48 +54,22 @@ const KelolaProduk = () => {
 
   return (
     <div className="flex min-h-screen bg-[#f5f1ed] font-sans text-[#334155]">
+
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#1e2d3d] text-white flex flex-col p-6 fixed h-full shadow-xl z-10">
-        <div className="mb-10 text-center">
+        <div className="mb-10 text-left">
           <h1 className="text-2xl font-serif italic tracking-wide">Floristation.id</h1>
           <p className="text-gray-400 text-[10px] mt-1 uppercase tracking-[0.3em]">Admin Panel</p>
         </div>
 
         <nav className="flex-1 space-y-2">
-          <button 
-            onClick={() => navigate('/admin/dashboard')} 
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Dashboard
-          </button>
-          
-          {/* Kelola Produk Aktif */}
-          <button 
-            className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium"
-          >
-            Kelola Produk
-          </button>
-
-          <button 
-            onClick={() => navigate('/admin/kelola-pesanan')} 
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Kelola Pesanan
-          </button>
-
-          {/* Navigasi ke Rekap - SUDAH DITAMBAHKAN */}
-          <button 
-            onClick={() => navigate('/admin/rekap')}
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Rekap
-          </button>
+          <button onClick={() => navigate('/admin/dashboard')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Dashboard</button>
+          <button className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium">Kelola Produk</button>
+          <button onClick={() => navigate('/admin/kelola-pesanan')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
+          <button onClick={() => navigate('/admin/rekap')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
         </nav>
 
-        <button 
-          onClick={() => navigate('/admin')} 
-          className="mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
-        >
+        <button onClick={() => navigate('/admin')} className="mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
           </svg>
@@ -110,8 +84,8 @@ const KelolaProduk = () => {
             <h2 className="text-2xl font-bold mb-1 text-[#1e2d3d]">Kelola Produk</h2>
             <p className="text-gray-500 text-sm">Manajemen produk buket bunga</p>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)} 
+          <button
+            onClick={() => setIsModalOpen(true)}
             className="bg-[#1e2d3d] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#2c3e50] shadow-lg shadow-[#1e2d3d]/20 active:scale-95 transition-all text-sm flex items-center gap-2"
           >
             <span className="text-lg">+</span> Tambah Produk
@@ -167,11 +141,11 @@ const KelolaProduk = () => {
             <form onSubmit={handleAddProduct} className="space-y-6">
               <div>
                 <label className="block text-[#2f435e] text-xs font-bold mb-2">Nama Produk *</label>
-                <input 
-                  type="text" 
-                  placeholder="KARINA LILY PINK" 
-                  className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]" 
-                  onChange={(e) => setFormData({...formData, nama: e.target.value})} 
+                <input
+                  type="text"
+                  placeholder="KARINA LILY PINK"
+                  className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]"
+                  onChange={(e) => setFormData({...formData, nama: e.target.value})}
                   required
                 />
               </div>
@@ -179,66 +153,66 @@ const KelolaProduk = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[#2f435e] text-xs font-bold mb-2">Harga *</label>
-                  <input 
-                    type="number" 
-                    placeholder="105" 
-                    className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]" 
-                    onChange={(e) => setFormData({...formData, harga: e.target.value})} 
+                  <input
+                    type="number"
+                    placeholder="105"
+                    className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]"
+                    onChange={(e) => setFormData({...formData, harga: e.target.value})}
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-[#2f435e] text-xs font-bold mb-2">Kategori</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Buket Fresh"
-                    className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]" 
-                    onChange={(e) => setFormData({...formData, kategori: e.target.value})} 
+                    className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]"
+                    onChange={(e) => setFormData({...formData, kategori: e.target.value})}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-[#2f435e] text-xs font-bold mb-2">URL Gambar</label>
-                <input 
-                  type="text" 
-                  placeholder="https://gambarbungakarinalilypink" 
-                  className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]" 
-                  onChange={(e) => setFormData({...formData, image: e.target.value})} 
+                <input
+                  type="text"
+                  placeholder="https://gambarbungakarinalilypink"
+                  className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm placeholder:text-[#b4b4b4]"
+                  onChange={(e) => setFormData({...formData, image: e.target.value})}
                 />
               </div>
 
               <div>
                 <label className="block text-[#2f435e] text-xs font-bold mb-2">Komposisi</label>
-                <textarea 
-                  rows="3" 
-                  placeholder="Rose, Lily, Baby Breath" 
+                <textarea
+                  rows="3"
+                  placeholder="Rose, Lily, Baby Breath"
                   className="w-full px-5 py-3.5 bg-[#f3f0ec] border-none rounded-xl outline-none text-sm resize-none placeholder:text-[#b4b4b4]"
                   onChange={(e) => setFormData({...formData, komposisi: e.target.value})}
                 ></textarea>
               </div>
 
               <div className="flex items-center gap-2 py-1">
-                <input 
-                  type="checkbox" 
-                  id="tersedia" 
-                  checked={formData.tersedia} 
-                  className="w-4 h-4 cursor-pointer accent-[#2f435e]" 
-                  onChange={(e) => setFormData({...formData, tersedia: e.target.checked})} 
+                <input
+                  type="checkbox"
+                  id="tersedia"
+                  checked={formData.tersedia}
+                  className="w-4 h-4 cursor-pointer accent-[#2f435e]"
+                  onChange={(e) => setFormData({...formData, tersedia: e.target.checked})}
                 />
                 <label htmlFor="tersedia" className="text-[#2f435e] text-xs font-bold cursor-pointer">Produk Tersedia</label>
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button 
-                  type="button" 
-                  onClick={() => setIsModalOpen(false)} 
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
                   className="flex-1 py-4 bg-[#f3f0ec] text-[#2f435e] font-bold rounded-2xl text-xs hover:bg-[#efe9e4] transition-colors"
                 >
                   Batal
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="flex-1 py-4 bg-[#2f435e] text-white font-bold rounded-2xl text-xs shadow-lg shadow-[#2f435e]/20 hover:bg-[#1e2d3d] transition-colors"
                 >
                   Tambah Produk
