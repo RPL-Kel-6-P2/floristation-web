@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom"; //
+
 function InvoiceQrisAmbil() {
+  const navigate = useNavigate(); // Inisialisasi navigate
+
   return (
     <div className="min-h-screen bg-slate-100 p-4">
       <div className="mx-auto min-h-screen max-w-[390px] bg-[#f7f1eb] shadow-2xl">
@@ -23,6 +27,7 @@ function InvoiceQrisAmbil() {
             <img
               src="/images/celline-white.png"
               className="h-20 w-20 rounded-xl object-cover"
+              alt="Celine White"
             />
             <div>
               <h2 className="text-lg font-semibold text-[#2f435e]">
@@ -77,12 +82,16 @@ function InvoiceQrisAmbil() {
             </div>
           </section>
 
-          {/* BUTTON */}
-          <button className="w-full rounded-xl bg-green-600 py-4 text-white">
+          {/* BUTTONS */}
+          <button className="w-full rounded-xl bg-green-600 py-4 text-white font-semibold active:scale-95 transition-transform">
             Konfirmasi via WhatsApp Admin
           </button>
 
-          <button className="w-full rounded-xl border py-4 text-[#2f435e]">
+          {/* Navigasi balik ke Katalog (path "/") */}
+          <button 
+            onClick={() => navigate("/")} 
+            className="w-full rounded-xl border-2 border-[#2f435e] py-4 text-[#2f435e] font-semibold active:scale-95 transition-transform"
+          >
             Kembali ke Beranda
           </button>
 

@@ -1,9 +1,19 @@
+import { useNavigate } from "react-router-dom"; // Tambahkan import ini
+
 function ProductDetailSnack() {
+  const navigate = useNavigate(); // Inisialisasi navigate
+
   return (
     <div className="min-h-screen bg-slate-100 p-4">
       <div className="mx-auto min-h-screen max-w-[390px] overflow-hidden bg-white shadow-2xl">
         <header className="bg-[#2f435e] px-4 py-4 text-white">
-          <p className="text-sm">← Detail Produk</p>
+          {/* Tambahkan onClick dan cursor-pointer di sini */}
+          <p 
+            className="text-sm cursor-pointer flex items-center gap-1" 
+            onClick={() => navigate(-1)}
+          >
+            <span>←</span> Detail Produk
+          </p>
         </header>
 
         <main className="px-6 py-8 pb-24">
@@ -34,7 +44,11 @@ function ProductDetailSnack() {
         </main>
 
         <div className="fixed bottom-4 left-1/2 w-[390px] -translate-x-1/2 bg-white px-6 py-4">
-          <button className="w-full rounded-xl bg-[#2f435e] py-3 text-sm text-white">
+          {/* Kamu bisa sekalian arahkan tombol ini ke halaman order jika mau */}
+          <button 
+            onClick={() => navigate("/order")}
+            className="w-full rounded-xl bg-[#2f435e] py-3 text-sm text-white"
+          >
             Pesan Sekarang
           </button>
         </div>
