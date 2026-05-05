@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 // Pages Pelanggan
 import Katalog from "./pages/Katalog";
 import KatalogDetailArtificial from "./pages/KatalogDetailArtificial"; 
-import ProductDetailAsteria from "./pages/ProductDetailAsteria"; // Tambahkan ini
+import ProductDetailAsteria from "./pages/ProductDetailAsteria"; 
 import ProductDetailCeline from "./pages/ProductDetailCeline";
 import ProductDetailSnack from "./pages/ProductDetailSnack";
 import ProductDetailOrela from "./pages/ProductDetailOrela";
@@ -20,6 +20,10 @@ import LoginError from "./pages/admin/LoginError";
 import Dashboard from "./pages/admin/Dashboard";
 import KelolaProduk from "./pages/admin/KelolaProduk";
 import KelolaPesanan from "./pages/admin/KelolaPesanan";
+import Rekap from "./pages/admin/Rekap"; // <-- Pastikan ini sudah di-import
+
+// Filter Pages Admin
+import FilterPesananDiproses from "./pages/admin/FilterPesananDiproses"; 
 
 function App() {
   return (
@@ -29,7 +33,7 @@ function App() {
       <Route path="/katalog-detail-artificial" element={<KatalogDetailArtificial />} />
       
       {/* Rute Detail Produk Mobile */}
-      <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> {/* Tambahkan ini */}
+      <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> 
       <Route path="/detail-celine" element={<ProductDetailCeline />} />
       <Route path="/detail-snack" element={<ProductDetailSnack />} />
       <Route path="/detail-orela" element={<ProductDetailOrela />} />
@@ -46,6 +50,12 @@ function App() {
       <Route path="/admin/dashboard" element={<Dashboard />} />
       <Route path="/admin/kelola-produk" element={<KelolaProduk />} />
       <Route path="/admin/kelola-pesanan" element={<KelolaPesanan />} />
+      
+      {/* Rute Rekap (INI YANG PENTING) */}
+      <Route path="/admin/rekap" element={<Rekap />} /> 
+      
+      {/* Rute Filter Pesanan */}
+      <Route path="/admin/filter-pesanan-diproses" element={<FilterPesananDiproses />} />
     </Routes>
   );
 }

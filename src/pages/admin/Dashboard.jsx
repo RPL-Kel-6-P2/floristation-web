@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -25,17 +25,42 @@ const Dashboard = () => {
         </div>
 
         <nav className="flex-1 space-y-2">
-          <button onClick={() => navigate('/admin/dashboard')} className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium">Dashboard</button>
-          <button onClick={() => navigate('/admin/kelola-produk')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Produk</button>
-          <button className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
-          <button className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
+          {/* Dashboard Aktif */}
+          <button 
+            onClick={() => navigate('/admin/dashboard')} 
+            className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium"
+          >
+            Dashboard
+          </button>
+          
+          <button 
+            onClick={() => navigate('/admin/kelola-produk')} 
+            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+          >
+            Kelola Produk
+          </button>
+
+          <button 
+            onClick={() => navigate('/admin/kelola-pesanan')} 
+            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+          >
+            Kelola Pesanan
+          </button>
+
+          {/* Navigasi ke Rekap */}
+          <button 
+            onClick={() => navigate('/admin/rekap')}
+            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+          >
+            Rekap
+          </button>
         </nav>
 
         <button onClick={handleLogout} className="mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
           </svg>
-          <span className="font-medium">Logout</span>
+          <span className="font-medium italic">Logout</span>
         </button>
       </aside>
 
@@ -48,7 +73,6 @@ const Dashboard = () => {
 
         {/* STATS CARDS */}
         <section className="grid grid-cols-3 gap-8 mb-10">
-          {/* Pesanan Hari Ini */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="bg-[#e7f5ff] p-4 rounded-2xl text-[#228be6]">
@@ -64,7 +88,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Pending */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="bg-[#fff9db] p-4 rounded-2xl text-[#fab005]">
@@ -80,7 +103,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Produk Aktif */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="bg-[#ebfbee] p-4 rounded-2xl text-[#40c057]">
@@ -98,18 +120,20 @@ const Dashboard = () => {
         </section>
 
         {/* TABLE SECTION */}
-        <section className="bg-white rounded-[2rem] shadow-sm p-8">
+        <section className="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-50">
           <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold">Daftar Pesanan</h3>
-            <div className="flex gap-4">
-               <div className="w-32 h-12 bg-[#f7f3f0] rounded-2xl border border-gray-100"></div>
-               <div className="w-32 h-12 bg-[#f7f3f0] rounded-2xl border border-gray-100"></div>
-            </div>
+            <h3 className="text-xl font-bold">Daftar Pesanan Terbaru</h3>
+            <button 
+              onClick={() => navigate('/admin/kelola-pesanan')}
+              className="text-sm font-semibold text-[#1e2d3d] hover:underline italic"
+            >
+              Lihat Semua →
+            </button>
           </div>
 
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="text-gray-400 border-b border-gray-100">
+              <tr className="text-gray-400 border-b border-gray-100 italic">
                 <th className="pb-6 font-bold text-center w-24">ID</th>
                 <th className="pb-6 font-bold px-4">Pelanggan</th>
                 <th className="pb-6 font-bold px-4">Produk</th>
