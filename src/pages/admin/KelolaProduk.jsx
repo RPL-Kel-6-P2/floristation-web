@@ -133,22 +133,74 @@ const KelolaProduk = () => {
 
   return (
     <div className="flex h-screen bg-[#f5f1ed] font-sans text-[#334155] overflow-hidden">
-      <aside className="w-64 bg-[#1e2d3d] text-white flex flex-col p-6 fixed h-full shadow-xl z-10 text-left">
-        <div className="mb-10">
-          <h1 className="text-2xl font-serif italic tracking-wide">Floristation.id</h1>
-          <p className="text-gray-400 text-[10px] mt-1 uppercase tracking-[0.3em]">Admin Panel</p>
-        </div>
-        <nav className="flex-1 space-y-2 text-left">
-          <button onClick={() => navigate('/admin/dashboard')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Dashboard</button>
-          <button className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium text-sm">Kelola Produk</button>
-          <button onClick={() => navigate('/admin/kelola-pesanan')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
-          <button onClick={() => navigate('/admin/rekap')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
-        </nav>
-        <button onClick={() => navigate('/admin')} className="mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-          <span className="font-medium italic text-sm">Logout</span>
-        </button>
-      </aside>
+      <aside className="w-64 bg-[#1e2d3d] text-white flex flex-col p-6 fixed h-full shadow-xl">
+  
+  <div className="mb-10">
+    <h1 className="text-2xl font-serif italic tracking-wide">
+      Floristation.id
+    </h1>
+
+    <p className="text-gray-400 text-[10px] mt-1 uppercase tracking-[0.3em]">
+      Admin Panel
+    </p>
+  </div>
+
+  <nav className="flex-1 space-y-2">
+    
+    <button
+      onClick={() => navigate('/admin/dashboard')}
+      className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+    >
+      Dashboard
+    </button>
+
+    <button
+      className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium"
+    >
+      Kelola Produk
+    </button>
+
+    <button
+      onClick={() => navigate('/admin/kelola-pesanan')}
+      className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+    >
+      Kelola Pesanan
+    </button>
+
+    <button
+      onClick={() => navigate('/admin/rekap')}
+      className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
+    >
+      Rekap
+    </button>
+
+  </nav>
+
+  <button
+    onClick={() => navigate('/admin')}
+    className="group mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 rotate-180"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+      />
+    </svg>
+
+    <span className="font-medium italic text-sm">
+      Logout
+    </span>
+  </button>
+
+</aside>
 
       <main className="flex-1 ml-64 p-8 flex flex-col overflow-hidden text-left">
         <header className="flex justify-between items-start mb-6 flex-shrink-0">
