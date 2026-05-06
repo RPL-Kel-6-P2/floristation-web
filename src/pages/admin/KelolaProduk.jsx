@@ -10,7 +10,7 @@ const KelolaProduk = () => {
   const [products, setProducts] = useState([
     { id: 1, nama: 'ASTERIA XS', harga: 'Rp50.000', kategori: 'Buket Fresh', status: 'Tersedia', image: '/images/asteria-xs.png', color: 'bg-[#ebfbee] text-[#40c057]' },
     { id: 2, nama: 'ARIANA S', harga: 'Rp165.000', kategori: 'Buket Fresh', status: 'Tersedia', image: '', color: 'bg-[#ebfbee] text-[#40c057]' },
-    { id: 3, nama: 'BELLA MEDIUM', harga: 'Rp200.000', kategori: 'Graduation', status: 'Habis', image: '/images/bella-medium.jpg', color: 'bg-[#fff5f5] text-[#fa5252]' },
+    { id: 3, nama: 'BELLA MEDIUM', harga: 'Rp200.000', kategori: 'Graduation', status: 'Habis', image: '/images/bella-medium.jpg', color: 'bg-[#fee2e2] text-[#ef4444]' },
     { id: 4, nama: 'ARTIFICIAL ROSE', harga: 'Rp120.000', kategori: 'Buket Artificial', status: 'Tersedia', image: '/images/artificial-rose.jpg', color: 'bg-[#ebfbee] text-[#40c057]' }
   ]);
 
@@ -30,7 +30,7 @@ const KelolaProduk = () => {
       kategori: formData.kategori || "Buket Fresh",
       status: formData.tersedia ? 'Tersedia' : 'Habis',
       image: formData.image || "https://via.placeholder.com/500",
-      color: formData.tersedia ? 'bg-[#ebfbee] text-[#40c057]' : 'bg-[#fff5f5] text-[#fa5252]'
+      color: formData.tersedia ? 'bg-[#ebfbee] text-[#40c057]' : 'bg-[#fee2e2] text-[#ef4444]'
     };
     setProducts([...products, newProd]);
     setIsModalOpen(false);
@@ -117,10 +117,10 @@ const KelolaProduk = () => {
                   <span className={`px-5 py-2 rounded-full text-[11px] font-bold ${product.color}`}>{product.status}</span>
                 </div>
                 <div className="flex gap-3 mt-auto">
-                  <button className="flex-1 bg-[#1e2d3d] text-white py-3 rounded-xl text-[11px] font-bold hover:bg-[#2c3e50] flex items-center justify-center gap-2">
+                  <button className="flex-1 bg-[#1e2d3d] text-white py-3.5 rounded-xl text-sm font-bold hover:bg-[#2c3e50] flex items-center justify-center gap-2">
                     <span>✎</span> Edit
                   </button>
-                  <button onClick={() => handleDelete(product.id)} className="flex-1 bg-[#900] text-white py-3 rounded-xl text-[11px] font-bold hover:bg-[#b30000] flex items-center justify-center gap-2">
+                  <button onClick={() => handleDelete(product.id)} className="flex-1 bg-[#ef4444] text-white py-3.5 rounded-xl text-sm font-bold hover:bg-[#dc2626] flex items-center justify-center gap-2">
                     <span>🗑</span> Hapus
                   </button>
                 </div>

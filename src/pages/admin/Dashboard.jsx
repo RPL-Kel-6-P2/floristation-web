@@ -4,14 +4,43 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // State untuk pesanan agar bisa simulasi update otomatis
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedEditOrder, setSelectedEditOrder] = useState(null);
+
+  const statusOptions = [
+    { status: 'pending',    label: 'Pending',    dot: 'bg-[#fab005]', color: 'bg-[#fff9db] text-[#fab005]' },
+    { status: 'konfirmasi', label: 'Konfirmasi', dot: 'bg-[#228be6]', color: 'bg-[#e7f5ff] text-[#228be6]' },
+    { status: 'diproses',   label: 'Diproses',   dot: 'bg-[#7950f2]', color: 'bg-[#f3f0ff] text-[#7950f2]' },
+    { status: 'selesai',    label: 'Selesai',    dot: 'bg-[#40c057]', color: 'bg-[#ebfbee] text-[#40c057]' },
+  ];
+
   const [orders, setOrders] = useState([
-    { id: 'FLR-0042', pelanggan: 'Siti Nurhaliza', produk: 'Asteria XS', tgl: '2026-04-28', status: 'Pending', color: 'bg-[#fff9db] text-[#fab005]' },
-    { id: 'FLR-0041', pelanggan: 'Budi Santoso', produk: 'Ariana S', tgl: '2026-04-27', status: 'Konfirmasi', color: 'bg-[#e7f5ff] text-[#228be6]' },
-    { id: 'FLR-0040', pelanggan: 'Dewi Lestari', produk: 'Bella Medium', tgl: '2026-04-26', status: 'Diproses', color: 'bg-[#f3f0ff] text-[#7950f2]' },
-    { id: 'FLR-0039', pelanggan: 'Ahmad Fauzi', produk: 'Artificial Rose', tgl: '2026-04-26', status: 'Selesai', color: 'bg-[#ebfbee] text-[#40c057]' },
-    { id: 'FLR-0038', pelanggan: 'Rina Kartika', produk: 'Snack Box Deluxe', tgl: '2026-04-25', status: 'Selesai', color: 'bg-[#ebfbee] text-[#40c057]' },
+    { id: 'FLR-0042', pelanggan: 'Siti Nurhaliza', produk: 'Asteria XS', tgl: '2026-04-28', metode: 'Ambil di Toko', total: 'Rp50.000', status: 'pending', label: 'Pending', color: 'bg-[#fff9db] text-[#fab005]', wa: '081234567890', penerima: 'Siti Nurhaliza', telpPenerima: '081234567890', waktu: '-', pembayaran: 'Transfer', pesan: '' },
+    { id: 'FLR-0041', pelanggan: 'Budi Santoso', produk: 'Ariana S', tgl: '2026-04-27', metode: 'GoSend', total: 'Rp165.000', status: 'konfirmasi', label: 'Konfirmasi', color: 'bg-[#e7f5ff] text-[#228be6]', wa: '082345678901', penerima: 'Rina Sari', telpPenerima: '082345678902', waktu: '10:00', pembayaran: 'Transfer', pesan: 'Happy Birthday!' },
+    { id: 'FLR-0040', pelanggan: 'Dewi Lestari', produk: 'Bella Medium', tgl: '2026-04-26', metode: 'Ambil di Toko', total: 'Rp200.000', status: 'diproses', label: 'Diproses', color: 'bg-[#f3f0ff] text-[#7950f2]', wa: '083456789012', penerima: 'Sarah Amelia', telpPenerima: '083456789013', waktu: '15:30', pembayaran: 'QRIS', pesan: 'Congratulations!' },
+    { id: 'FLR-0039', pelanggan: 'Ahmad Fauzi', produk: 'Artificial Rose', tgl: '2026-04-26', metode: 'Ambil di Toko', total: 'Rp120.000', status: 'selesai', label: 'Selesai', color: 'bg-[#ebfbee] text-[#40c057]', wa: '084567890123', penerima: 'Linda Cahya', telpPenerima: '084567890124', waktu: '13:00', pembayaran: 'Cash', pesan: 'With love!' },
+    { id: 'FLR-0038', pelanggan: 'Rina Kartika', produk: 'Snack Box Deluxe', tgl: '2026-04-25', metode: 'GoSend', total: 'Rp180.000', status: 'selesai', label: 'Selesai', color: 'bg-[#ebfbee] text-[#40c057]', wa: '085678901234', penerima: 'Doni', telpPenerima: '085678901235', waktu: '09:00', pembayaran: 'QRIS', pesan: '' },
   ]);
+
+  const openDetail = (order) => { setSelectedOrder(order); setIsDetailModalOpen(true); };
+  const closeDetail = () => { setIsDetailModalOpen(false); setSelectedOrder(null); };
+
+  const openEdit = (order) => { setSelectedEditOrder(order); setIsEditModalOpen(true); };
+  const closeEdit = () => { setIsEditModalOpen(false); setSelectedEditOrder(null); };
+
+  const handleUpdateStatus = (newStatus) => {
+    const opt = statusOptions.find(o => o.status === newStatus);
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === selectedEditOrder.id
+          ? { ...o, status: opt.status, label: opt.label, color: opt.color }
+          : o
+      )
+    );
+    closeEdit();
+  };
 
   const handleLogout = () => navigate('/admin');
 
@@ -25,35 +54,10 @@ const Dashboard = () => {
         </div>
 
         <nav className="flex-1 space-y-2">
-          {/* Dashboard Aktif */}
-          <button 
-            onClick={() => navigate('/admin/dashboard')} 
-            className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium"
-          >
-            Dashboard
-          </button>
-          
-          <button 
-            onClick={() => navigate('/admin/kelola-produk')} 
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Kelola Produk
-          </button>
-
-          <button 
-            onClick={() => navigate('/admin/kelola-pesanan')} 
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Kelola Pesanan
-          </button>
-
-          {/* Navigasi ke Rekap */}
-          <button 
-            onClick={() => navigate('/admin/rekap')}
-            className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors"
-          >
-            Rekap
-          </button>
+          <button onClick={() => navigate('/admin/dashboard')} className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium">Dashboard</button>
+          <button onClick={() => navigate('/admin/kelola-produk')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Produk</button>
+          <button onClick={() => navigate('/admin/kelola-pesanan')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
+          <button onClick={() => navigate('/admin/rekap')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
         </nav>
 
         <button onClick={handleLogout} className="mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
@@ -123,7 +127,7 @@ const Dashboard = () => {
         <section className="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-50">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xl font-bold">Daftar Pesanan Terbaru</h3>
-            <button 
+            <button
               onClick={() => navigate('/admin/kelola-pesanan')}
               className="text-sm font-semibold text-[#1e2d3d] hover:underline italic"
             >
@@ -151,13 +155,30 @@ const Dashboard = () => {
                   <td className="py-6 px-4 text-gray-500">{order.tgl}</td>
                   <td className="py-6 text-center">
                     <span className={`px-5 py-2 rounded-full text-[11px] font-bold ${order.color}`}>
-                      {order.status}
+                      {order.label}
                     </span>
                   </td>
                   <td className="py-6 text-center">
-                    <div className="flex justify-center gap-3 px-4">
-                      <button className="bg-[#334155] text-white px-4 py-2 rounded-xl text-[11px] font-bold hover:bg-[#242f3d] transition-colors">Detail</button>
-                      <button className="bg-[#f0e8dc] text-[#334155] px-4 py-2 rounded-xl text-[11px] font-bold hover:bg-[#e6dbcc] transition-colors">Update</button>
+                    <div className="flex justify-center gap-2 px-4">
+                      {/* Tombol Detail */}
+                      <button
+                        onClick={() => openDetail(order)}
+                        className="bg-[#334155] text-white p-2.5 rounded-xl text-[11px] font-bold hover:bg-[#242f3d] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                      {/* Tombol Update */}
+                      <button
+                        onClick={() => openEdit(order)}
+                        className="bg-[#f0e8dc] text-[#334155] p-2.5 rounded-xl text-[11px] font-bold hover:bg-[#e6dbcc] transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -166,6 +187,144 @@ const Dashboard = () => {
           </table>
         </section>
       </main>
+
+      {/* MODAL DETAIL PESANAN */}
+      {isDetailModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+          <div className="bg-white w-full max-w-xl rounded-[1.5rem] shadow-2xl overflow-hidden">
+
+            <div className="flex justify-between items-center px-8 py-6 border-b border-gray-100">
+              <h3 className="text-lg font-bold text-[#1e2d3d]">Detail Pesanan - {selectedOrder.id}</h3>
+              <button onClick={closeDetail} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="px-8 py-6 space-y-5 max-h-[72vh] overflow-y-auto">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">ID Pesanan</p>
+                  <p className="font-bold text-[#1e2d3d] text-base">{selectedOrder.id}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400 mb-1">Status</p>
+                  <span className={`px-4 py-1 rounded-full text-xs font-bold ${selectedOrder.color}`}>
+                    {selectedOrder.label}
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100">
+                <p className="font-bold text-[#1e2d3d] text-sm mb-3">Data Pemesan</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Nama</p>
+                    <p className="font-semibold text-[#334155] text-sm">{selectedOrder.pelanggan}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">WhatsApp</p>
+                    <p className="font-semibold text-[#334155] text-sm">{selectedOrder.wa || '-'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100">
+                <p className="font-bold text-[#1e2d3d] text-sm mb-3">Data Penerima</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Nama</p>
+                    <p className="font-semibold text-[#334155] text-sm">{selectedOrder.penerima || '-'}</p>
+                    <p className="text-[10px] text-gray-400 italic mt-1">*isi nama yang akan mengambil barang florist yaa</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Telepon</p>
+                    <p className="font-semibold text-[#334155] text-sm">{selectedOrder.telpPenerima || '-'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 space-y-3">
+                <p className="font-bold text-[#1e2d3d] text-sm mb-1">Detail Pesanan</p>
+                {[
+                  { label: 'Produk', value: selectedOrder.produk },
+                  { label: 'Tanggal', value: selectedOrder.tgl },
+                  { label: 'Waktu', value: selectedOrder.waktu || '-' },
+                  { label: 'Metode', value: selectedOrder.metode },
+                  { label: 'Pembayaran', value: selectedOrder.pembayaran || '-' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between text-sm">
+                    <span className="text-gray-400">{label}</span>
+                    <span className="font-semibold text-[#334155]">{value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {selectedOrder.pesan && (
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-400 mb-2">Greeting Card</p>
+                  <div className="bg-[#f9f7f4] p-4 rounded-xl">
+                    <p className="text-sm italic text-[#334155]">"{selectedOrder.pesan}"</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-4 border-t-2 border-dashed border-gray-200">
+                <p className="font-bold text-[#1e2d3d]">Total Harga</p>
+                <p className="text-lg font-black text-[#1e2d3d]">{selectedOrder.total}</p>
+              </div>
+            </div>
+
+            <div className="px-8 pb-8 pt-2">
+              <button onClick={closeDetail} className="w-full bg-[#1e2d3d] text-white py-4 rounded-xl font-bold hover:bg-[#334155] transition-all">
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL UPDATE STATUS */}
+      {isEditModalOpen && selectedEditOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-[1.5rem] shadow-2xl overflow-hidden">
+
+            <div className="px-8 py-6 border-b border-gray-100">
+              <h3 className="text-lg font-bold text-[#1e2d3d]">Update Status Pesanan</h3>
+              <p className="text-sm text-gray-400 mt-0.5">{selectedEditOrder.id}</p>
+            </div>
+
+            <div className="px-8 py-6 space-y-3">
+              <p className="text-sm text-[#334155] mb-4">Pilih status baru untuk pesanan ini:</p>
+              {statusOptions.map((opt) => {
+                const isActive = selectedEditOrder.status === opt.status;
+                return (
+                  <button
+                    key={opt.status}
+                    onClick={() => handleUpdateStatus(opt.status)}
+                    className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl text-sm font-semibold transition-all text-left
+                      ${isActive ? 'bg-[#1e2d3d] text-white' : 'bg-[#f5f1ed] text-[#334155] hover:bg-[#ede8e3]'}`}
+                  >
+                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${isActive ? 'bg-white opacity-70' : opt.dot}`} />
+                    {opt.label}{isActive ? ' (Saat ini)' : ''}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="px-8 pb-8">
+              <button
+                onClick={closeEdit}
+                className="w-full bg-[#f5f1ed] text-[#334155] py-4 rounded-2xl font-bold hover:bg-[#ede8e3] transition-all text-sm"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
