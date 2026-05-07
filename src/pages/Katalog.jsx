@@ -5,6 +5,16 @@ import ProductCard from "../components/ProductCard";
 function Katalog() {
   const navigate = useNavigate();
 
+  // List kategori lengkap sesuai manajemen produk
+  const categories = [
+    "Semua", 
+    "Fresh Flowers", 
+    "Artificial Flowers", 
+    "Snack Bouquet", 
+    "Graduation Bouquet", 
+    "Bloom Box Arrangement"
+  ];
+
   return (
     <div className="min-h-screen bg-slate-100 p-4">
       <div className="mx-auto min-h-screen max-w-[390px] overflow-hidden rounded-[2.5rem] bg-[#f7f1eb] shadow-2xl relative">
@@ -18,16 +28,20 @@ function Katalog() {
           <p className="mt-3 text-sm text-slate-500 font-light">Buket segar & artificial di Bogor</p>
         </section>
 
-        <section className="border-t-2 border-dashed border-slate-200 bg-white px-4 py-4">
-          <div className="flex gap-2">
-            {["Semua", "Fresh Flowers", "Artificial", "Snack Bouquet"].map((item) => (
+        {/* SECTION KATEGORI DENGAN HORIZONTAL SCROLL */}
+        <section className="border-t-2 border-dashed border-slate-200 bg-white px-4 py-4 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 min-w-max">
+            {categories.map((item) => (
               <button
                 key={item}
                 onClick={() => {
-                  if (item === "Artificial") navigate("/katalog-detail-artificial");
+                  // Logika navigasi kategori
+                  if (item === "Artificial Flowers") navigate("/katalog-detail-artificial");
                 }}
-                className={`rounded-full border px-3 py-2 text-xs transition-colors ${
-                  item === "Semua" ? "bg-[#2f435e] text-white" : "bg-white text-[#2f435e]"
+                className={`rounded-full border px-4 py-2 text-[11px] font-medium transition-colors whitespace-nowrap ${
+                  item === "Semua" 
+                    ? "bg-[#2f435e] text-white border-[#2f435e]" 
+                    : "bg-white text-[#2f435e] border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 {item}
@@ -36,7 +50,7 @@ function Katalog() {
           </div>
         </section>
 
-        <main className="grid grid-cols-2 gap-4 px-4 pb-36">
+        <main className="grid grid-cols-2 gap-4 px-4 pb-36 pt-4">
           {products.map((product) => (
             <div 
               key={product.id} 
@@ -54,6 +68,7 @@ function Katalog() {
           ))}
         </main>
 
+        {/* BOTTOM NAVIGATION */}
         <nav className="absolute bottom-6 left-1/2 grid w-[92%] -translate-x-1/2 grid-cols-4 rounded-[2rem] bg-white px-2 py-3 text-center text-[10px] shadow-xl border border-slate-50">
           <div className="flex flex-col items-center text-[#2f435e] font-bold cursor-pointer">
             <span className="text-xl">🏠</span>
