@@ -1,52 +1,63 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ProductCard({ name, price, status, image }) {
+function ProductCard({ product }) {
+  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    const routes = {
-      "CELLINE WHITE": "/detail-celine",
-      "ASTERIA XS": "/detail-asteria",
-      "SNACK BOUQUET 2": "/detail-snack",
-      "ORELA BASKET (M) ONE SIDE": "/detail-orela",
-    };
-
-    navigate(routes[name]);
+  const handleDetailClick = () => {
+    if (product.detailPath) {
+      navigate(product.detailPath);
+    } else {
+      alert("Halaman detail produk ini belum dibuat.");
+    }
   };
 
   return (
-    <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white p-3">
-      
-      <img
-        src={image}
-        alt={name}
-        className="h-36 w-full rounded-xl object-cover"
-      />
+    <div className="overflow-hidden rounded-[12px] bg-white shadow-[0_3px_10px_rgba(0,0,0,0.12)]">
+      <div className="h-[190px] w-full bg-[#f1ede8]">
+        {!imageError ? (
+          <img
+            src={product.image}
+            alt=""
+            onError={() => setImageError(true)}
+            className="h-full w-full object-cover"
+            style={{
+              objectPosition: product.imagePosition || "center center",
+            }}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-2 text-center text-[10px] text-slate-400">
+            Foto belum ditemukan
+          </div>
+        )}
+      </div>
 
-      <p className="mt-3 w-fit rounded bg-slate-200 px-2 py-1 text-xs font-medium text-orange-600">
-        {name}
-      </p>
+      <div className="px-4 pb-4 pt-4">
+        <h3 className="line-clamp-2 min-h-[34px] text-[14px] font-bold uppercase leading-tight text-[#2f435e]">
+          {product.name}
+        </h3>
 
-      <p className="mt-2 text-sm font-medium text-[#2f435e]">
-        {price}
-      </p>
+        <p className="mt-4 text-[18px] font-bold text-[#2f435e]">
+          {product.price}
+        </p>
 
-      <p
-        className={`mt-2 w-fit rounded px-2 py-1 text-xs ${
-          status === "Tersedia"
-            ? "bg-green-100 text-green-600"
-            : "border border-dashed border-red-400 text-red-500"
-        }`}
-      >
-        {status}
-      </p>
+        <p className="mt-1 text-[13px] text-slate-400">
+          Size: {product.size}
+        </p>
 
-      <button
-        onClick={handleClick}
-        className="mt-3 w-full rounded-xl bg-[#2f435e] py-2 text-sm text-white"
-      >
-        Lihat Detail
-      </button>
+        <span className="mt-3 inline-block rounded-[10px] bg-green-100 px-3 py-1.5 text-[13px] font-medium text-green-600">
+          ✓ {product.status}
+        </span>
+
+        <button
+          type="button"
+          onClick={handleDetailClick}
+          className="mt-4 w-full rounded-[9px] bg-[#2f435e] py-3 text-[13px] font-semibold text-white active:scale-95 transition-transform"
+        >
+          Lihat Detail
+        </button>
+      </div>
     </div>
   );
 }

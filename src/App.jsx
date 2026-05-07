@@ -4,9 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Katalog from "./pages/Katalog";
 import KatalogDetailArtificial from "./pages/KatalogDetailArtificial"; 
 import ProductDetailAsteria from "./pages/ProductDetailAsteria"; 
-import ProductDetailCeline from "./pages/ProductDetailCeline";
-import ProductDetailSnack from "./pages/ProductDetailSnack";
-import ProductDetailOrela from "./pages/ProductDetailOrela";
+import ProductDetailRafaela from "./pages/ProductDetailRafaela";
 
 // Pages Order & Invoice
 import OrderForm from "./pages/OrderForm";
@@ -34,10 +32,8 @@ function App() {
       
       {/* Rute Detail Produk Mobile */}
       <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> 
-      <Route path="/detail-celine" element={<ProductDetailCeline />} />
-      <Route path="/detail-snack" element={<ProductDetailSnack />} />
-      <Route path="/detail-orela" element={<ProductDetailOrela />} />
-
+      <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
+      
       {/* Sisi Order & Pembayaran */}
       <Route path="/order" element={<OrderForm />} />
       <Route path="/order-bca" element={<OrderFormBca />} />
