@@ -2,22 +2,24 @@ import { Routes, Route } from "react-router-dom";
 
 // Pages Pelanggan
 import Katalog from "./pages/Katalog";
-import KatalogDetailArtificial from "./pages/KatalogDetailArtificial"; 
 import ProductDetailAsteria from "./pages/ProductDetailAsteria"; 
 import ProductDetailRafaela from "./pages/ProductDetailRafaela";
+import ProductDetailGarbe5Stem from "./pages/ProductDetailGarbe5Stem";
+import ProductDetailAriana from "./pages/ProductDetailAriana";
+import ProductDetailSunySideUp from "./pages/ProductDetailSunySideUp";
+import ProductDetailGracePink from "./pages/ProductDetailGracePink"
+import ProductDetailKarinaLilyRed from "../public/images/ProductDetailKarinaLilyRed";
+import ProductDetailGraceRedWhite from "./pages/ProductDetailGraceRedWhite";
 
 // Pages Order & Invoice
 import OrderForm from "./pages/OrderForm";
-import OrderFormBca from "./pages/OrderFormBca";
-import InvoiceBcaGosend from "./pages/InvoiceBcaGosend";
-import InvoiceQrisAmbil from "./pages/InvoiceQrisAmbil";
 
 // Pages Admin
 import LoginAwal from "./pages/admin/LoginAwal";
 import LoginError from "./pages/admin/LoginError";
 import Dashboard from "./pages/admin/Dashboard";
 import KelolaProduk from "./pages/admin/KelolaProduk";
-import KelolaPesanan from "./pages/admin/KelolaPesanan"; // Modal Detail ada di dalam sini
+import KelolaPesanan from "./pages/admin/KelolaPesanan"; 
 import Rekap from "./pages/admin/Rekap"; 
 
 // Filter Pages Admin
@@ -28,17 +30,23 @@ function App() {
     <Routes>
       {/* Sisi Pelanggan & Katalog Utama */}
       <Route path="/" element={<Katalog />} />
-      <Route path="/katalog-detail-artificial" element={<KatalogDetailArtificial />} />
       
       {/* Rute Detail Produk Mobile */}
       <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> 
       <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
-      
+      <Route path="/detail-garbe-5-stem" element={<ProductDetailGarbe5Stem />} />
+      <Route path="/detail-ariana" element={<ProductDetailAriana />} />
+      <Route path="/detail-sunny-side-up" element={<ProductDetailSunySideUp />} />
+      <Route path="/detail-grace-pink" element={<ProductDetailGracePink />} />
+      <Route path="/detail-karina-lily-red" element={<ProductDetailKarinaLilyRed />} />
+      <Route path="/detail-grace-red-white" element={<ProductDetailGraceRedWhite />} />
+
+
+
+
+
       {/* Sisi Order & Pembayaran */}
       <Route path="/order" element={<OrderForm />} />
-      <Route path="/order-bca" element={<OrderFormBca />} />
-      <Route path="/invoice-bca-gosend" element={<InvoiceBcaGosend />} />
-      <Route path="/invoice-qris-ambil" element={<InvoiceQrisAmbil />} />
 
       {/* Sisi Admin Panel */}
       <Route path="/admin" element={<LoginAwal />} />

@@ -18,6 +18,7 @@ export const products = [
     category: "Fresh Flowers",
     image: "/images/Fresh Flowers Ariana S.jpeg",
     imagePosition: "center 25%",
+    detailPath: "/detail-ariana",
   },
   {
     id: 3,
@@ -37,6 +38,7 @@ export const products = [
     status: "Tersedia",
     category: "Fresh Flowers",
     image: "/images/Fresh Flowers Garbe 5 Stem M.jpeg",
+    detailPath: "/detail-garbe-5-stem",
   },
   {
     id: 5,
@@ -46,6 +48,7 @@ export const products = [
     status: "Tersedia",
     category: "Fresh Flowers",
     image: "/images/Fresh Flowers Suny Sideup L.jpeg",
+    detailPath: "/detail-sunny-side-up",
   },
 {
   id: 6,
@@ -55,6 +58,8 @@ export const products = [
   status: "Tersedia",
   category: "Artificial Flowers",
   image: "/images/artificial-grace-pink.jpeg",
+  detailPath: "/detail-grace-pink",
+
 },
 {
   id: 7,
@@ -64,6 +69,7 @@ export const products = [
   status: "Tersedia",
   category: "Artificial Flowers",
   image: "/images/artificial-grace-red-white.jpeg",
+  detailPath: "/detail-grace-red-white",
 },
 {
   id: 8,
@@ -73,6 +79,7 @@ export const products = [
   status: "Tersedia",
   category: "Artificial Flowers",
   image: "/images/artificial-karina-lily-red.jpeg",
+  detailPath: "/detail-karina-lily-red",
 },
 {
   id: 9,
@@ -82,6 +89,7 @@ export const products = [
   status: "Tersedia",
   category: "Artificial Flowers",
   image: "/images/artificial-freya-xl.jpeg",
+  detailPath: "/detail-freya-xl",
 },
 {
   id: 10,
@@ -91,6 +99,7 @@ export const products = [
   status: "Tersedia",
   category: "Artificial Flowers",
   image: "/images/artificial-brenda-l.jpeg",
+  detailPath: "/detail-brenda-l",
 },
   {
     id: 11,
@@ -100,6 +109,7 @@ export const products = [
     status: "Tersedia",
     category: "Snack Bouquet",
     image: "/images/SNACK BOUQUET 1.png",
+    detailPath: "/detail-snack-bouquet-1",
   },
   {
     id: 12,
@@ -109,6 +119,7 @@ export const products = [
     status: "Tersedia",
     category: "Snack Bouquet",
     image: "/images/SNACK BOUQUET 2.png",
+    detailPath: "/detail-snack-bouquet-2",
   },
   {
     id: 13,
@@ -118,6 +129,7 @@ export const products = [
     status: "Tersedia",
     category: "Snack Bouquet",
     image: "/images/SNACK BOUQUET 3.png",
+    detailPath: "/detail-snack-bouquet-3",
   },
 
   {
@@ -128,6 +140,7 @@ export const products = [
     status: "Tersedia",
     category: "Graduation Bouquet",
     image: "/images/Graduation Ivana Red S.png",
+    detailPath: "/detail-ivana-red",
   },
   {
     id: 15,
@@ -137,6 +150,7 @@ export const products = [
     status: "Tersedia",
     category: "Graduation Bouquet",
     image: "/images/Graduation Clara Purple M.png",
+    detailPath: "/detail-clara-purple",
   },
   {
     id: 16,
@@ -146,6 +160,7 @@ export const products = [
     status: "Tersedia",
     category: "Graduation Bouquet",
     image: "/images/Graduation Valencia Blue L.png",
+    detailPath: "/detail-valencia-blue",
   },
 
   {
@@ -156,6 +171,7 @@ export const products = [
     status: "Tersedia",
     category: "Bloom Box Arrangement",
     image: "/images/BLOOM BOX ARRANGEMENT BBA Godiva Blue.png",
+    detailPath: "/detail-bba-godiva-blue",
   },
   {
     id: 18,
@@ -165,6 +181,7 @@ export const products = [
     status: "Tersedia",
     category: "Bloom Box Arrangement",
     image: "/images/BLOOM BOX ARRANGEMENT BBA Godiva Red.png",
+    detailPath: "/detail-bba-godiva-red",
   },
   {
     id: 19,
@@ -174,5 +191,8 @@ export const products = [
     status: "Tersedia",
     category: "Bloom Box Arrangement",
     image: "/images/BLOOM BOX ARRANGEMENT BBA Liro.png",
+    detailPath: "/detail-bba-liro",
+  },
+  {     
   },
 ];

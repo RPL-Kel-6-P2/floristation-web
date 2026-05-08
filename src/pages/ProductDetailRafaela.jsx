@@ -5,7 +5,7 @@ function ProductDetailRafaela() {
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden bg-[#f7f2ec] shadow-2xl">
+      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl">
         {/* HEADER */}
         <header className="h-[56px] bg-[#2f435e] px-5 text-white flex items-center">
           <button
@@ -20,26 +20,26 @@ function ProductDetailRafaela() {
         </header>
 
         {/* CONTENT */}
-        <main className="h-full overflow-y-auto pb-[96px]">
+        <main className="h-full overflow-y-auto pb-[105px]">
           {/* IMAGE */}
-          <div className="h-[365px] w-full overflow-hidden bg-[#f1ede8]">
+          <div className="h-[392px] w-full overflow-hidden bg-[#f1ede8]">
             <img
               src="/images/Fresh Flowers Rafaela M.jpeg"
               alt="Rafaela M"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-center"
               style={{
-                objectPosition: "center 52%",
+                objectPosition: "center 35%",
               }}
             />
           </div>
 
           {/* DETAIL CARD */}
-          <section className="mx-4 mt-2 bg-white px-6 py-5">
-            <h2 className="text-[25px] font-medium tracking-wide text-[#2f435e]">
+          <section className="mx-5 mt-3 bg-white px-6 py-5">
+            <h2 className="text-[26px] font-medium tracking-wide text-[#2f435e]">
               RAFAELA (M)
             </h2>
 
-            <p className="mt-3 text-[16px] text-[#2f435e]">Rp285.000</p>
+            <p className="mt-4 text-[17px] text-[#2f435e]">Rp285.000</p>
 
             <div className="mt-4">
               <p className="text-[15px] text-slate-400">Komposisi:</p>

@@ -1,47 +1,75 @@
 import { useNavigate } from "react-router-dom";
 
-function ProductDetailAsteria() {
+function ProductDetailKarinaLilyRed() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl">
+      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden bg-[#f7f2ec] shadow-2xl">
+        
+        {/* HEADER */}
         <header className="bg-[#2f435e] px-5 py-5 text-white">
           <div className="flex items-center gap-4">
-            <button type="button" onClick={() => navigate(-1)} className="text-[26px] leading-none">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="text-[26px] leading-none"
+            >
               ←
             </button>
-            <h1 className="text-[20px] font-medium">Detail Produk</h1>
+
+            <h1 className="text-[20px] font-medium">
+              Detail Produk
+            </h1>
           </div>
         </header>
 
+        {/* CONTENT */}
         <main className="h-full overflow-y-auto pb-[105px]">
+          
+          {/* PRODUCT IMAGE */}
           <img
-            src="/images/Fresh Flowers Asteria XS.jpeg"
-            alt="Asteria XS"
-            className="h-[392px] w-full object-cover object-right"
+            src="/images/artificial-karina-lily-red.jpeg"
+            alt="Karina Lily Red Bouquet"
+            className="h-[392px] w-full object-cover object-center"
           />
 
+          {/* PRODUCT DETAIL */}
           <section className="mx-5 mt-3 bg-white px-6 py-5">
+            
+            {/* TITLE */}
             <h2 className="text-[26px] font-medium tracking-wide text-[#2f435e]">
-              ASTERIA (XS)
+              KARINA LILY RED
             </h2>
-            <p className="mt-3 text-[17px] text-[#2f435e]">Rp50.000</p>
 
+            {/* PRICE */}
+            <p className="mt-3 text-[17px] text-[#2f435e]">
+              Rp265.000
+            </p>
+
+            {/* COMPOSITION */}
             <div className="mt-4">
-              <p className="text-[16px] text-slate-400">Komposisi:</p>
+              <p className="text-[16px] text-slate-400">
+                Komposisi:
+              </p>
+
               <p className="mt-1 text-[16px] tracking-wide text-[#2f435e]">
-                CHRYSAN ASTER, PAKIS
+                ARTIFICIAL LILY, ARTIFICIAL ROSE, PREMIUM WRAPPING
               </p>
             </div>
 
+            {/* SIZE */}
             <div className="mt-4">
-              <p className="text-[16px] text-slate-400">Ukuran:</p>
+              <p className="text-[16px] text-slate-400">
+                Ukuran:
+              </p>
+
               <div className="mt-2 flex h-11 w-14 items-center justify-center rounded-[12px] bg-[#2f435e] text-[16px] font-medium text-white">
-                XS
+                M
               </div>
             </div>
 
+            {/* STOCK */}
             <div className="mt-4">
               <span className="inline-flex items-center rounded-[12px] bg-green-100 px-4 py-2 text-[16px] font-medium text-green-600">
                 ✓ Tersedia
@@ -50,11 +78,12 @@ function ProductDetailAsteria() {
           </section>
         </main>
 
+        {/* ORDER BUTTON */}
         <div className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4">
           <button
             type="button"
             onClick={() => navigate("/order")}
-            className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform"
+            className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white transition-transform active:scale-95"
           >
             Pesan Sekarang
           </button>
@@ -64,4 +93,4 @@ function ProductDetailAsteria() {
   );
 }
 
-export default ProductDetailAsteria;
+export default ProductDetailKarinaLilyRed;
