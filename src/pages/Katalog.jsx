@@ -13,7 +13,7 @@ function Katalog() {
     { label: "Snack Bouquet", value: "Snack Bouquet" },
     { label: "Graduation Bouquet", value: "Graduation Bouquet" },
     { label: "Bloom Box Arrangement", value: "Bloom Box Arrangement" },
-  ];
+  ]; 
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
