@@ -17,7 +17,6 @@ export const products = [
     status: "Tersedia",
     category: "Fresh Flowers",
     image: "/images/Fresh Flowers Ariana S.jpeg",
-    imagePosition: "center 25%",
     detailPath: "/detail-ariana",
   },
   {
@@ -50,57 +49,60 @@ export const products = [
     image: "/images/Fresh Flowers Suny Sideup L.jpeg",
     detailPath: "/detail-sunny-side-up",
   },
-{
-  id: 6,
-  name: "GRACE PINK (S)",
-  price: "Rp70.000",
-  size: "S",
-  status: "Tersedia",
-  category: "Artificial Flowers",
-  image: "/images/artificial-grace-pink.jpeg",
-  detailPath: "/detail-grace-pink",
 
-},
-{
-  id: 7,
-  name: "GRACE RED WHITE (S)",
-  price: "Rp70.000",
-  size: "S",
-  status: "Tersedia",
-  category: "Artificial Flowers",
-  image: "/images/artificial-grace-red-white.jpeg",
-  detailPath: "/detail-grace-red-white",
-},
-{
-  id: 8,
-  name: "KARINA LILY RED (M)",
-  price: "Rp105.000",
-  size: "M",
-  status: "Tersedia",
-  category: "Artificial Flowers",
-  image: "/images/artificial-karina-lily-red.jpeg",
-  detailPath: "/detail-karina-lily-red",
-},
-{
-  id: 9,
-  name: "FREYA (XL)",
-  price: "Rp400.000",
-  size: "XL",
-  status: "Tersedia",
-  category: "Artificial Flowers",
-  image: "/images/artificial-freya-xl.jpeg",
-  detailPath: "/detail-freya-xl",
-},
-{
-  id: 10,
-  name: "BRENDA (L)",
-  price: "Rp325.000",
-  size: "L",
-  status: "Tersedia",
-  category: "Artificial Flowers",
-  image: "/images/artificial-brenda-l.jpeg",
-  detailPath: "/detail-brenda-l",
-},
+  // ARTIFICIAL
+  {
+    id: 6,
+    name: "GRACE PINK (S)",
+    price: "Rp70.000",
+    size: "S",
+    status: "Tersedia",
+    category: "Artificial Flowers",
+    image: "/images/artificial-grace-pink.jpeg",
+    detailPath: "/detail-grace-pink",
+  },
+  {
+    id: 7,
+    name: "GRACE RED WHITE (S)",
+    price: "Rp70.000",
+    size: "S",
+    status: "Tersedia",
+    category: "Artificial Flowers",
+    image: "/images/artificial-grace-red-white.jpeg",
+    detailPath: "/detail-grace-red-white",
+  },
+  {
+    id: 8,
+    name: "KARINA LILY RED (M)",
+    price: "Rp105.000",
+    size: "M",
+    status: "Tersedia",
+    category: "Artificial Flowers",
+    image: "/images/artificial-karina-lily-red.jpeg",
+    detailPath: "/detail-karina-lily-red",
+  },
+  {
+    id: 9,
+    name: "FREYA (XL)",
+    price: "Rp400.000",
+    size: "XL",
+    status: "Tersedia",
+    category: "Artificial Flowers",
+    image: "/images/artificial-freya-xl.jpeg",
+    detailPath: "/detail-freya-xl",
+  },
+  {
+    id: 10,
+    name: "BRENDA (L)",
+    price: "Rp325.000",
+    size: "L",
+    status: "Tersedia",
+    category: "Artificial Flowers",
+    image: "/images/artificial-brenda-l.jpeg",
+    detailPath: "/detail-brenda-l",
+  },
+
+  // SNACK
   {
     id: 11,
     name: "SNACK BOUQUET 1",
@@ -132,6 +134,7 @@ export const products = [
     detailPath: "/detail-snack-bouquet-3",
   },
 
+  // GRADUATION
   {
     id: 14,
     name: "IVANA RED (S)",
@@ -163,6 +166,7 @@ export const products = [
     detailPath: "/detail-valencia-blue",
   },
 
+  // BLOOM BOX
   {
     id: 17,
     name: "BBA GODIVA BLUE",
@@ -192,7 +196,5 @@ export const products = [
     category: "Bloom Box Arrangement",
     image: "/images/BLOOM BOX ARRANGEMENT BBA Liro.png",
     detailPath: "/detail-bba-liro",
-  },
-  {     
   },
 ];

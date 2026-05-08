@@ -1,17 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function OrderForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const produk = location.state || {};
+
   const [metodeAmbil, setMetodeAmbil] = useState("ambil");
   const [metodeBayar, setMetodeBayar] = useState("qris");
   const [goodieBag, setGoodieBag] = useState(false);
 
-  const hargaProduk = 50000;
+  const [nama, setNama] = useState("");
+  const [wa, setWa] = useState("");
+  const [namaPenerima, setNamaPenerima] = useState("");
+  const [teleponPenerima, setTeleponPenerima] = useState("");
+  const [tanggal, setTanggal] = useState("");
+  const [jam, setJam] = useState("");
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const draft = {
+      produk,
+      nama,
+      wa,
+      tanggal,
+      jam,
+      metodeAmbil,
+      metodeBayar,
+      goodieBag,
+    };
+
+    localStorage.setItem("draftPesanan", JSON.stringify(draft));
+  }, [nama, wa, tanggal, jam, metodeAmbil, metodeBayar, goodieBag, produk]);
+
+  const hargaProduk = Number(
+    (produk?.price || "Rp50.000").replace(/[^0-9]/g, "")
+  );
   const hargaGoodie = 5000;
   const total = hargaProduk + (goodieBag ? hargaGoodie : 0);
 
   const formatRupiah = (n) => "Rp" + n.toLocaleString("id-ID");
+
+  const handleSubmit = () => {
+    const newErrors = {};
+
+    if (!tanggal) newErrors.tanggal = "Tanggal wajib diisi";
+    if (!jam) newErrors.jam = "Jam wajib diisi";
+    if (!nama) newErrors.nama = "Nama wajib diisi";
+    if (!wa) newErrors.wa = "WhatsApp wajib diisi";
+    if (!namaPenerima) newErrors.namaPenerima = "Nama penerima wajib diisi";
+    if (!teleponPenerima) newErrors.teleponPenerima = "Telepon penerima wajib diisi";
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      navigate(
+        metodeBayar === "qris"
+          ? "/invoice-qris-ambil"
+          : "/invoice-bca-gosend"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
@@ -30,13 +79,16 @@ function OrderForm() {
           {/* PRODUK */}
           <section className="flex gap-4 rounded-2xl bg-white p-4 items-center">
             <img
-              src="/images/Fresh Flowers Asteria XS.jpeg"
-              alt="Asteria XS"
+              src={produk?.image || "/images/Fresh Flowers Asteria XS.jpeg"}
               className="h-16 w-16 rounded-xl object-cover"
             />
             <div>
-              <h2 className="text-[17px] font-semibold text-[#2f435e]">ASTERIA (XS)</h2>
-              <p className="mt-1 text-[15px] text-[#2f435e]">Rp50.000</p>
+              <h2 className="text-[17px] font-semibold text-[#2f435e]">
+                {produk?.name || "ASTERIA (XS)"}
+              </h2>
+              <p className="text-[15px] text-[#2f435e]">
+                {formatRupiah(hargaProduk)}
+              </p>
             </div>
           </section>
 
@@ -67,8 +119,11 @@ function OrderForm() {
             <input
               type="date"
               className="mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px] text-[#2f435e]"
+              value={tanggal}
+              onChange={(e) => setTanggal(e.target.value)}
             />
             <p className="text-[11px] text-slate-400 mb-4">🗓 Klik untuk memilih tanggal</p>
+            {errors.tanggal && <p className="text-red-500 text-xs">{errors.tanggal}</p>}
 
             {/* JAM */}
             <label className="text-[13px] text-slate-500 flex items-center gap-1 mb-1">
@@ -77,9 +132,11 @@ function OrderForm() {
             <input
               type="time"
               className="mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px] text-[#2f435e]"
+              value={jam}
+              onChange={(e) => setJam(e.target.value)}
             />
             <p className="text-[11px] text-slate-400 mb-4">🕐 Klik untuk memilih jam</p>
-
+            {errors.jam && <p className="text-red-500 text-xs">{errors.jam}</p>}
             {/* INFO JAM OPERASIONAL */}
             <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3">
               <p className="text-[13px] font-semibold text-blue-700">🕐 Jam Operasional Toko:</p>
@@ -92,19 +149,41 @@ function OrderForm() {
           <section className="rounded-2xl bg-white p-4">
             <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Pemesan</h3>
             <label className="text-[13px] text-slate-500">Nama Pemesan *</label>
-            <input className="mt-1 mb-4 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]" />
+            <input
+              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
+            />
+            {errors.nama && <p className="text-red-500 text-xs mb-3">{errors.nama}</p>}
             <label className="text-[13px] text-slate-500">No WhatsApp *</label>
-            <input placeholder="08xxxxxxxxxx" className="mt-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]" />
+            <input
+              placeholder="08xxxxxxxxxx"
+              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              value={wa}
+              onChange={(e) => setWa(e.target.value)}
+            />
+            {errors.wa && <p className="text-red-500 text-xs mb-3">{errors.wa}</p>}
           </section>
 
           {/* DATA PENERIMA */}
           <section className="rounded-2xl bg-white p-4">
             <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Penerima</h3>
             <label className="text-[13px] text-slate-500">Nama Penerima *</label>
-            <input className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]" />
+            <input
+              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              value={namaPenerima}
+              onChange={(e) => setNamaPenerima(e.target.value)}
+            />
+            {errors.namaPenerima && <p className="text-red-500 text-xs mb-3">{errors.namaPenerima}</p>}
             <p className="text-[11px] text-slate-400 mb-4">*isi nama yang akan mengambil florist yaa</p>
             <label className="text-[13px] text-slate-500">No Telepon Penerima *</label>
-            <input placeholder="08xxxxxxxxxx" className="mt-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]" />
+            <input
+              placeholder="08xxxxxxxxxx"
+              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              value={teleponPenerima}
+              onChange={(e) => setTeleponPenerima(e.target.value)}
+            />
+            {errors.teleponPenerima && <p className="text-red-500 text-xs">{errors.teleponPenerima}</p>}
           </section>
 
           {/* GREETING */}
@@ -176,7 +255,7 @@ function OrderForm() {
           {/* TOMBOL KIRIM */}
           <button
             type="button"
-            onClick={() => navigate(metodeBayar === "qris" ? "/invoice-qris-ambil" : "/invoice-bca-gosend")}
+            onClick={handleSubmit}
             className="w-full rounded-xl bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform"
           >
             Kirim Pesanan →
@@ -188,4 +267,4 @@ function OrderForm() {
   );
 }
 
-export default OrderForm;
+export default OrderForm

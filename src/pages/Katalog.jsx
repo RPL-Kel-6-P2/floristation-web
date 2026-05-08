@@ -45,7 +45,7 @@ function Katalog() {
           </header>
 
           {/* HERO */}
-          <section className="bg-gradient-to-b from-[#eadfd2] to-[#f6f1eb] px-5 py-6 text-center">
+          <section className="bg-gradient-to-b from-[#eadfd2] to-[#f6f1eb] px-5 py-5 text-center">
             <h2 className="text-[20px] font-semibold text-[#2f435e]">
               Keindahan untuk Setiap Momen
             </h2>
@@ -56,8 +56,8 @@ function Katalog() {
           </section>
 
           {/* SEARCH */}
-          <section className="bg-white px-5 py-5">
-            <div className="flex h-[58px] items-center rounded-[20px] border border-[#ded8d1] bg-[#f8f4ef] px-5">
+          <section className="bg-white px-6 py-3">
+            <div className="flex h-[55px] items-center rounded-[22px] border border-[#ded8d1] bg-[#f8f4ef] px-5">
               <span className="mr-3 text-[16px] text-slate-400">
                 🔍
               </span>

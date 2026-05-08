@@ -2,14 +2,27 @@ import { Routes, Route } from "react-router-dom";
 
 // Pages Pelanggan
 import Katalog from "./pages/Katalog";
+import Draft from "./pages/Draft";
+import Info from "./pages/info";
 import ProductDetailAsteria from "./pages/ProductDetailAsteria"; 
 import ProductDetailRafaela from "./pages/ProductDetailRafaela";
 import ProductDetailGarbe5Stem from "./pages/ProductDetailGarbe5Stem";
 import ProductDetailAriana from "./pages/ProductDetailAriana";
 import ProductDetailSunySideUp from "./pages/ProductDetailSunySideUp";
 import ProductDetailGracePink from "./pages/ProductDetailGracePink"
-import ProductDetailKarinaLilyRed from "../public/images/ProductDetailKarinaLilyRed";
+import ProductDetailKarinaLilyRed from "./pages/ProductDetailKarinaLilyRed";
 import ProductDetailGraceRedWhite from "./pages/ProductDetailGraceRedWhite";
+import ProductDetailFreya from "./pages/ProductDetailFreya";
+import ProductDetailBrenda from "./pages/ProductDetailBrenda";
+import ProductDetailSnack1 from "./pages/ProductDetailSnack1";
+import ProductDetailSnack2 from "./pages/ProductDetailSnack2";
+import ProductDetailSnack3 from "./pages/ProductDetailSnack3";
+import ProductDetailIvanaRed from "./pages/ProductDetailIvanaRed";
+import ProductDetailClaraPurple from "./pages/ProductDetailClaraPurple";
+import ProductDetailValenciaBlue from "./pages/ProductDetailValenciaBlue";
+import ProductDetailBbaGodivaBlue from "./pages/ProductDetailBbaGodivaBlue";
+import ProductDetailBbaGodivaRed from "./pages/ProductDetailBbaGodivaRed";
+import ProductDetailBbaLiro from "./pages/ProductDetailBbaLiro";
 
 // Pages Order & Invoice
 import OrderForm from "./pages/OrderForm";
@@ -30,6 +43,9 @@ function App() {
     <Routes>
       {/* Sisi Pelanggan & Katalog Utama */}
       <Route path="/" element={<Katalog />} />
+      <Route path="/draft" element={<Draft />} />
+      <Route path="/info" element={<Info />} />
+
       
       {/* Rute Detail Produk Mobile */}
       <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> 
@@ -40,14 +56,22 @@ function App() {
       <Route path="/detail-grace-pink" element={<ProductDetailGracePink />} />
       <Route path="/detail-karina-lily-red" element={<ProductDetailKarinaLilyRed />} />
       <Route path="/detail-grace-red-white" element={<ProductDetailGraceRedWhite />} />
-
-
-
+      <Route path="/detail-freya-xl" element={<ProductDetailFreya />} />
+      <Route path="/detail-brenda-l" element={<ProductDetailBrenda />} />
+      <Route path="/detail-snack-bouquet-1" element={<ProductDetailSnack1 />} />
+      <Route path="/detail-snack-bouquet-2" element={<ProductDetailSnack2 />} />
+      <Route path="/detail-snack-bouquet-3" element={<ProductDetailSnack3 />} />
+      <Route path="/detail-ivana-red" element={<ProductDetailIvanaRed />} />
+      <Route path="/detail-clara-purple" element={<ProductDetailClaraPurple />} />  
+      <Route path="/detail-valencia-blue" element={<ProductDetailValenciaBlue />} />  
+      <Route path="/detail-bba-godiva-blue" element={<ProductDetailBbaGodivaBlue />} />
+      <Route path="/detail-bba-godiva-red" element={<ProductDetailBbaGodivaRed />} /> 
+      <Route path="/detail-bba-liro" element={<ProductDetailBbaLiro />} />
 
 
       {/* Sisi Order & Pembayaran */}
       <Route path="/order" element={<OrderForm />} />
-
+      
       {/* Sisi Admin Panel */}
       <Route path="/admin" element={<LoginAwal />} />
       <Route path="/admin/login-error" element={<LoginError />} />
