@@ -6,8 +6,8 @@ const Rekap = () => {
 
   const stats = [
     {
-      label: 'Total Pesanan',
-      value: '127',
+      label: 'Total Produk Terjual',
+      value: '124',
       change: '+15% dari bulan lalu',
       positive: true,
       color: 'text-[#228be6]',
@@ -23,7 +23,7 @@ const Rekap = () => {
     },
     {
       label: 'Produk Terjual',
-      value: '89',
+      value: '38',
       change: '+8% dari bulan lalu',
       positive: true,
       color: 'text-[#7950f2]',
@@ -48,9 +48,9 @@ const Rekap = () => {
   ];
 
   const topProduk = [
-    { rank: 1, nama: 'Ariana S', terjual: 23, pendapatan: 'Rp1.150.000' },
-    { rank: 2, nama: 'Rafaela M', terjual: 18, pendapatan: 'Rp5.130.000' },
-    { rank: 3, nama: 'Ivana Red S', terjual: 15, pendapatan: 'Rp1.500.000' },
+    { rank: 1, nama: 'Ariana S', terjual: 40, pendapatan: 'Rp6.600.000' },
+    { rank: 2, nama: 'Rafaela M', terjual: 35, pendapatan: 'Rp9.030.000' },
+    { rank: 3, nama: 'Ivana Red S', terjual: 27, pendapatan: 'Rp2.700.000' },
     { rank: 4, nama: 'Asteria XS', terjual: 12, pendapatan: 'Rp600.000' },
     { rank: 5, nama: 'Snack Bouquet 1', terjual: 10, pendapatan: 'Rp1.200.000' },
   ];

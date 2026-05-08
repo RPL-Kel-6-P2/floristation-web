@@ -51,7 +51,7 @@ function ProductDetailBbaGodivaRed() {
               </p>
 
               <p className="mt-1 text-[16px] tracking-wide text-[#2f435e]">
-                FRESH FLOWERS: GOMPIE, ROSE & FILLER
+                GOMPIE, ROSE & FILLER
               </p>
             </div>
 

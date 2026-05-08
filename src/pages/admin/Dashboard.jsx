@@ -16,27 +16,28 @@ const Dashboard = () => {
     { status: 'selesai',    label: 'Selesai',    dot: 'bg-[#40c057]', color: 'bg-[#ebfbee] text-[#40c057]' },
   ];
 
-  // Daftar produk aktif
-  const [activeProducts] = useState([
-    'Asteria XS', 'Ariana S', 'Grace Pink S', 'Valencia Blue L', 'Snack Bouquet 1',
-    'Bella Large', 'Rose Bouquet M', 'Sunflower S', 'Tulip Wrap', 'Daisy Box',
-    'Wildflower L', 'Peony Pink M', 'Carnation Red S', 'Lily White M', 'Orchid Purple L',
-    'Hydrangea Blue', 'Lavender Bunch', 'Mixed Pastel M', 'Eternal Rose Box', 'Baby Breath S',
-    'Chocolate Bouquet', 'Teddy Bear Set', 'Premium Gift Box', 'Seasonal Special',
-  ]);
-
   const [orders, setOrders] = useState([
-    { id: 'FLR-0042', pelanggan: 'Siti Nurhaliza', produk: 'Asteria XS',     tgl: '2026-04-28', metode: 'Ambil di Toko', total: 'Rp50.000',  status: 'pending',    label: 'Pending',    color: 'bg-[#fff9db] text-[#fab005]', wa: '081234567890', penerima: 'Siti Nurhaliza', telpPenerima: '081234567890', waktu: '10:00',    pembayaran: 'Transfer', pesan: '' },
-    { id: 'FLR-0041', pelanggan: 'Budi Santoso',   produk: 'Ariana S',       tgl: '2026-04-28', metode: 'GoSend',        total: 'Rp165.000', status: 'konfirmasi', label: 'Konfirmasi', color: 'bg-[#e7f5ff] text-[#228be6]', wa: '082345678901', penerima: 'Rina Sari',        telpPenerima: '082345678902', waktu: '9:00', pembayaran: 'Transfer', pesan: 'Happy Birthday!' },
-    { id: 'FLR-0040', pelanggan: 'Dewi Kartika',   produk: 'Grace Pink S',   tgl: '2026-04-27', metode: 'Ambil di Toko', total: 'Rp200.000', status: 'diproses',   label: 'Diproses',   color: 'bg-[#f3f0ff] text-[#7950f2]', wa: '083456789012', penerima: 'Sarah Amelia',     telpPenerima: '083456789013', waktu: '15:30', pembayaran: 'QRIS',     pesan: 'Congratulations!' },
-    { id: 'FLR-0039', pelanggan: 'Ahmad Fauzi',    produk: 'Valencia Blue L', tgl: '2026-04-26', metode: 'Ambil di Toko', total: 'Rp120.000', status: 'selesai',    label: 'Selesai',    color: 'bg-[#ebfbee] text-[#40c057]', wa: '084567890123', penerima: 'Linda Cahya',      telpPenerima: '084567890124', waktu: '13:00', pembayaran: 'Cash',     pesan: 'With love!' },
-    { id: 'FLR-0038', pelanggan: 'Sartika',   produk: 'BBA Godiva Blue', tgl: '2026-04-25', metode: 'GoSend',        total: 'Rp350.000', status: 'selesai',    label: 'Selesai',    color: 'bg-[#ebfbee] text-[#40c057]', wa: '085678901234', penerima: 'Sartika',             telpPenerima: '085678901234', waktu: '11:00', pembayaran: 'Transfer',     pesan: '' },
+    { id: 'FLR-0042', pelanggan: 'Siti Nurhaliza', produk: 'Asteria XS',      tgl: '2026-04-28', metode: 'Ambil di Toko', total: 'Rp50.000',  status: 'pending',    label: 'Pending',    color: 'bg-[#fff9db] text-[#fab005]', wa: '081234567890', penerima: 'Siti Nurhaliza', telpPenerima: '081234567890', waktu: '10:00', pembayaran: 'Transfer', pesan: '' },
+    { id: 'FLR-0041', pelanggan: 'Budi Santoso',   produk: 'Ariana S',        tgl: '2026-04-28', metode: 'GoSend',         total: 'Rp165.000', status: 'konfirmasi', label: 'Konfirmasi', color: 'bg-[#e7f5ff] text-[#228be6]', wa: '082345678901', penerima: 'Rina Sari',        telpPenerima: '082345678902', waktu: '9:00',  pembayaran: 'Transfer', pesan: 'Happy Birthday!' },
+    { id: 'FLR-0040', pelanggan: 'Dewi Kartika',   produk: 'Grace Pink S',    tgl: '2026-04-27', metode: 'Ambil di Toko', total: 'Rp200.000', status: 'diproses',    label: 'Diproses',    color: 'bg-[#f3f0ff] text-[#7950f2]', wa: '083456789012', penerima: 'Sarah Amelia',      telpPenerima: '083456789013', waktu: '15:30', pembayaran: 'QRIS',     pesan: 'Congratulations!' },
+    { id: 'FLR-0039', pelanggan: 'Ahmad Fauzi',    produk: 'Valencia Blue L', tgl: '2026-04-26', metode: 'Ambil di Toko', total: 'Rp120.000', status: 'selesai',     label: 'Selesai',    color: 'bg-[#ebfbee] text-[#40c057]', wa: '084567890123', penerima: 'Linda Cahya',      telpPenerima: '084567890124', waktu: '13:00', pembayaran: 'Cash',     pesan: 'With love!' },
+    { id: 'FLR-0038', pelanggan: 'Sartika',        produk: 'BBA Godiva Blue', tgl: '2026-04-25', metode: 'GoSend',         total: 'Rp350.000', status: 'selesai',     label: 'Selesai',    color: 'bg-[#ebfbee] text-[#40c057]', wa: '085678901234', penerima: 'Sartika',              telpPenerima: '085678901234', waktu: '11:00', pembayaran: 'Transfer', pesan: '' },
   ]);
 
-  // ─── Computed stats (auto-update) ───────────────────────────────────────────
-  const totalPesanan   = orders.length;
-  const totalPending   = orders.filter(o => o.status === 'pending').length;
-  const totalProdukAktif = activeProducts.length;
+  // ─── Tanggal hari ini format YYYY-MM-DD ──────────────────────────────────────
+  const todayStr = new Date().toLocaleDateString('en-CA');
+
+  // ─── Computed stats ──────────────────────────────────────────────────────────
+  const totalPesananAktif  = orders.filter(o => ['pending', 'konfirmasi', 'diproses'].includes(o.status)).length;
+  
+  // ✅ LOGIKA BARU: Greeting Card difilter hanya yang statusnya pending, konfirmasi, atau diproses
+  const totalGreetingCard  = orders.filter(o => 
+    o.pesan && 
+    o.pesan.trim() !== '' && 
+    ['pending', 'konfirmasi', 'diproses'].includes(o.status)
+  ).length;
+
+  const totalPending       = orders.filter(o => o.status === 'pending').length;
 
   // ─── Generate next order ID ──────────────────────────────────────────────────
   const getNextId = () => {
@@ -46,7 +47,7 @@ const Dashboard = () => {
   };
 
   // ─── Modal handlers ──────────────────────────────────────────────────────────
-  const openDetail  = (order) => { setSelectedOrder(order);     setIsDetailModalOpen(true); };
+  const openDetail  = (order) => { setSelectedOrder(order);      setIsDetailModalOpen(true); };
   const closeDetail = ()      => { setIsDetailModalOpen(false); setSelectedOrder(null); };
 
   const openEdit  = (order) => { setSelectedEditOrder(order); setIsEditModalOpen(true); };
@@ -76,35 +77,21 @@ const Dashboard = () => {
         </div>
 
         <nav className="flex-1 space-y-2">
-          <button onClick={() => navigate('/admin/dashboard')}     className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium">Dashboard</button>
-          <button onClick={() => navigate('/admin/kelola-produk')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Produk</button>
-          <button onClick={() => navigate('/admin/kelola-pesanan')}className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
-          <button onClick={() => navigate('/admin/rekap')}         className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
+          <button onClick={() => navigate('/admin/dashboard')}      className="w-full text-left px-4 py-3 bg-[#ffffff20] rounded-xl font-medium">Dashboard</button>
+          <button onClick={() => navigate('/admin/kelola-produk')}  className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Produk</button>
+          <button onClick={() => navigate('/admin/kelola-pesanan')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
+          <button onClick={() => navigate('/admin/rekap')}          className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
         </nav>
 
         <button
-  onClick={handleLogout}
-  className="group mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-5 w-5 rotate-180"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-    />
-  </svg>
-
-  <span className="font-medium italic text-sm">
-    Logout
-  </span>
-</button>
+          onClick={handleLogout}
+          className="group mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+          </svg>
+          <span className="font-medium italic text-sm">Logout</span>
+        </button>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -114,9 +101,10 @@ const Dashboard = () => {
           <p className="text-gray-500 text-sm">Ringkasan aktivitas hari ini</p>
         </header>
 
-        {/* STATS CARDS — semua nilai dihitung otomatis dari state */}
+        {/* STATS CARDS */}
         <section className="grid grid-cols-3 gap-8 mb-10">
-          {/* Pesanan Hari Ini */}
+
+          {/* ── Kotak 1: Pesanan Aktif ── */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="bg-[#e7f5ff] p-4 rounded-2xl text-[#228be6]">
@@ -124,15 +112,31 @@ const Dashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <span className="text-[#228be6] font-bold text-2xl">{totalPesanan}</span>
+              <span className="text-[#228be6] font-bold text-2xl">{totalPesananAktif}</span>
             </div>
             <div>
-              <h3 className="font-bold text-xl mb-1">Pesanan Hari Ini</h3>
-              <p className="text-gray-400 text-sm">{totalPesanan} pesanan</p>
+              <h3 className="font-bold text-xl mb-1">Pesanan Aktif</h3>
+              <p className="text-gray-400 text-sm">Pending, Konfirmasi, Diproses</p>
             </div>
           </div>
 
-          {/* Pending */}
+          {/* ── Kotak 2: Greeting Card ── */}
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
+            <div className="flex justify-between items-start">
+              <div className="bg-[#fff0f6] p-4 rounded-2xl text-[#e64980]">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <span className="text-[#e64980] font-bold text-2xl">{totalGreetingCard}</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-xl mb-1">Greeting Card</h3>
+              <p className="text-gray-400 text-sm">Pesanan aktif dengan kartu ucapan</p>
+            </div>
+          </div>
+
+          {/* ── Kotak 3: Pending ── */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="bg-[#fff9db] p-4 rounded-2xl text-[#fab005]">
@@ -148,21 +152,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Produk Aktif */}
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm flex flex-col gap-4">
-            <div className="flex justify-between items-start">
-              <div className="bg-[#ebfbee] p-4 rounded-2xl text-[#40c057]">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <span className="text-[#40c057] font-bold text-2xl">{totalProdukAktif}</span>
-            </div>
-            <div>
-              <h3 className="font-bold text-xl mb-1">Produk Aktif</h3>
-              <p className="text-gray-400 text-sm">Tersedia untuk dijual</p>
-            </div>
-          </div>
         </section>
 
         {/* TABLE SECTION */}
@@ -242,7 +231,6 @@ const Dashboard = () => {
             </div>
 
             <div className="px-8 py-6 space-y-5 max-h-[72vh] overflow-y-auto">
-              {/* ID & Status */}
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-xs text-gray-400 mb-1">ID Pesanan</p>
@@ -256,7 +244,6 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Data Pemesan */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-3">Data Pemesan</p>
                 <div className="grid grid-cols-2 gap-4">
@@ -271,7 +258,6 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Data Penerima */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-3">Data Penerima</p>
                 <div className="grid grid-cols-2 gap-4">
@@ -287,7 +273,6 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Detail Pesanan */}
               <div className="pt-4 border-t border-gray-100 space-y-3">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-1">Detail Pesanan</p>
                 {[
@@ -304,7 +289,6 @@ const Dashboard = () => {
                 ))}
               </div>
 
-              {/* Greeting Card */}
               {selectedOrder.pesan && (
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-xs text-gray-400 mb-2">Greeting Card</p>
@@ -314,7 +298,6 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {/* Total */}
               <div className="flex justify-between items-center pt-4 border-t-2 border-dashed border-gray-200">
                 <p className="font-bold text-[#1e2d3d]">Total Harga</p>
                 <p className="text-lg font-black text-[#1e2d3d]">{selectedOrder.total}</p>

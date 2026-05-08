@@ -9,56 +9,55 @@ const KelolaProduk = () => {
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [lastState, setLastState] = useState(null);
 
+  // Filter & Search States
+  const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Semua Kategori');
   const [statusFilter, setStatusFilter] = useState('Semua Status');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 6; 
+  const productsPerPage = 6; // Ditingkatkan karena ukuran sekarang lebih kecil
 
   const [products, setProducts] = useState([
-    { id: 1, nama: 'ASTERIA (XS)', harga: 'Rp50.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'asteria-xs.png', komposisi: ['CHRYSAN ASTER', 'PAKIS'] },
-    { id: 2, nama: 'ARIANA (S)', harga: 'Rp165.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'ariana-s.jpg', komposisi: ['GARBERA', 'CALIMERO', 'BABY BREATH'] },
-    { id: 3, nama: 'RAFAELA (M)', harga: 'Rp285.000', kategori: 'Fresh Flowers', status: 'Habis', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'rafaela-m.png', komposisi: ['GARBERA', 'RAFAEL/CALIMERO', 'CHRYSAN', 'BABY BREATH'] },
-    { id: 4, nama: 'GARBE 5 STEM (M)', harga: 'Rp150.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'garbe-5-stem-m.jpg', komposisi: ['CHRYSAN ASTER', 'GARBERA', 'SOLIDAGO/PAKIS/RUSKUS'] },
-    { id: 5, nama: 'SUNNY SIDE UP (L)', harga: 'Rp475.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'sunny-side-up.jpg', komposisi: ['SUNFLOWER', 'BABY BREATH', 'SILVER DOLLAR'] },
-    { id: 6, nama: 'GRACE PINK (S)', harga: 'Rp70.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'grace-pink.jpg', komposisi: ['PEONY', 'GARBERA MINI'] },
-    { id: 7, nama: 'GRACE RED WHITE (S)', harga: 'Rp70.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'grace-red-white.jpg', komposisi: ['PEONY', 'GARBERA MINI'] },
-    { id: 8, nama: 'KARINA LILY RED (M)', harga: 'Rp105.000', kategori: 'Artificial Flowers', status: 'Habis', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'karina-lily-red.jpg', komposisi: ['LILY', 'ROSE', 'DRIED CASPEA'] },
-    { id: 9, nama: 'FREYA (XL)', harga: 'Rp400.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'freya-xl.jpg', komposisi: ['LILY LATEX', 'ROSE', 'GOMPIE', 'DRIED CASPEA', 'TULIP', 'HYDRANGEA', 'BABY ROSE'] },
-    { id: 10, nama: 'BRENDA (L)', harga: 'Rp325.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'brenda-l.jpg', komposisi: ['ANTHURIUM', 'ORCHIRD', 'GOMPIE', 'PEONY', 'ROSE', 'ONCIMIDIUM', 'DAISY', 'CASPEA'] },
-    { id: 11, nama: 'SNACK BOUQUET 1', harga: 'Rp120.000', kategori: 'Snack Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'snack-bouquet-1.jpg', komposisi: ['NEXTAR', 'GOOD TIME', 'BENG BENG'] },
-    { id: 12, nama: 'SNACK BOUQUET 2', harga: 'Rp100.000', kategori: 'Snack Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'snack-bouquet-2.png', komposisi: ['NEXTAR', 'GOOD TIME', 'HELLO PANDA', 'TANGGO', 'SMAX RING', 'TWIST'] },
-    { id: 13, nama: 'SNACK BOUQUET 3', harga: 'Rp165.000', kategori: 'Snack Bouquet', status: 'Habis', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'snack-bouquet-3.jpg.png', komposisi: ['GOOD TIME', 'BENG BENG', 'POCKY', 'CADBURY'] },
+    { id: 1, nama: 'ASTERIA (XS)', harga: 'Rp50.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'Fresh Flowers Asteria XS.jpeg', komposisi: ['CHRYSAN ASTER', 'PAKIS'] },
+    { id: 2, nama: 'ARIANA (S)', harga: 'Rp165.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'Fresh Flowers Ariana S.jpeg', komposisi: ['GARBERA', 'CALIMERO', 'BABY BREATH'] },
+    { id: 3, nama: 'RAFAELA (M)', harga: 'Rp285.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'Fresh Flowers Rafaela M.jpeg', komposisi: ['GARBERA', 'RAFAEL/CALIMERO', 'CHRYSAN', 'BABY BREATH'] },
+    { id: 4, nama: 'GARBE 5 STEM (M)', harga: 'Rp150.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'Fresh Flowers Garbe 5 Stem M.jpeg', komposisi: ['CHRYSAN ASTER', 'GARBERA', 'SOLIDAGO/PAKIS/RUSKUS'] },
+    { id: 5, nama: 'SUNNY SIDE UP (L)', harga: 'Rp475.000', kategori: 'Fresh Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'Fresh Flowers Suny Sideup L.jpeg', komposisi: ['SUNFLOWER', 'BABY BREATH', 'SILVER DOLLAR'] },
+    { id: 6, nama: 'GRACE PINK (S)', harga: 'Rp70.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'artificial-grace-pink.jpeg', komposisi: ['PEONY', 'GARBERA MINI'] },
+    { id: 7, nama: 'GRACE RED WHITE (S)', harga: 'Rp70.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'artificial-grace-red-white.jpeg', komposisi: ['PEONY', 'GARBERA MINI'] },
+    { id: 8, nama: 'KARINA LILY RED (M)', harga: 'Rp105.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'artificial-karina-lily-red.jpeg', komposisi: ['LILY', 'ROSE', 'DRIED CASPEA'] },
+    { id: 9, nama: 'FREYA (XL)', harga: 'Rp400.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'artificial-freya-xl.jpeg', komposisi: ['LILY LATEX', 'ROSE', 'GOMPIE', 'DRIED CASPEA', 'TULIP', 'HYDRANGEA', 'BABY ROSE'] },
+    { id: 10, nama: 'BRENDA (L)', harga: 'Rp325.000', kategori: 'Artificial Flowers', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'artificial-brenda-l.jpeg', komposisi: ['ANTHURIUM', 'ORCHIRD', 'GOMPIE', 'PEONY', 'ROSE', 'ONCIMIDIUM', 'DAISY', 'CASPEA'] },
+    { id: 11, nama: 'SNACK BOUQUET 1', harga: 'Rp120.000', kategori: 'Snack Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'SNACK BOUQUET 1.png', komposisi: ['NEXTAR', 'GOOD TIME', 'BENG BENG'] },
+    { id: 12, nama: 'SNACK BOUQUET 2', harga: 'Rp100.000', kategori: 'Snack Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'SNACK BOUQUET 2.png', komposisi: ['NEXTAR', 'GOOD TIME', 'HELLO PANDA', 'TANGGO', 'SMAX RING', 'TWIST'] },
+    { id: 13, nama: 'SNACK BOUQUET 3', harga: 'Rp165.000', kategori: 'Snack Bouquet', status: 'Tersedia', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'SNACK BOUQUET 3.png', komposisi: ['GOOD TIME', 'BENG BENG', 'POCKY', 'CADBURY'] },
     { id: 14, nama: 'IVANA RED (S)', harga: 'Rp100.000', kategori: 'Graduation Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'ivana-red-s.jpg', komposisi: ['GRADUATION DOLL', 'GOMPIE', 'ROSE', 'FILLER'] },
-    { id: 15, nama: 'CLARA PURPLE (M)', harga: 'Rp135.000', kategori: 'Graduation Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'clara-purple.jpg', komposisi: ['GRADUATION DOLL', 'GOMPIE', 'ROSE', 'BABY ROSE', 'DRIED CASPEA'] },
+    { id: 15, nama: 'CLARA PURPLE (M)', harga: 'Rp135.000', kategori: 'Graduation Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'clara-purple-m.jpg', komposisi: ['GRADUATION DOLL', 'GOMPIE', 'ROSE', 'BABY ROSE', 'DRIED CASPEA'] },
     { id: 16, nama: 'VALENCIA BLUE (L)', harga: 'Rp195.000', kategori: 'Graduation Bouquet', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'valencia-blue-l.jpg', komposisi: ['GRADUATION DOLL', 'ROSE', 'GOMPIE', 'HYDRANGEA', 'BABY ROSE', 'DRIED CASPEA', 'SILVER DOLLAR'] },
-    { id: 17, nama: 'BBA GODIVA BLUE', harga: 'Rp350.000', kategori: 'Bloom Box Arrangement', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'bba-godiva-blue.jpg', komposisi: ['GOMPIE', 'ROSE & FILLER'] },
-    { id: 18, nama: 'BBA GODIVA RED', harga: 'Rp350.000', kategori: 'Bloom Box Arrangement', status: 'Habis', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'bba-godiva-red.jpg', komposisi: ['GOMPIE', 'ROSE & FILLER'] }
+    { id: 17, nama: 'BBA GODIVA BLUE', harga: 'Rp350.000', kategori: 'Bloom Box Arrangement', status: 'Tersedia', color: 'bg-[#ebfbee] text-[#40c057]', image: 'BLOOM BOX ARRANGEMENT BBA Godiva Blue.png', komposisi: ['GOMPIE', 'ROSE & FILLER'] },
+    { id: 18, nama: 'BBA GODIVA RED', harga: 'Rp350.000', kategori: 'Bloom Box Arrangement', status: 'Tersedia', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'BLOOM BOX ARRANGEMENT BBA Godiva Red.png', komposisi: ['GOMPIE', 'ROSE & FILLER'] },
+    { id: 19, nama: 'BBA LIRO', harga: 'Rp850.000', kategori: 'Bloom Box Arrangement', status: 'Tersedia', color: 'bg-[#fee2e2] text-[#ef4444]', image: 'BLOOM BOX ARRANGEMENT BBA Liro.png', komposisi: ['GOMPIE', 'ROSE & FILLER'] }
   ]);
 
   const initialFormState = { nama: '', harga: '', kategori: 'Fresh Flowers', tersedia: true, komposisi: [''], image: '', preview: null };
   const [formData, setFormData] = useState(initialFormState);
 
-  // LOGIKA TAMBAHAN: Upload File
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ 
-          ...formData, 
-          preview: reader.result, 
-          image: file.name // Mengisi input text Nama File secara otomatis
-        });
+        setFormData({ ...formData, preview: reader.result, image: file.name });
       };
       reader.readAsDataURL(file);
     }
   };
 
   const filteredProducts = products.filter((product) => {
+    const matchSearch = product.nama.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = categoryFilter === 'Semua Kategori' || product.kategori === categoryFilter;
     const matchStatus = statusFilter === 'Semua Status' || product.status === statusFilter;
-    return matchCategory && matchStatus;
+    return matchSearch && matchCategory && matchStatus;
   });
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -111,7 +110,7 @@ const KelolaProduk = () => {
       tersedia: product.status === 'Tersedia', 
       komposisi: product.komposisi || [''], 
       image: product.image,
-      preview: product.image.startsWith('data:') ? product.image : `/assets/${product.image}`
+      preview: product.image.startsWith('data:') ? product.image : `/images/${product.image}`
     });
     setIsModalOpen(true);
   };
@@ -148,6 +147,7 @@ const KelolaProduk = () => {
 
   return (
     <div className="flex h-screen bg-[#f5f1ed] font-sans text-[#334155] overflow-hidden">
+      {/* SIDEBAR */}
       <aside className="w-64 bg-[#1e2d3d] text-white flex flex-col p-6 fixed h-full shadow-xl">
         <div className="mb-10 text-left">
           <h1 className="text-2xl font-serif italic tracking-wide">Floristation.id</h1>
@@ -159,9 +159,8 @@ const KelolaProduk = () => {
           <button onClick={() => navigate('/admin/kelola-pesanan')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Kelola Pesanan</button>
           <button onClick={() => navigate('/admin/rekap')} className="w-full text-left px-4 py-3 hover:bg-[#ffffff10] rounded-xl transition-colors">Rekap</button>
         </nav>
-        <button onClick={() => navigate('/admin')} className="group mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-          <span className="font-medium italic text-sm">Logout</span>
+        <button onClick={() => navigate('/admin')} className="group mt-auto flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-left font-medium italic text-sm">
+          <span>Logout</span>
         </button>
       </aside>
 
@@ -178,10 +177,26 @@ const KelolaProduk = () => {
           </div>
         )}
 
-        <section className="flex gap-6 mb-8 flex-shrink-0">
+        {/* SECTION SEARCH & FILTER */}
+        <section className="flex gap-4 mb-8 flex-shrink-0 items-end">
+          <div className="flex flex-col gap-1.5 text-left w-56">
+            <label className="text-[10px] font-bold text-[#1e2d3d] uppercase tracking-wide">Cari Produk</label>
+            <div className="relative">
+              <input 
+                type="text"
+                placeholder="Nama bunga..."
+                value={searchTerm}
+                onChange={(e) => {setSearchTerm(e.target.value); setCurrentPage(1);}}
+                className="w-full bg-white border border-gray-200 px-8 py-2 rounded-xl text-[11px] font-bold text-[#334155] outline-none shadow-sm focus:border-[#1e2d3d]/30"
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
           <div className="flex flex-col gap-1.5 text-left">
-            <label className="text-sm font-bold text-[#1e2d3d] uppercase tracking-wide">Kategori</label>
-            <select value={categoryFilter} onChange={(e) => {setCategoryFilter(e.target.value); setCurrentPage(1);}} className="bg-white border border-gray-200 px-5 py-3 rounded-xl text-xs font-bold text-[#334155] outline-none min-w-[220px] shadow-sm">
+            <label className="text-[10px] font-bold text-[#1e2d3d] uppercase tracking-wide">Kategori</label>
+            <select value={categoryFilter} onChange={(e) => {setCategoryFilter(e.target.value); setCurrentPage(1);}} className="bg-white border border-gray-200 px-3 py-2 rounded-xl text-[11px] font-bold text-[#334155] outline-none min-w-[160px] shadow-sm">
               <option value="Semua Kategori">Semua Kategori</option>
               <option value="Fresh Flowers">Fresh Flowers</option>
               <option value="Artificial Flowers">Artificial Flowers</option>
@@ -191,8 +206,8 @@ const KelolaProduk = () => {
             </select>
           </div>
           <div className="flex flex-col gap-1.5 text-left">
-            <label className="text-sm font-bold text-[#1e2d3d] uppercase tracking-wide">Status</label>
-            <select value={statusFilter} onChange={(e) => {setStatusFilter(e.target.value); setCurrentPage(1);}} className="bg-[#1e2d3d] px-6 py-3 rounded-xl text-xs font-bold text-white outline-none min-w-[160px] shadow-md">
+            <label className="text-[10px] font-bold text-[#1e2d3d] uppercase tracking-wide">Status</label>
+            <select value={statusFilter} onChange={(e) => {setStatusFilter(e.target.value); setCurrentPage(1);}} className="bg-[#1e2d3d] px-3 py-2 rounded-xl text-[11px] font-bold text-white outline-none min-w-[120px] shadow-md">
               <option value="Semua Status">Semua Status</option>
               <option value="Tersedia">Tersedia</option>
               <option value="Habis">Habis</option>
@@ -201,27 +216,31 @@ const KelolaProduk = () => {
         </section>
 
         <div className="flex-1 min-h-0 overflow-hidden">
-          <div className="grid grid-cols-3 grid-rows-2 gap-4 h-full">
+          {/* GRID DIPERBANYAK MENJADI 3 KOLOM AGAR LEBIH RINGKAS */}
+          <div className="grid grid-cols-3 gap-4 h-full content-start overflow-y-auto pr-2 custom-scrollbar">
             {currentProducts.map((p) => (
-              <div key={p.id} className="bg-white rounded-[2rem] shadow-sm flex flex-col border border-gray-100 p-5 transition-all hover:shadow-lg overflow-hidden">
+              <div key={p.id} className="bg-white rounded-3xl shadow-sm flex flex-col border border-gray-100 p-3 transition-all hover:shadow-md">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <span className="text-gray-400 text-[8px] font-bold uppercase tracking-widest block mb-0.5">{p.kategori}</span>
-                    <h3 className="text-xs font-bold text-[#1e2d3d] uppercase truncate w-32">{p.nama}</h3>
+                    <span className="text-gray-400 text-[7px] font-bold uppercase tracking-widest block">{p.kategori}</span>
+                    <h3 className="text-[10px] font-bold text-[#1e2d3d] uppercase truncate w-28">{p.nama}</h3>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter ${p.color}`}>{p.status}</span>
+                  <span className={`px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-tighter ${p.color}`}>{p.status}</span>
                 </div>
-                <div className="mb-3 bg-[#fcfaf8] p-2 rounded-xl border border-gray-50 flex-1 min-h-0 text-left flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                    <img src={p.image.startsWith('data:') ? p.image : `/assets/${p.image}`} className="w-full h-full object-cover" alt="" onError={(e) => e.target.src = 'https://via.placeholder.com/50'} />
+                
+                {/* KOTAK GAMBAR DIPERKECIL (h-40) */}
+                <div className="mb-3 rounded-xl border border-gray-50 bg-[#fcfaf8] p-1.5">
+                  <div className="h-40 w-full overflow-hidden rounded-lg bg-gray-100">
+                    <img src={p.image.startsWith('data:') ? p.image : `/images/${p.image}`} className="h-full w-full object-cover" alt={p.nama} onError={(e) => e.target.src = "https://via.placeholder.com/200?text=No+Image"} />
                   </div>
-                  <p className="text-[10px] text-[#5c524f] italic line-clamp-2 leading-tight">{p.komposisi?.join(', ') || '-'}</p>
+                  <p className="mt-2 line-clamp-1 text-[9px] italic text-[#5c524f]">{p.komposisi?.join(", ") || "-"}</p>
                 </div>
+
                 <div className="mt-auto">
-                  <p className="text-sm font-black text-[#1e2d3d] mb-3">{p.harga}</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => openEditModal(p)} className="flex-1 bg-[#1e2d3d] text-white py-2 rounded-lg text-[9px] font-bold hover:bg-black uppercase transition-colors">Edit</button>
-                    <button onClick={() => handleDelete(p.id)} className="flex-1 bg-[#e03131] text-white py-2 rounded-lg text-[9px] font-bold hover:bg-[#c92a2a] transition-colors">Hapus</button>
+                  <p className="mb-2 text-sm font-black text-[#1e2d3d]">{p.harga}</p>
+                  <div className="flex gap-1.5">
+                    <button onClick={() => openEditModal(p)} className="flex-1 rounded-lg bg-[#1e2d3d] py-1.5 text-[9px] font-bold uppercase text-white hover:bg-black transition-colors">Edit</button>
+                    <button onClick={() => handleDelete(p.id)} className="flex-1 rounded-lg bg-[#e03131] py-1.5 text-[9px] font-bold text-white hover:bg-[#c92a2a] transition-colors">Hapus</button>
                   </div>
                 </div>
               </div>
@@ -229,17 +248,17 @@ const KelolaProduk = () => {
           </div>
         </div>
 
-        <footer className="mt-auto py-6 border-t border-gray-100 flex justify-between items-center flex-shrink-0">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total {filteredProducts.length} Produk</p>
-          <div className="flex gap-4 items-center">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)} className={`w-28 py-3 rounded-2xl text-xs font-bold transition-all ${currentPage === 1 ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]'}`}>← Back</button>
-            <div className="text-xs font-black text-[#1e2d3d] bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm">Page {currentPage} of {totalPages || 1}</div>
-            <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => prev + 1)} className={`w-28 py-3 rounded-2xl text-xs font-bold transition-all shadow-md ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-100 text-gray-300 cursor-not-allowed shadow-none' : 'bg-[#1e2d3d] text-white hover:bg-black'}`}>Next →</button>
+        <footer className="mt-auto py-4 border-t border-gray-100 flex justify-between items-center flex-shrink-0">
+          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Total {filteredProducts.length} Produk</p>
+          <div className="flex gap-3 items-center">
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)} className={`px-4 py-2 rounded-xl text-[10px] font-bold transition-all ${currentPage === 1 ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]'}`}>← Back</button>
+            <div className="text-[10px] font-black text-[#1e2d3d] bg-white px-3 py-1 rounded-full border border-gray-100">Page {currentPage} of {totalPages || 1}</div>
+            <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => prev + 1)} className={`px-4 py-2 rounded-xl text-[10px] font-bold transition-all shadow-sm ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-100 text-gray-300 cursor-not-allowed' : 'bg-[#1e2d3d] text-white hover:bg-black'}`}>Next →</button>
           </div>
         </footer>
       </main>
 
-      {/* MODAL 2 KOLOM DENGAN FITUR UPLOAD */}
+      {/* MODAL (Tetap 2 kolom agar nyaman mengedit) */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[999] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl p-10 relative text-left">
@@ -247,50 +266,40 @@ const KelolaProduk = () => {
             <h3 className="text-2xl font-bold text-[#1e2d3d] mb-8">{isEditMode ? 'Edit Produk' : 'Tambah Produk Baru'}</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-10">
+                {/* Sisi Kiri: Foto & Komposisi */}
                 <div className="space-y-5">
-                  {/* PREVIEW FOTO (Style Referensi Sapi) */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Preview Foto :</label>
                     <div className="w-full h-48 bg-[#f7f3f0] rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden mb-3">
-                      {formData.preview ? (
-                        <img src={formData.preview} className="w-full h-full object-contain" alt="Preview" />
-                      ) : (
+                      {formData.preview ? <img src={formData.preview} className="w-full h-full object-contain" alt="Preview" /> : (
                         <div className="flex flex-col items-center text-gray-300">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                           <span className="text-[10px] mt-2 font-bold uppercase tracking-widest">No Image Selected</span>
                         </div>
                       )}
                     </div>
-                    {/* UPLOAD FOTO */}
                     <label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Upload Foto :</label>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleFileUpload}
-                      className="block w-full text-[10px] text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-[#1e2d3d] file:text-white cursor-pointer hover:file:bg-black transition-all"
-                    />
+                    <input type="file" accept="image/*" onChange={handleFileUpload} className="block w-full text-[10px] text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-[#1e2d3d] file:text-white cursor-pointer hover:file:bg-black transition-all" />
                   </div>
-                  
-                  {/* KOMPOSISI (Pindah ke kiri bawah agar rapi) */}
-                  <div className="bg-[#fcfaf8] p-6 rounded-[2rem] border border-gray-100 flex flex-col">
-                    <label className="block text-[11px] font-bold mb-4 uppercase text-gray-400 tracking-widest text-left">Komposisi</label>
+                  <div className="bg-[#fcfaf8] p-6 rounded-[2rem] border border-gray-100 flex flex-col text-left">
+                    <label className="block text-[11px] font-bold mb-4 uppercase text-gray-400 tracking-widest">Komposisi</label>
                     <div className="space-y-3 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
                       {formData.komposisi.map((item, index) => (
                         <div key={index} className="flex gap-2 group">
                           <input type="text" placeholder="Isi item..." className="flex-1 px-4 py-2.5 bg-white rounded-xl text-xs outline-none border border-gray-100" value={item} onChange={(e) => handleCompositionChange(index, e.target.value)} />
-                          {formData.komposisi.length > 1 && (<button type="button" onClick={() => handleRemoveComposition(index)} className="text-red-300 hover:text-red-500 font-bold">✕</button>)}
+                          {formData.komposisi.length > 1 && <button type="button" onClick={() => handleRemoveComposition(index)} className="text-red-300 hover:text-red-500 font-bold">✕</button>}
                         </div>
                       ))}
                     </div>
                     <button type="button" onClick={handleAddComposition} className="mt-4 pt-2 text-[11px] font-black text-[#1e2d3d] underline uppercase text-center w-full">+ Tambah Item</button>
                   </div>
                 </div>
-
-                <div className="space-y-5">
-                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Nama Produk :</label><input type="text" placeholder="ASTERIA XS" className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-medium border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} required /></div>
-                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Harga :</label><div className="relative"><span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">Rp</span><input type="text" placeholder="50.000" className="w-full pl-12 pr-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-bold border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formatRupiah(formData.harga)} onChange={handlePriceChange} required /></div></div>
-                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Kategori :</label><select className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-medium border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formData.kategori} onChange={(e) => setFormData({...formData, kategori: e.target.value})}><option value="Fresh Flowers">Fresh Flowers</option><option value="Artificial Flowers">Artificial Flowers</option><option value="Snack Bouquet">Snack Bouquet</option><option value="Graduation Bouquet">Graduation Bouquet</option><option value="Bloom Box Arrangement">Bloom Box Arrangement</option></select></div>
-                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest text-left">Nama File Gambar :</label><input type="text" placeholder="ariana-s.jpg" className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-xs border border-transparent font-mono text-gray-500" value={formData.image} readOnly /></div>
+                {/* Sisi Kanan: Detail Data */}
+                <div className="space-y-5 text-left">
+                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">Nama Produk :</label><input type="text" placeholder="ASTERIA XS" className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-medium border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formData.nama} onChange={(e) => setFormData({...formData, nama: e.target.value})} required /></div>
+                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">Harga :</label><div className="relative"><span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">Rp</span><input type="text" placeholder="50.000" className="w-full pl-12 pr-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-bold border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formatRupiah(formData.harga)} onChange={handlePriceChange} required /></div></div>
+                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">Kategori :</label><select className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-medium border border-transparent focus:border-[#1e2d3d]/10 transition-all" value={formData.kategori} onChange={(e) => setFormData({...formData, kategori: e.target.value})}><option value="Fresh Flowers">Fresh Flowers</option><option value="Artificial Flowers">Artificial Flowers</option><option value="Snack Bouquet">Snack Bouquet</option><option value="Graduation Bouquet">Graduation Bouquet</option><option value="Bloom Box Arrangement">Bloom Box Arrangement</option></select></div>
+                  <div><label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">Nama File Gambar :</label><input type="text" className="w-full px-5 py-3.5 bg-[#f7f3f0] rounded-2xl outline-none text-xs border border-transparent font-mono text-gray-500" value={formData.image} readOnly /></div>
                   <div className="flex items-center gap-3 py-2"><input type="checkbox" id="stock" checked={formData.tersedia} onChange={(e) => setFormData({...formData, tersedia: e.target.checked})} className="w-6 h-6 accent-[#1e2d3d] cursor-pointer" /><label htmlFor="stock" className="text-sm font-bold text-[#1e2d3d] cursor-pointer">Produk Tersedia di Stok</label></div>
                   <div className="flex flex-col gap-3 pt-6 border-t border-gray-50">
                     <button type="submit" className="w-full py-4 bg-[#1e2d3d] text-white font-black rounded-2xl text-xs shadow-xl hover:bg-black transition-all uppercase tracking-[0.2em]">{isEditMode ? 'Simpan Perubahan' : 'Daftarkan Produk'}</button>

@@ -51,7 +51,7 @@ function ProductDetailBbaLiro() {
               </p>
 
               <p className="mt-1 text-[16px] tracking-wide text-[#2f435e]">
-                FRESH FLOWERS: LILY, ROSE, CARNATION, GOMPIE, FILLER & FERERRO
+              LILY, ROSE, CARNATION, GOMPIE, FILLER & FERERRO
               </p>
             </div>
 
