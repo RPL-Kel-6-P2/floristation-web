@@ -33,10 +33,10 @@ function Katalog() {
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
       {/* FRAME MOBILE */}
       <div className="relative h-screen max-h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f6f1eb] shadow-[0_18px_45px_rgba(39,55,77,0.22)]">
-        
+
         {/* SCROLL CONTENT */}
         <div className="hide-scrollbar h-full overflow-y-auto pb-[100px]">
-          
+
           {/* HEADER */}
           <header className="bg-[#2f435e] px-7 pb-5 pt-5">
             <h1 className="font-serif text-[23px] font-semibold italic text-white">
@@ -94,7 +94,7 @@ function Katalog() {
 
           {/* PRODUCT AREA */}
           <main className="bg-[#f6f1eb] px-5 pb-6 pt-5">
-            
+
             {/* TITLE */}
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-[18px] font-semibold text-[#2f435e]">
@@ -167,6 +167,7 @@ function Katalog() {
                 Info
               </span>
             </button>
+
           </div>
         </nav>
       </div>
