@@ -6,6 +6,7 @@ function Invoice() {
   const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const data = location.state;
+  const idPesanan = data?.orderId || "FLR-0000";
 
   if (!data) {
     return <div className="text-center mt-10">Data tidak ditemukan</div>;
@@ -25,17 +26,6 @@ function Invoice() {
 
   const metodeBayarText =
     data.metodeBayar === "qris" ? "QRIS" : "Transfer BCA";
-
-  const generateId = () => {
-  const last = localStorage.getItem("lastOrderId") || "0";
-  const next = parseInt(last) + 1;
-
-  localStorage.setItem("lastOrderId", next);
-
-  return "FLR-" + String(next).padStart(4, "0");
-};
-
-const [idPesanan] = useState(generateId());
 
   const ADMIN = {
     dramaga: "6285697264377",

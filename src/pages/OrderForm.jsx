@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { db } from "../firebase/config";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const draftKey = "draftOrders";
 
@@ -105,9 +107,10 @@ function OrderForm() {
 
   const formatRupiah = (n) => "Rp" + n.toLocaleString("id-ID");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors = {};
 
+    // 1. Validasi Kosong (Bawaan awal)
     if (!tanggal) newErrors.tanggal = "Tanggal wajib diisi";
     if (!jam) newErrors.jam = "Jam wajib diisi";
     if (!nama) newErrors.nama = "Nama wajib diisi";
@@ -115,16 +118,108 @@ function OrderForm() {
     if (!namaPenerima) newErrors.namaPenerima = "Nama penerima wajib diisi";
     if (!teleponPenerima) newErrors.teleponPenerima = "Telepon penerima wajib diisi";
 
+    // --- TAMBAHAN VALIDASI BARU ---
+
+    // 2. Validasi Jam Operasional (Mencegah pesan di luar jam)
+    if (jam) {
+      // Ubah jam jadi angka biar gampang dicek (misal "09:30" jadi 9.5)
+      const jamAngka = parseFloat(jam.replace(":", "."));
+      const isWeekend = new Date(tanggal).getDay() === 0 || new Date(tanggal).getDay() === 6;
+      
+      if (isWeekend && (jamAngka < 10 || jamAngka > 21)) {
+        newErrors.jam = "Pilih jam antara 10:00 - 21:00 (Weekend)";
+      } else if (!isWeekend && (jamAngka < 9 || jamAngka > 20)) {
+        newErrors.jam = "Pilih jam antara 09:00 - 20:00 (Weekday)";
+      }
+    }
+
+    // 3. Validasi Nomor WhatsApp & Telepon (Hanya angka, 10-13 digit)
+    const regexAngka = /^[0-9]+$/;
+    if (wa && (!regexAngka.test(wa) || wa.length < 10 || wa.length > 13)) {
+      newErrors.wa = "Nomor WA harus berupa angka (10-13 digit)";
+    }
+    if (teleponPenerima && (!regexAngka.test(teleponPenerima) || teleponPenerima.length < 10 || teleponPenerima.length > 13)) {
+      newErrors.teleponPenerima = "Nomor Telepon harus berupa angka (10-13 digit)";
+    }
+
+    // 5. Validasi Tanggal Pemesanan (Maksimal 7 Hari ke Depan)
+    if (tanggal) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset jam ke tengah malam
+
+      const maxDate = new Date(today);
+      maxDate.setDate(maxDate.getDate() + 7); // Hitung batas maksimal H+7
+
+      const inputDate = new Date(tanggal);
+      inputDate.setHours(0, 0, 0, 0);
+
+      if (inputDate < today) {
+        newErrors.tanggal = "Tanggal pengambilan tidak boleh di masa lalu";
+      } else if (inputDate > maxDate) {
+        newErrors.tanggal = "Pemesanan maksimal hanya untuk 7 hari ke depan";
+      }
+    }
+
+    // 4. Validasi Nama Pemesan & Penerima (Tanpa angka, minimal 3 huruf)
+    const regexHuruf = /^[a-zA-Z\s]+$/;
+    if (nama && (nama.length < 3 || !regexHuruf.test(nama))) {
+      newErrors.nama = "Nama minimal 3 huruf dan tidak boleh mengandung angka/simbol";
+    }
+    if (namaPenerima && (namaPenerima.length < 3 || !regexHuruf.test(namaPenerima))) {
+      newErrors.namaPenerima = "Nama minimal 3 huruf dan tidak boleh mengandung angka/simbol";
+    }
+
+    // --- AKHIR TAMBAHAN VALIDASI BARU ---
+
     setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
+    if (Object.keys(newErrors).length > 0) return;
+
+    // Generate ID pesanan
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const orderId = `FLR-${dateStr}-${randomNum}`;
+
+    const hargaProduk = Number((produk?.price || "Rp0").replace(/[^0-9]/g, ""));
+    const hargaGoodie = goodieBag ? 5000 : 0;
+    const totalHarga = hargaProduk + hargaGoodie;
+
+    // Simpan ke Firestore
+    try {
+      await addDoc(collection(db, "orders"), {
+        order_id: orderId,
+        namaPemesan: nama,
+        noPemesan: wa,
+        namaPenerima,
+        noTeleponPenerima: teleponPenerima,
+        tanggal,
+        jam,
+        metodePengambilan: metodeAmbil,
+        metodePembayaran: metodeBayar,
+        goodieBag,
+        greetingCard: greeting,
+        totalHarga,
+        status: "Pending",
+        produk: {
+          name: produk?.name,
+          price: produk?.price,
+          image: produk?.image,
+        },
+        createdAt: serverTimestamp(),
+      });
+
+      // Bersihkan localStorage
       localStorage.removeItem("selectedProduct");
       const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
-      const remainingDrafts = savedDrafts.filter(
-        (item) => item.id !== draftId
+      localStorage.setItem(
+        draftKey,
+        JSON.stringify(savedDrafts.filter((item) => item.id !== draftId))
       );
-      localStorage.setItem(draftKey, JSON.stringify(remainingDrafts));
+
+      // Navigate ke invoice
       navigate("/invoice", {
         state: {
+          orderId,
           produk,
           nama,
           wa,
@@ -138,6 +233,9 @@ function OrderForm() {
           greeting,
         },
       });
+    } catch (error) {
+      console.error("Gagal menyimpan pesanan:", error);
+      alert("Gagal menyimpan pesanan, coba lagi!");
     }
   };
 
