@@ -2,6 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 function ProductDetailSnack1() {
   const navigate = useNavigate();
+  const produk = {
+    name: "SNACK BOUQUET 1",
+    price: "Rp120.000",
+    image: "/images/SNACK BOUQUET 1.png",
+  };
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
@@ -69,7 +74,10 @@ function ProductDetailSnack1() {
         <div className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4">
           <button
             type="button"
-            onClick={() => navigate("/order")}
+            onClick={() => {
+              localStorage.setItem("selectedProduct", JSON.stringify(produk));
+              navigate("/order", { state: produk });
+            }}
             className="w-full rounded-[14px] bg-[#2f435e] py-4 text-white active:scale-95 transition-transform"
           >
             Pesan Sekarang

@@ -2,6 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 function ProductDetailAsteria() {
   const navigate = useNavigate();
+  const produk = {
+  name: "ASTERIA (XS)",
+  price: "Rp50.000",
+  image: "/images/Fresh Flowers Asteria XS.jpeg"
+};
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
@@ -53,7 +58,7 @@ function ProductDetailAsteria() {
         <div className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4">
           <button
             type="button"
-            onClick={() => navigate("/order")}
+            onClick={() => navigate("/order", { state: produk })}
             className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform"
           >
             Pesan Sekarang

@@ -2,6 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 function ProductDetailAriana() {
   const navigate = useNavigate();
+  const produk = {
+  name: "ARIANA (S)",
+  price: "Rp165.000",
+  image: "/images/Fresh Flowers Ariana S.jpeg"
+};
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
@@ -37,7 +42,7 @@ function ProductDetailAriana() {
         </main>
 
         <div className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4">
-          <button type="button" onClick={() => navigate("/order")} className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform">
+          <button type="button" onClick={() => navigate("/order", { state: produk })} className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform">
             Pesan Sekarang
           </button>
         </div>

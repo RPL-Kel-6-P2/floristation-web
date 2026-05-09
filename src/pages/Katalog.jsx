@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { products } from "../data/products";
+
 import ProductCard from "../components/ProductCard";
 
 function Katalog() {
@@ -30,15 +31,9 @@ function Katalog() {
   }, [activeCategory, searchKeyword]);
 
   return (
-    <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-      {/* FRAME MOBILE */}
-      <div className="relative h-screen max-h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f6f1eb] shadow-[0_18px_45px_rgba(39,55,77,0.22)]">
-
-        {/* SCROLL CONTENT */}
-        <div className="hide-scrollbar h-full overflow-y-auto pb-[100px]">
-
-          {/* HEADER */}
-          <header className="bg-[#2f435e] px-7 pb-5 pt-5">
+    <>
+      {/* HEADER */}
+      <header className="bg-[#2f435e] px-7 pb-5 pt-5">
             <h1 className="font-serif text-[23px] font-semibold italic text-white">
               Floristation.id
             </h1>
@@ -123,55 +118,7 @@ function Katalog() {
               </div>
             )}
           </main>
-        </div>
-
-        {/* BOTTOM NAV */}
-        <nav className="absolute bottom-0 left-0 right-0 z-30 border-t border-[#e8e0d8] bg-white px-8 py-3 shadow-[0_-4px_18px_rgba(0,0,0,0.08)]">
-          <div className="flex items-center justify-between">
-
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center rounded-[14px] bg-[#f7f1eb] px-4 py-2 text-[#c45f32]"
-            >
-              <span className="text-[18px] leading-none">
-                🏠
-              </span>
-
-              <span className="mt-1 text-[10px] font-semibold">
-                Beranda
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center px-4 py-2 text-[#b8a48c]"
-            >
-              <span className="text-[18px] leading-none">
-                📋
-              </span>
-
-              <span className="mt-1 text-[10px] font-medium">
-                Draft
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center px-4 py-2 text-[#7fb4e7]"
-            >
-              <span className="text-[18px] leading-none">
-                ℹ️
-              </span>
-
-              <span className="mt-1 text-[10px] font-medium">
-                Info
-              </span>
-            </button>
-
-          </div>
-        </nav>
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -2,6 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 function ProductDetailRafaela() {
   const navigate = useNavigate();
+  const produk = {
+  name: "RAFAELA (M)",
+  price: "Rp285.000",
+  image: "/images/Fresh Flowers Rafaela M.jpeg"
+};
 
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
@@ -68,7 +73,7 @@ function ProductDetailRafaela() {
         <div className="absolute bottom-0 left-0 right-0 bg-white px-5 py-4">
           <button
             type="button"
-            onClick={() => navigate("/order")}
+            onClick={() => navigate("/order", { state: produk })}
             className="w-full rounded-[13px] bg-[#2f435e] py-4 text-[16px] font-medium text-white active:scale-95 transition-transform"
           >
             Pesan Sekarang

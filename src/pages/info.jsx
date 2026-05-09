@@ -44,12 +44,22 @@ function Info() {
                 <span>📞</span>
                 <div>
                   <p className="font-medium">WhatsApp</p>
-                  <p>+62 812 3456 7890</p>
+                  <p className="text-slate-500">085697264377 (Dramaga)</p>
+                  <p className="text-slate-500">085778684728 (Semplak)</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span>📸</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      className="text-pink-500"
+    >
+      <path d="M7.75 2C4.574 2 2 4.574 2 7.75v8.5C2 19.426 4.574 22 7.75 22h8.5C19.426 22 22 19.426 22 16.25v-8.5C22 4.574 19.426 2 16.25 2h-8.5zm0 2h8.5C18.56 4 20 5.44 20 7.75v8.5c0 2.31-1.44 3.75-3.75 3.75h-8.5C5.44 20 4 18.56 4 16.25v-8.5C4 5.44 5.44 4 7.75 4zm8.25 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/>
+    </svg>
+
                 <div>
                   <p className="font-medium">Instagram</p>
                   <p>@floristation.id</p>
@@ -60,7 +70,8 @@ function Info() {
                 <span>📍</span>
                 <div>
                   <p className="font-medium">Alamat</p>
-                  <p>Jl. Raya Dramaga, Bogor</p>
+                  <p className="text-slate-500">Jl. Dramaga, Bogor</p>
+                  <p className="text-slate-500">Jl. Semplak, Bogor</p>
                 </div>
               </div>
 

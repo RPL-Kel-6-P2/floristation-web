@@ -2,10 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
+const draftKey = "draftOrders";
+
 function OrderForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const produk = location.state || {};
+  const savedProduct = JSON.parse(localStorage.getItem("selectedProduct") || "null");
+  const locationState = location.state;
+  const stateProduk = locationState?.produk || (locationState?.name ? locationState : savedProduct);
+
+  const [draftId, setDraftId] = useState(null);
+  const [produk, setProduk] = useState(stateProduk || {});
 
   const [metodeAmbil, setMetodeAmbil] = useState("ambil");
   const [metodeBayar, setMetodeBayar] = useState("qris");
@@ -17,13 +24,62 @@ function OrderForm() {
   const [teleponPenerima, setTeleponPenerima] = useState("");
   const [tanggal, setTanggal] = useState("");
   const [jam, setJam] = useState("");
+  const [greeting, setGreeting] = useState("");
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
+    const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
+    const stateDraftId = locationState?.draftId;
+    const stateProduk = locationState?.produk || (locationState?.name ? locationState : savedProduct);
+
+    let loadedDraft = null;
+
+    if (stateDraftId) {
+      loadedDraft = savedDrafts.find((item) => item.id === stateDraftId);
+    } else if (stateProduk?.name) {
+      loadedDraft = savedDrafts.find(
+        (item) =>
+          item.produk?.name === stateProduk.name &&
+          item.produk?.price === stateProduk.price
+      );
+    }
+
+    if (loadedDraft) {
+      setDraftId(loadedDraft.id);
+      setProduk(loadedDraft.produk || stateProduk || savedProduct || {});
+      setNama(loadedDraft.nama || "");
+      setWa(loadedDraft.wa || "");
+      setNamaPenerima(loadedDraft.namaPenerima || "");
+      setTeleponPenerima(loadedDraft.teleponPenerima || "");
+      setTanggal(loadedDraft.tanggal || "");
+      setJam(loadedDraft.jam || "");
+      setMetodeAmbil(loadedDraft.metodeAmbil || "ambil");
+      setMetodeBayar(loadedDraft.metodeBayar || "qris");
+      setGoodieBag(loadedDraft.goodieBag || false);
+    } else if (stateProduk?.name) {
+      setProduk(stateProduk);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!produk?.name) return;
+
+    const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
+    const existingDraft = savedDrafts.find(
+      (item) =>
+        item.produk?.name === produk.name &&
+        item.produk?.price === produk.price
+    );
+    const id = draftId || existingDraft?.id || `draft-${Date.now()}`;
+
     const draft = {
+      id,
+      updatedAt: Date.now(),
       produk,
       nama,
       wa,
+      namaPenerima,
+      teleponPenerima,
       tanggal,
       jam,
       metodeAmbil,
@@ -31,8 +87,15 @@ function OrderForm() {
       goodieBag,
     };
 
-    localStorage.setItem("draftPesanan", JSON.stringify(draft));
-  }, [nama, wa, tanggal, jam, metodeAmbil, metodeBayar, goodieBag, produk]);
+    const nextDrafts = [draft, ...savedDrafts.filter((item) => item.id !== id)];
+    localStorage.setItem(draftKey, JSON.stringify(nextDrafts));
+
+    if (produk && produk.name) {
+      localStorage.setItem("selectedProduct", JSON.stringify(produk));
+    }
+
+    setDraftId(id);
+  }, [produk, nama, wa, namaPenerima, teleponPenerima, tanggal, jam, metodeAmbil, metodeBayar, goodieBag, draftId]);
 
   const hargaProduk = Number(
     (produk?.price || "Rp50.000").replace(/[^0-9]/g, "")
@@ -54,17 +117,33 @@ function OrderForm() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      navigate(
-        metodeBayar === "qris"
-          ? "/invoice-qris-ambil"
-          : "/invoice-bca-gosend"
+      localStorage.removeItem("selectedProduct");
+      const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
+      const remainingDrafts = savedDrafts.filter(
+        (item) => item.id !== draftId
       );
+      localStorage.setItem(draftKey, JSON.stringify(remainingDrafts));
+      navigate("/invoice", {
+        state: {
+          produk,
+          nama,
+          wa,
+          namaPenerima,
+          teleponPenerima,
+          tanggal,
+          jam,
+          metodeAmbil,
+          metodeBayar,
+          goodieBag,
+          greeting,
+        },
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-      <div className="relative w-[430px] max-w-full bg-[#f7f1eb] shadow-[0_18px_45px_rgba(39,55,77,0.22)] rounded-[38px] overflow-hidden">
+    <div className="min-h-full bg-[#e8edf3] flex justify-center items-start py-6">
+      <div className="relative w-full max-w-[430px] bg-[#f7f1eb] shadow-[0_18px_45px_rgba(39,55,77,0.22)] rounded-[38px] overflow-hidden">
 
         {/* HEADER */}
         <header className="bg-[#2f435e] px-5 py-5 text-white">
@@ -191,6 +270,8 @@ function OrderForm() {
             <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Greeting Card</h3>
             <textarea
               placeholder="Tulis pesan untuk kartu ucapan (opsional)"
+              value={greeting}
+              onChange={(e) => setGreeting(e.target.value)}
               className="h-24 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
             />
           </section>
