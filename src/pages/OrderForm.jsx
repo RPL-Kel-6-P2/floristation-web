@@ -66,6 +66,11 @@ function OrderForm() {
   useEffect(() => {
     if (!produk?.name) return;
 
+    // VALIDASI: Draft hanya dibuat jika user sudah isi minimal 2 field
+    // Hitung berapa field yang sudah terisi (dari 6 field penting)
+    const filledFields = [nama, wa, tanggal, jam, namaPenerima, teleponPenerima].filter(Boolean).length;
+    const hasRequiredFields = filledFields >= 2;
+
     const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
     const existingDraft = savedDrafts.find(
       (item) =>
@@ -74,6 +79,15 @@ function OrderForm() {
     );
     const id = draftId || existingDraft?.id || `draft-${Date.now()}`;
 
+    // Jika field penting kosong → HAPUS draft
+    if (!hasRequiredFields) {
+      const nextDrafts = savedDrafts.filter((item) => item.id !== id);
+      localStorage.setItem(draftKey, JSON.stringify(nextDrafts));
+      setDraftId(null);
+      return;
+    }
+
+    // Jika field penting terisi → SIMPAN draft
     const draft = {
       id,
       updatedAt: Date.now(),

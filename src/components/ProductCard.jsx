@@ -54,17 +54,27 @@ function ProductCard({ product }) {
         </p>
 
         {/* STATUS */}
-        <span className="mt-2 inline-block rounded-[10px] bg-green-100 px-3 py-1 text-[12px] text-green-600">
-          ✓ {product.status}
-        </span>
-
+        <span
+  className={`mt-2 inline-block rounded-[10px] px-3 py-1 text-[12px] ${
+    product.status === "Tersedia"
+      ? "bg-green-100 text-green-600"
+      : "bg-red-100 text-red-600"
+  }`}
+>
+  {product.status === "Tersedia" ? "✓ Tersedia" : "✕ Habis"}
+</span>
         {/* BUTTON */}
         <button
-          onClick={handleDetailClick}
-          className="mt-4 w-full rounded-[10px] bg-[#2f435e] py-3 text-[13px] font-semibold text-white active:scale-95 transition"
-        >
-          Lihat Detail
-        </button>
+  onClick={product.status === "Tersedia" ? handleDetailClick : null}
+  disabled={product.status !== "Tersedia"}
+  className={`mt-4 w-full rounded-[10px] py-3 text-[13px] font-semibold transition ${
+    product.status === "Tersedia"
+      ? "bg-[#2f435e] text-white active:scale-95"
+      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+  }`}
+>
+  {product.status === "Tersedia" ? "Lihat Detail" : "Stok Habis"}
+</button>
 
       </div>
     </div>
