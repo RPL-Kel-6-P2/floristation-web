@@ -23,12 +23,49 @@ function KelolaPesanan() {
   ];
 
   const [allOrders, setAllOrders] = useState([
-    { id: "FLR-0042", pelanggan: "Siti Nurhaliza", produk: "Asteria XS", tgl: "2026-04-28", metode: "Ambil di Toko", total: "Rp50.000", status: "pending", label: "Pending", color: "bg-[#fff9db] text-[#fab005]", wa: "081234567890", penerima: "Siti Nurhaliza", telpPenerima: "081234567890", waktu: "10:00", pembayaran: "Transfer", pesan: "" },
-    { id: "FLR-0041", pelanggan: "Budi Santoso", produk: "Ariana S", tgl: "2026-04-28", metode: "GoSend", total: "Rp165.000", status: "konfirmasi", label: "Konfirmasi", color: "bg-[#e7f5ff] text-[#228be6]", wa: "082345678901", penerima: "Rina Sari", telpPenerima: "082345678902", waktu: "09:00", pembayaran: "Transfer", pesan: "Happy Birthday!" },
-    { id: "FLR-0040", pelanggan: "Dewi Kartika", produk: "Grace Pink S", tgl: "2026-04-27", metode: "Ambil di Toko", total: "Rp70.000", status: "diproses", label: "Diproses", color: "bg-[#f3f0ff] text-[#7950f2]", wa: "083456789012", penerima: "Sarah Amelia", telpPenerima: "083456789013", waktu: "15:30", pembayaran: "QRIS", pesan: "Congratulations!" },
-    { id: "FLR-0039", pelanggan: "Ahmad Fauzi", produk: "Valencia Blue L", tgl: "2026-04-26", metode: "Ambil di Toko", total: "Rp195.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "084567890123", penerima: "Linda Cahya", telpPenerima: "084567890124", waktu: "13:00", pembayaran: "Cash", pesan: "With love!" },
-    { id: "FLR-0038", pelanggan: "Sartika", produk: "BBA Godiva Blue", tgl: "2026-04-25", metode: "GoSend", total: "Rp350.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "085678901234", penerima: "Sartika", telpPenerima: "085678901234", waktu: "11:00", pembayaran: "Transfer", pesan: "" },
-  ]);
+  { id: "FLR-0042", pelanggan: "Siti Nurhaliza", produk: "Asteria XS", tgl: "2026-04-28", metode: "Ambil di Toko", total: "Rp50.000", status: "pending", label: "Pending", color: "bg-[#fff9db] text-[#fab005]", wa: "081234567890", penerima: "Siti Nurhaliza", telpPenerima: "081234567890", waktu: "10:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0041", pelanggan: "Budi Santoso", produk: "Ariana S", tgl: "2026-04-28", metode: "GoSend", total: "Rp165.000", status: "konfirmasi", label: "Konfirmasi", color: "bg-[#e7f5ff] text-[#228be6]", wa: "082345678901", penerima: "Rina Sari", telpPenerima: "082345678902", waktu: "09:00", pembayaran: "Transfer", pesan: "Happy Birthday!" },
+  { id: "FLR-0040", pelanggan: "Dewi Kartika", produk: "Grace Pink S", tgl: "2026-04-27", metode: "Ambil di Toko", total: "Rp70.000", status: "diproses", label: "Diproses", color: "bg-[#f3f0ff] text-[#7950f2]", wa: "083456789012", penerima: "Sarah Amelia", telpPenerima: "083456789013", waktu: "15:30", pembayaran: "QRIS", pesan: "Congratulations!" },
+  { id: "FLR-0039", pelanggan: "Ahmad Fauzi", produk: "Valencia Blue L", tgl: "2026-04-26", metode: "Ambil di Toko", total: "Rp195.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "084567890123", penerima: "Linda Cahya", telpPenerima: "084567890124", waktu: "13:00", pembayaran: "Cash", pesan: "With love!" },
+  { id: "FLR-0038", pelanggan: "Sartika", produk: "BBA Godiva Blue", tgl: "2026-04-25", metode: "GoSend", total: "Rp350.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "085678901234", penerima: "Sartika", telpPenerima: "085678901234", waktu: "11:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0037", pelanggan: "Siti Aminah", produk: "Asteria XS", tgl: "2026-05-09", metode: "GoSend", total: "Rp50.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110037", penerima: "Siti Aminah", telpPenerima: "081211110037", waktu: "09:00", pembayaran: "Transfer", pesan: "Happy Graduation!" },
+  { id: "FLR-0036", pelanggan: "Budi Santoso", produk: "Ariana S", tgl: "2026-05-09", metode: "Ambil di Toko", total: "Rp165.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110036", penerima: "Ani", telpPenerima: "081211110036", waktu: "10:30", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0035", pelanggan: "Citra Lestari", produk: "Rafaela M", tgl: "2026-05-08", metode: "GoSend", total: "Rp285.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110035", penerima: "Ibu Citra", telpPenerima: "081211110035", waktu: "13:00", pembayaran: "Transfer", pesan: "Sehat selalu ya Ma." },
+  { id: "FLR-0034", pelanggan: "Dewi Sartika", produk: "Valencia Blue L", tgl: "2026-05-08", metode: "Ambil di Toko", total: "Rp195.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110034", penerima: "Dewi", telpPenerima: "081211110034", waktu: "15:00", pembayaran: "Cash", pesan: "" },
+  { id: "FLR-0033", pelanggan: "Eko Prasetyo", produk: "Grace Pink S", tgl: "2026-05-08", metode: "GoSend", total: "Rp70.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110033", penerima: "Lani", telpPenerima: "087811110033", waktu: "08:30", pembayaran: "Transfer", pesan: "Happy Birthday!" },
+  { id: "FLR-0032", pelanggan: "Fajar Nugraha", produk: "Sunny Side Up L", tgl: "2026-05-07", metode: "GoSend", total: "Rp475.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110032", penerima: "Fajar", telpPenerima: "081211110032", waktu: "11:00", pembayaran: "Transfer", pesan: "Semangat sidangnya!" },
+  { id: "FLR-0031", pelanggan: "Gita Permata", produk: "Snack Bouquet 1", tgl: "2026-05-07", metode: "Ambil di Toko", total: "Rp120.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110031", penerima: "Gita", telpPenerima: "081211110031", waktu: "14:00", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0030", pelanggan: "Hadi Wijaya", produk: "Brenda L", tgl: "2026-05-07", metode: "GoSend", total: "Rp325.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110030", penerima: "Siska", telpPenerima: "081211110030", waktu: "10:00", pembayaran: "Transfer", pesan: "Congratulations!" },
+  { id: "FLR-0029", pelanggan: "Indah Kusuma", produk: "Karina Lily Red M", tgl: "2026-05-06", metode: "GoSend", total: "Rp105.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110029", penerima: "Indah", telpPenerima: "081211110029", waktu: "09:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0028", pelanggan: "Joko Anwar", produk: "Freya XL", tgl: "2026-05-06", metode: "Ambil di Toko", total: "Rp400.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110028", penerima: "Joko", telpPenerima: "081211110028", waktu: "16:00", pembayaran: "Cash", pesan: "For my lovely wife." },
+  { id: "FLR-0027", pelanggan: "Kartika Putri", produk: "Clara Purple M", tgl: "2026-05-06", metode: "GoSend", total: "Rp135.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110027", penerima: "Kartika", telpPenerima: "081211110027", waktu: "12:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0026", pelanggan: "Lutfi Hakim", produk: "Ivana Red S", tgl: "2026-05-05", metode: "GoSend", total: "Rp100.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110026", penerima: "Lutfi", telpPenerima: "081211110026", waktu: "10:30", pembayaran: "Transfer", pesan: "Happy Anniversary!" },
+  { id: "FLR-0025", pelanggan: "Maya Sari", produk: "BBA Godiva Blue", tgl: "2026-05-05", metode: "Ambil di Toko", total: "Rp350.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110025", penerima: "Maya", telpPenerima: "081211110025", waktu: "14:30", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0024", pelanggan: "Nanang Kosim", produk: "Snack Bouquet 2", tgl: "2026-05-05", metode: "GoSend", total: "Rp100.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110024", penerima: "Nanang", telpPenerima: "081211110024", waktu: "11:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0023", pelanggan: "Olivia Zalianty", produk: "Asteria XS", tgl: "2026-05-04", metode: "GoSend", total: "Rp50.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110023", penerima: "Olivia", telpPenerima: "081211110023", waktu: "09:30", pembayaran: "Transfer", pesan: "Get well soon!" },
+  { id: "FLR-0022", pelanggan: "Putu Gede", produk: "Ariana S", tgl: "2026-05-04", metode: "Ambil di Toko", total: "Rp165.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110022", penerima: "Putu", telpPenerima: "081211110022", waktu: "13:00", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0021", pelanggan: "Qori Sandioriva", produk: "Rafaela M", tgl: "2026-05-04", metode: "GoSend", total: "Rp285.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110021", penerima: "Qori", telpPenerima: "081211110021", waktu: "10:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0020", pelanggan: "Rian D'Masiv", produk: "Garbe 5 Stem M", tgl: "2026-05-03", metode: "GoSend", total: "Rp150.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110020", penerima: "Rian", telpPenerima: "081211110020", waktu: "08:00", pembayaran: "Transfer", pesan: "Jangan menyerah!" },
+  { id: "FLR-0019", pelanggan: "Siska Kohl", produk: "Sunny Side Up L", tgl: "2026-05-03", metode: "Ambil di Toko", total: "Rp475.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110019", penerima: "Siska", telpPenerima: "081211110019", waktu: "15:00", pembayaran: "Cash", pesan: "Mari kita coba!" },
+  { id: "FLR-0018", pelanggan: "Tulus Permadi", produk: "Grace Pink S", tgl: "2026-05-03", metode: "GoSend", total: "Rp70.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110018", penerima: "Ibu Tulus", telpPenerima: "081211110018", waktu: "10:30", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0017", pelanggan: "Umar Bakri", produk: "Snack Bouquet 3", tgl: "2026-05-02", metode: "GoSend", total: "Rp165.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110017", penerima: "Umar", telpPenerima: "081211110017", waktu: "09:00", pembayaran: "Transfer", pesan: "Happy Birthday Legend!" },
+  { id: "FLR-0016", pelanggan: "Vina Panduwinata", produk: "Ivana Red S", tgl: "2026-05-02", metode: "Ambil di Toko", total: "Rp100.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110016", penerima: "Vina", telpPenerima: "081211110016", waktu: "13:30", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0015", pelanggan: "Wawan Juniarso", produk: "Valencia Blue L", tgl: "2026-05-02", metode: "GoSend", total: "Rp195.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110015", penerima: "Istri Wawan", telpPenerima: "081211110015", waktu: "11:00", pembayaran: "Transfer", pesan: "Luv u." },
+  { id: "FLR-0014", pelanggan: "Xena Herawati", produk: "BBA Liro", tgl: "2026-05-01", metode: "GoSend", total: "Rp850.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110014", penerima: "Xena", telpPenerima: "081211110014", waktu: "10:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0013", pelanggan: "Yuni Shara", produk: "Ariana S", tgl: "2026-05-01", metode: "Ambil di Toko", total: "Rp165.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110013", penerima: "Yuni", telpPenerima: "081211110013", waktu: "14:00", pembayaran: "Cash", pesan: "" },
+  { id: "FLR-0012", pelanggan: "Zaskia Gotik", produk: "Grace Red White S", tgl: "2026-05-01", metode: "GoSend", total: "Rp70.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110012", penerima: "Zaskia", telpPenerima: "081211110012", waktu: "08:30", pembayaran: "Transfer", pesan: "Tarik Mang!" },
+  { id: "FLR-0011", pelanggan: "Ahmad Dhani", produk: "Freya XL", tgl: "2026-04-30", metode: "GoSend", total: "Rp400.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110011", penerima: "Mulan", telpPenerima: "081211110011", waktu: "09:00", pembayaran: "Transfer", pesan: "Mahluk tuhan paling seksi." },
+  { id: "FLR-0010", pelanggan: "Bunga Citra", produk: "Karina Lily Red M", tgl: "2026-04-30", metode: "Ambil di Toko", total: "Rp105.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110010", penerima: "BCL", telpPenerima: "081211110010", waktu: "15:00", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0009", pelanggan: "Cinta Laura", produk: "Snack Bouquet 1", tgl: "2026-04-30", metode: "GoSend", total: "Rp120.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110009", penerima: "Cinta", telpPenerima: "081211110009", waktu: "10:30", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0008", pelanggan: "Deddy Corbuzier", produk: "BBA Godiva Red", tgl: "2026-04-29", metode: "GoSend", total: "Rp350.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110008", penerima: "Sabrina", telpPenerima: "081211110008", waktu: "11:00", pembayaran: "Transfer", pesan: "Smart!" },
+  { id: "FLR-0007", pelanggan: "Eross Candra", produk: "Rafaela M", tgl: "2026-04-29", metode: "Ambil di Toko", total: "Rp285.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110007", penerima: "Eross", telpPenerima: "081211110007", waktu: "13:00", pembayaran: "Cash", pesan: "" },
+  { id: "FLR-0006", pelanggan: "Fatin Shidqia", produk: "Asteria XS", tgl: "2026-04-29", metode: "GoSend", total: "Rp50.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110006", penerima: "Fatin", telpPenerima: "081211110006", waktu: "09:30", pembayaran: "Transfer", pesan: "Semangat kuliahnya!" },
+  { id: "FLR-0005", pelanggan: "Giring Ganesha", produk: "Ariana S", tgl: "2026-04-28", metode: "GoSend", total: "Rp165.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110005", penerima: "Giring", telpPenerima: "081211110005", waktu: "10:00", pembayaran: "Transfer", pesan: "" },
+  { id: "FLR-0004", pelanggan: "Hesti Purwadinata", produk: "Brenda L", tgl: "2026-04-28", metode: "Ambil di Toko", total: "Rp325.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110004", penerima: "Hesti", telpPenerima: "081211110004", waktu: "15:30", pembayaran: "QRIS", pesan: "" },
+  { id: "FLR-0003", pelanggan: "Isyana Sarasvati", produk: "Valencia Blue L", tgl: "2026-04-28", metode: "GoSend", total: "Rp195.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110003", penerima: "Rayhan", telpPenerima: "081211110003", waktu: "11:30", pembayaran: "Transfer", pesan: "Love you honey." },
+  { id: "FLR-0002", pelanggan: "Judika Sihotang", produk: "Freya XL", tgl: "2026-04-27", metode: "GoSend", total: "Rp400.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110002", penerima: "Duma", telpPenerima: "081211110002", waktu: "09:00", pembayaran: "Transfer", pesan: "Sampai akhir." },
+  { id: "FLR-0001", pelanggan: "Krisdayanti", produk: "BBA Liro", tgl: "2026-04-27", metode: "Ambil di Toko", total: "Rp850.000", status: "selesai", label: "Selesai", color: "bg-[#ebfbee] text-[#40c057]", wa: "081211110001", penerima: "KD", telpPenerima: "081211110001", waktu: "14:00", pembayaran: "Cash", pesan: "" }
+]);
 
   const filteredOrders = allOrders.filter(order => {
     const matchStatus = statusFilter === "" || order.status === statusFilter;
@@ -78,16 +115,15 @@ function KelolaPesanan() {
           <p className="text-gray-500 text-sm">Manajemen pesanan pelanggan</p>
         </header>
 
-        {/* SECTION FILTER DENGAN ICON DROPDOWN */}
+        {/* SECTION FILTER */}
         <section className="bg-white p-8 rounded-[2rem] shadow-sm flex items-center justify-between mb-8 border border-gray-50">
           <div className="flex items-center gap-6 text-sm">
-            {/* Filter Status */}
             <div className="flex items-center gap-3">
               <label className="font-bold text-[#1e2d3d]">Status:</label>
               <div className="relative group">
-                <select 
-                  value={statusFilter} 
-                  onChange={(e) => {setStatusFilter(e.target.value); setCurrentPage(1);}} 
+                <select
+                  value={statusFilter}
+                  onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                   className="appearance-none bg-[#f7f3f0] border border-gray-200 rounded-2xl px-6 py-3 pr-12 text-sm font-medium focus:outline-none cursor-pointer min-w-[160px]"
                 >
                   <option value="">Semua Status</option>
@@ -104,13 +140,12 @@ function KelolaPesanan() {
               </div>
             </div>
 
-            {/* Filter Metode */}
             <div className="flex items-center gap-3">
               <label className="font-bold text-[#1e2d3d]">Metode:</label>
               <div className="relative group">
-                <select 
-                  value={metodeFilter} 
-                  onChange={(e) => {setMetodeFilter(e.target.value); setCurrentPage(1);}} 
+                <select
+                  value={metodeFilter}
+                  onChange={(e) => { setMetodeFilter(e.target.value); setCurrentPage(1); }}
                   className="appearance-none bg-[#f7f3f0] border border-gray-200 rounded-2xl px-6 py-3 pr-12 text-sm font-medium focus:outline-none cursor-pointer min-w-[180px]"
                 >
                   <option value="">Semua Metode</option>
@@ -177,11 +212,10 @@ function KelolaPesanan() {
         </section>
       </main>
 
-      {/* MODAL DETAIL PESANAN — PERSIS GAMBAR REFERENSI */}
+      {/* MODAL DETAIL PESANAN */}
       {isDetailModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left font-sans">
           <div className="bg-white w-full max-w-xl rounded-[1.5rem] shadow-2xl overflow-hidden">
-            {/* Header Modal */}
             <div className="flex justify-between items-center px-8 py-6 border-b border-gray-100">
               <h3 className="text-lg font-bold text-[#1e2d3d]">Detail Pesanan — {selectedOrder.id}</h3>
               <button onClick={closeDetail} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -192,7 +226,6 @@ function KelolaPesanan() {
             </div>
 
             <div className="px-8 py-6 space-y-6 max-h-[72vh] overflow-y-auto">
-              {/* ID & Status */}
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-xs text-gray-400 mb-1">ID Pesanan</p>
@@ -206,7 +239,6 @@ function KelolaPesanan() {
                 </div>
               </div>
 
-              {/* Data Pemesan */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-3 uppercase tracking-wider">Data Pemesan</p>
                 <div className="grid grid-cols-2 gap-4">
@@ -221,7 +253,6 @@ function KelolaPesanan() {
                 </div>
               </div>
 
-              {/* Data Penerima — DENGAN KETERANGAN & TELEPON */}
               <div className="pt-4 border-t border-gray-100">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-3 uppercase tracking-wider">Data Penerima</p>
                 <div className="grid grid-cols-2 gap-4">
@@ -237,7 +268,6 @@ function KelolaPesanan() {
                 </div>
               </div>
 
-              {/* Detail Pesanan */}
               <div className="pt-4 border-t border-gray-100 space-y-3">
                 <p className="font-bold text-[#1e2d3d] text-sm mb-1 uppercase tracking-wider">Detail Pesanan</p>
                 {[
@@ -254,7 +284,6 @@ function KelolaPesanan() {
                 ))}
               </div>
 
-              {/* Greeting Card (Opsional) */}
               {selectedOrder.pesan && (
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-xs text-gray-400 mb-2 uppercase font-bold">Greeting Card</p>
@@ -264,7 +293,6 @@ function KelolaPesanan() {
                 </div>
               )}
 
-              {/* Total Harga */}
               <div className="flex justify-between items-center pt-4 border-t-2 border-dashed border-gray-200">
                 <p className="font-bold text-[#1e2d3d] uppercase tracking-widest text-sm">Total Harga</p>
                 <p className="text-lg font-black text-[#1e2d3d]">{selectedOrder.total}</p>

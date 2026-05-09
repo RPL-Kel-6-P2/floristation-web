@@ -23,7 +23,7 @@ const Rekap = () => {
     },
     {
       label: 'Produk Terjual',
-      value: '38',
+      value: '39',
       change: '+8% dari bulan lalu',
       positive: true,
       color: 'text-[#7950f2]',
