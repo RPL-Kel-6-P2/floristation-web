@@ -2,12 +2,12 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 
-// =======================
-// PAGES USER
-// =======================
+// USER PAGES
 import Katalog from "./pages/Katalog";
 import Draft from "./pages/Draft";
 import Info from "./pages/info";
+import OrderForm from "./pages/OrderForm";
+import Invoice from "./pages/Invoice";
 
 // DETAIL PRODUK
 import ProductDetailAsteria from "./pages/ProductDetailAsteria";
@@ -30,22 +30,13 @@ import ProductDetailBbaGodivaBlue from "./pages/ProductDetailBbaGodivaBlue";
 import ProductDetailBbaGodivaRed from "./pages/ProductDetailBbaGodivaRed";
 import ProductDetailBbaLiro from "./pages/ProductDetailBbaLiro";
 
-// =======================
-// ORDER
-// =======================
-import OrderForm from "./pages/OrderForm";
-import Invoice from "./pages/Invoice";
-
-// =======================
-// ADMIN
-// =======================
+// ADMIN PAGES
 import LoginAwal from "./pages/admin/LoginAwal";
 import LoginError from "./pages/admin/LoginError";
 import Dashboard from "./pages/admin/Dashboard";
 import KelolaProduk from "./pages/admin/KelolaProduk";
 import KelolaPesanan from "./pages/admin/KelolaPesanan";
 import Rekap from "./pages/admin/Rekap";
-import FilterPesananDiproses from "./pages/admin/FilterPesananDiproses";
 
 function App() {
   return (
