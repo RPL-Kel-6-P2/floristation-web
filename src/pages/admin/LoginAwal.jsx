@@ -9,7 +9,6 @@ const LoginAwal = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  
   useEffect(() => {
     const unsub = onAuthChange((user) => {
       if (user) {
@@ -26,81 +25,102 @@ const LoginAwal = () => {
     try {
       await loginAdmin(email, password);
     } catch (err) {
-      setError(err.message);
+      setError("Login gagal. Periksa kembali email dan password Anda.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#1e2d3d] flex flex-col items-center justify-center p-4 font-sans">
-      <div className="text-center mb-8">
-        <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">
+    // Menggunakan overflow-hidden agar tidak bisa scroll
+    <div className="h-screen bg-[#233446] flex flex-col items-center justify-center p-4 font-sans overflow-hidden">
+      
+      {/* SECTION LOGO & TITLE - Spasi mb dikurangi agar menghemat ruang vertikal */}
+      <div className="text-center mb-6">
+        <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4 shadow-xl overflow-hidden p-2">
           <img
             src="/images/floristation.png"
             alt="Logo"
             className="w-16 h-16 object-contain"
           />
         </div>
-        <h1 className="text-white text-3xl font-serif italic tracking-wide">
+        <h1 className="text-white text-3xl font-serif italic tracking-wide mb-1">
           Floristation.id
         </h1>
-        <p className="text-gray-400 text-[10px] mt-1 uppercase tracking-[0.3em]">
+        <p className="text-gray-400 text-[11px] uppercase tracking-[0.4em] font-medium">
           Admin Panel
         </p>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 w-full max-w-[440px]">
-        <h2 className="text-[#334155] text-2xl font-bold text-center mb-8">
+      {/* LOGIN CARD - Ukuran p-12 dan max-w-480 tetap sama agar font besar */}
+      <div className="bg-white rounded-[2rem] shadow-2xl p-12 w-full max-w-[480px]">
+        <h2 className="text-[#4b5563] text-2xl font-bold text-center mb-8">
           Login Admin
         </h2>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
-            <div className="bg-red-500 text-white rounded-full min-w-[20px] h-5 flex items-center justify-center text-[10px] font-bold">
-              !
-            </div>
-            <div>
-              <p className="text-red-700 text-sm font-bold">Login Gagal</p>
-              <p className="text-red-600 text-xs">{error}</p>
-            </div>
+          <div className="bg-red-50 text-red-600 text-xs p-3 rounded-xl mb-4 text-center border border-red-100">
+            {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-gray-400 text-sm font-medium mb-2 ml-1">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="text-left">
+            <label className="block text-gray-500 text-sm font-semibold mb-2 ml-1">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Masukkan Email"
-              className="w-full px-6 py-4 bg-[#f7f3f0] rounded-2xl outline-none focus:ring-2 focus:ring-[#334155] transition-all placeholder:text-gray-400"
+              placeholder="admin@floristation.id"
+              className="w-full px-5 py-4 bg-[#f4f0ec] rounded-xl outline-none text-gray-700 placeholder:text-gray-400 border border-transparent focus:border-gray-200 transition-all"
               required
             />
           </div>
-          <div>
-            <label className="block text-gray-400 text-sm font-medium mb-2 ml-1">
+
+          <div className="text-left">
+            <label className="block text-gray-500 text-sm font-semibold mb-2 ml-1">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Masukkan password"
-              className="w-full px-6 py-4 bg-[#f7f3f0] rounded-2xl outline-none focus:ring-2 focus:ring-[#334155] transition-all placeholder:text-gray-400"
+              placeholder="•••••••••"
+              className="w-full px-5 py-4 bg-[#f4f0ec] rounded-xl outline-none text-gray-700 placeholder:text-gray-400 border border-transparent focus:border-gray-200 transition-all"
               required
             />
           </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#334155] hover:bg-[#242f3d] text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-md disabled:opacity-60"
+            className="w-full bg-[#34445c] hover:bg-[#2a3a4f] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-md mt-2"
           >
-            {loading ? "Memverifikasi..." : "Login"}
+            {loading ? "Memproses..." : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Login</span>
+              </>
+            )}
           </button>
         </form>
+
+        {/* DEMO CREDENTIALS BOX - Jarak mt dikurangi sedikit */}
+        <div className="mt-10 text-center">
+          <p className="text-gray-400 text-[11px] mb-3 uppercase tracking-widest font-bold">
+            Demo Credentials:
+          </p>
+          <div className="bg-[#e5ddd2] p-4 rounded-2xl border border-[#d6ccbf]">
+            <p className="text-[#5c524f] text-sm leading-relaxed">
+              Email: <span className="font-bold">admin@floristation.id</span><br />
+              Password: <span className="font-bold">Fl0r1st@tion_id</span>
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );
