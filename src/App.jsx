@@ -41,46 +41,98 @@ import Rekap from "./pages/admin/Rekap";
 function App() {
   return (
     <Routes>
+      {/* ✅ CUSTOMER — pakai MainLayout */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Katalog />} />
+        <Route path="/draft" element={<Draft />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="/order" element={<OrderForm />} />
+      </Route>
 
-  {/* ✅ YANG PAKAI LAYOUT */}
-  <Route element={<MainLayout />}>
-    <Route path="/" element={<Katalog />} />
-    <Route path="/draft" element={<Draft />} />
-    <Route path="/info" element={<Info />} />
-    <Route path="/order" element={<OrderForm />} />
-  </Route>
+      {/* ✅ INVOICE — tanpa layout */}
+      <Route path="/invoice" element={<Invoice />} />
 
-  {/* ❌ TANPA LAYOUT */}
-  <Route path="/detail-asteria" element={<ProductDetailAsteria />} />
-  <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
-  <Route path="/detail-garbe-5-stem" element={<ProductDetailGarbe5Stem />} />
-  <Route path="/detail-ariana" element={<ProductDetailAriana />} />
-  <Route path="/detail-sunny-side-up" element={<ProductDetailSunySideUp />} />
-  <Route path="/detail-grace-pink" element={<ProductDetailGracePink />} />
-  <Route path="/detail-karina-lily-red" element={<ProductDetailKarinaLilyRed />} />
-  <Route path="/detail-grace-red-white" element={<ProductDetailGraceRedWhite />} />
-  <Route path="/detail-freya-xl" element={<ProductDetailFreya />} />
-  <Route path="/detail-brenda-l" element={<ProductDetailBrenda />} />
-  <Route path="/detail-snack-bouquet-1" element={<ProductDetailSnack1 />} />
-  <Route path="/detail-snack-bouquet-2" element={<ProductDetailSnack2 />} />
-  <Route path="/detail-snack-bouquet-3" element={<ProductDetailSnack3 />} />
-  <Route path="/detail-ivana-red" element={<ProductDetailIvanaRed />} />
-  <Route path="/detail-clara-purple" element={<ProductDetailClaraPurple />} />
-  <Route path="/detail-valencia-blue" element={<ProductDetailValenciaBlue />} />
-  <Route path="/detail-bba-godiva-blue" element={<ProductDetailBbaGodivaBlue />} />
-  <Route path="/detail-bba-godiva-red" element={<ProductDetailBbaGodivaRed />} />
-  <Route path="/detail-bba-liro" element={<ProductDetailBbaLiro />} />
+      {/* ✅ DETAIL PRODUK — tanpa layout */}
+      <Route path="/detail-asteria" element={<ProductDetailAsteria />} />
+      <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
+      <Route
+        path="/detail-garbe-5-stem"
+        element={<ProductDetailGarbe5Stem />}
+      />
+      <Route path="/detail-ariana" element={<ProductDetailAriana />} />
+      <Route
+        path="/detail-sunny-side-up"
+        element={<ProductDetailSunySideUp />}
+      />
+      <Route path="/detail-grace-pink" element={<ProductDetailGracePink />} />
+      <Route
+        path="/detail-karina-lily-red"
+        element={<ProductDetailKarinaLilyRed />}
+      />
+      <Route
+        path="/detail-grace-red-white"
+        element={<ProductDetailGraceRedWhite />}
+      />
+      <Route path="/detail-freya-xl" element={<ProductDetailFreya />} />
+      <Route path="/detail-brenda-l" element={<ProductDetailBrenda />} />
+      <Route path="/detail-snack-bouquet-1" element={<ProductDetailSnack1 />} />
+      <Route path="/detail-snack-bouquet-2" element={<ProductDetailSnack2 />} />
+      <Route path="/detail-snack-bouquet-3" element={<ProductDetailSnack3 />} />
+      <Route path="/detail-ivana-red" element={<ProductDetailIvanaRed />} />
+      <Route
+        path="/detail-clara-purple"
+        element={<ProductDetailClaraPurple />}
+      />
+      <Route
+        path="/detail-valencia-blue"
+        element={<ProductDetailValenciaBlue />}
+      />
+      <Route
+        path="/detail-bba-godiva-blue"
+        element={<ProductDetailBbaGodivaBlue />}
+      />
+      <Route
+        path="/detail-bba-godiva-red"
+        element={<ProductDetailBbaGodivaRed />}
+      />
+      <Route path="/detail-bba-liro" element={<ProductDetailBbaLiro />} />
 
-  {/* ADMIN */}
-  <Route path="/admin" element={<LoginAwal />} />
-  <Route path="/admin/login-error" element={<LoginError />} />
-  <Route path="/admin/dashboard" element={<Dashboard />} />
-  <Route path="/admin/kelola-produk" element={<KelolaProduk />} />
-  <Route path="/admin/kelola-pesanan" element={<KelolaPesanan />} />
-  <Route path="/admin/rekap" element={<Rekap />} />
-  <Route path="/admin/filter-pesanan-diproses" element={<FilterPesananDiproses />} />
-
-</Routes>
+      {/* ✅ ADMIN — login bebas, halaman lain protected */}
+      <Route path="/admin" element={<LoginAwal />} />
+      <Route path="/admin/login-error" element={<LoginError />} />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/kelola-produk"
+        element={
+          <ProtectedRoute>
+            <KelolaProduk />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/kelola-pesanan"
+        element={
+          <ProtectedRoute>
+            <KelolaPesanan />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/rekap"
+        element={
+          <ProtectedRoute>
+            <Rekap />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 
