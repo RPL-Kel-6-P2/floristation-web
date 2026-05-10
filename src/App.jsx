@@ -1,15 +1,16 @@
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 
-// USER PAGES
+// --- USER PAGES ---
 import Katalog from "./pages/Katalog";
 import Draft from "./pages/Draft";
 import Info from "./pages/info";
 import OrderForm from "./pages/OrderForm";
 import Invoice from "./pages/Invoice";
 
-// DETAIL PRODUK
+// --- DETAIL PRODUK ---
 import ProductDetailAsteria from "./pages/ProductDetailAsteria";
 import ProductDetailRafaela from "./pages/ProductDetailRafaela";
 import ProductDetailGarbe5Stem from "./pages/ProductDetailGarbe5Stem";
@@ -30,8 +31,9 @@ import ProductDetailBbaGodivaBlue from "./pages/ProductDetailBbaGodivaBlue";
 import ProductDetailBbaGodivaRed from "./pages/ProductDetailBbaGodivaRed";
 import ProductDetailBbaLiro from "./pages/ProductDetailBbaLiro";
 
-// ADMIN PAGES
-import LoginAwal from "./pages/admin/LoginAwal";
+// --- ADMIN PAGES ---
+// Pastikan nama file di folder adalah LoginAwal.jsx (L dan A huruf kapital)
+import LoginAwal from "./pages/admin/LoginAwal"; 
 import LoginError from "./pages/admin/LoginError";
 import Dashboard from "./pages/admin/Dashboard";
 import KelolaProduk from "./pages/admin/KelolaProduk";
@@ -41,7 +43,7 @@ import Rekap from "./pages/admin/Rekap";
 function App() {
   return (
     <Routes>
-      {/* ✅ CUSTOMER — pakai MainLayout */}
+      {/* 🟢 CUSTOMER SECTION — Menggunakan MainLayout (Navbar & Footer) */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Katalog />} />
         <Route path="/draft" element={<Draft />} />
@@ -49,57 +51,36 @@ function App() {
         <Route path="/order" element={<OrderForm />} />
       </Route>
 
-      {/* ✅ INVOICE — tanpa layout */}
+      {/* 🟢 INVOICE — Tanpa Layout */}
       <Route path="/invoice" element={<Invoice />} />
-
-      {/* ✅ DETAIL PRODUK — tanpa layout */}
+      
+      {/* 🟢 DETAIL PRODUK — Jalur Cepat ke Masing-masing Bunga */}
       <Route path="/detail-asteria" element={<ProductDetailAsteria />} />
       <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
-      <Route
-        path="/detail-garbe-5-stem"
-        element={<ProductDetailGarbe5Stem />}
-      />
+      <Route path="/detail-garbe-5-stem" element={<ProductDetailGarbe5Stem />} />
       <Route path="/detail-ariana" element={<ProductDetailAriana />} />
-      <Route
-        path="/detail-sunny-side-up"
-        element={<ProductDetailSunySideUp />}
-      />
+      <Route path="/detail-sunny-side-up" element={<ProductDetailSunySideUp />} />
       <Route path="/detail-grace-pink" element={<ProductDetailGracePink />} />
-      <Route
-        path="/detail-karina-lily-red"
-        element={<ProductDetailKarinaLilyRed />}
-      />
-      <Route
-        path="/detail-grace-red-white"
-        element={<ProductDetailGraceRedWhite />}
-      />
+      <Route path="/detail-karina-lily-red" element={<ProductDetailKarinaLilyRed />} />
+      <Route path="/detail-grace-red-white" element={<ProductDetailGraceRedWhite />} />
       <Route path="/detail-freya-xl" element={<ProductDetailFreya />} />
       <Route path="/detail-brenda-l" element={<ProductDetailBrenda />} />
       <Route path="/detail-snack-bouquet-1" element={<ProductDetailSnack1 />} />
       <Route path="/detail-snack-bouquet-2" element={<ProductDetailSnack2 />} />
       <Route path="/detail-snack-bouquet-3" element={<ProductDetailSnack3 />} />
       <Route path="/detail-ivana-red" element={<ProductDetailIvanaRed />} />
-      <Route
-        path="/detail-clara-purple"
-        element={<ProductDetailClaraPurple />}
-      />
-      <Route
-        path="/detail-valencia-blue"
-        element={<ProductDetailValenciaBlue />}
-      />
-      <Route
-        path="/detail-bba-godiva-blue"
-        element={<ProductDetailBbaGodivaBlue />}
-      />
-      <Route
-        path="/detail-bba-godiva-red"
-        element={<ProductDetailBbaGodivaRed />}
-      />
+      <Route path="/detail-clara-purple" element={<ProductDetailClaraPurple />} />
+      <Route path="/detail-valencia-blue" element={<ProductDetailValenciaBlue />} />
+      <Route path="/detail-bba-godiva-blue" element={<ProductDetailBbaGodivaBlue />} />
+      <Route path="/detail-bba-godiva-red" element={<ProductDetailBbaGodivaRed />} />
       <Route path="/detail-bba-liro" element={<ProductDetailBbaLiro />} />
 
-      {/* ✅ ADMIN — login bebas, halaman lain protected */}
+      {/* 🔴 ADMIN SECTION */}
+      {/* Halaman Login (Bisa diakses tanpa login) */}
       <Route path="/admin" element={<LoginAwal />} />
       <Route path="/admin/login-error" element={<LoginError />} />
+      
+      {/* Halaman yang diproteksi (Harus Login Firebase dulu) */}
       <Route
         path="/admin/dashboard"
         element={
@@ -132,6 +113,10 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      {/* 🔄 REDIRECT OTOMATIS */}
+      {/* Jika user mengakses URL yang tidak ada, balikkan ke Katalog utama */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

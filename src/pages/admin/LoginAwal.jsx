@@ -9,6 +9,7 @@ const LoginAwal = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Efek untuk cek status auth
   useEffect(() => {
     const unsub = onAuthChange((user) => {
       if (user) {
@@ -18,6 +19,7 @@ const LoginAwal = () => {
     return () => unsub();
   }, [navigate]);
 
+  // Fungsi Handle Login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -31,10 +33,10 @@ const LoginAwal = () => {
   };
 
   return (
-    // Menggunakan overflow-hidden agar tidak bisa scroll
+    // h-screen dan overflow-hidden agar pas satu layar tanpa scroll
     <div className="h-screen bg-[#233446] flex flex-col items-center justify-center p-4 font-sans overflow-hidden">
       
-      {/* SECTION LOGO & TITLE - Spasi mb dikurangi agar menghemat ruang vertikal */}
+      {/* SECTION LOGO & TITLE */}
       <div className="text-center mb-6">
         <div className="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4 shadow-xl overflow-hidden p-2">
           <img
@@ -51,14 +53,15 @@ const LoginAwal = () => {
         </p>
       </div>
 
-      {/* LOGIN CARD - Ukuran p-12 dan max-w-480 tetap sama agar font besar */}
+      {/* LOGIN CARD */}
       <div className="bg-white rounded-[2rem] shadow-2xl p-12 w-full max-w-[480px]">
         <h2 className="text-[#4b5563] text-2xl font-bold text-center mb-8">
           Login Admin
         </h2>
 
+        {/* Notifikasi Error */}
         {error && (
-          <div className="bg-red-50 text-red-600 text-xs p-3 rounded-xl mb-4 text-center border border-red-100">
+          <div className="bg-red-50 text-red-600 text-[11px] font-bold p-3 rounded-xl mb-4 text-center border border-red-100">
             {error}
           </div>
         )}
@@ -108,7 +111,7 @@ const LoginAwal = () => {
           </button>
         </form>
 
-        {/* DEMO CREDENTIALS BOX - Jarak mt dikurangi sedikit */}
+        {/* DEMO CREDENTIALS BOX */}
         <div className="mt-10 text-center">
           <p className="text-gray-400 text-[11px] mb-3 uppercase tracking-widest font-bold">
             Demo Credentials:
