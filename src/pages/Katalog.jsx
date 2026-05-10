@@ -30,14 +30,14 @@ function Katalog() {
     });
   }, [activeCategory, searchKeyword]);
 
-  return (
+   return (
     <>
       {/* HEADER */}
       <header className="bg-[#2f435e] px-7 pb-5 pt-5">
-            <h1 className="font-serif text-[23px] font-semibold italic text-white">
-              Floristation.id
-            </h1>
-          </header>
+        <h1 className="font-serif text-[23px] font-semibold italic text-white">
+          Floristation.id
+        </h1>
+      </header>
 
           {/* HERO */}
           <section className="bg-gradient-to-b from-[#eadfd2] to-[#f6f1eb] px-5 py-5 text-center">
@@ -51,7 +51,7 @@ function Katalog() {
           </section>
 
           {/* SEARCH */}
-          <section className="bg-white px-6 py-3">
+          <section className="px-6 py-3">
             <div className="flex h-[55px] items-center rounded-[22px] border border-[#ded8d1] bg-[#f8f4ef] px-5">
               <span className="mr-3 text-[16px] text-slate-400">
                 🔍
@@ -68,7 +68,7 @@ function Katalog() {
           </section>
 
           {/* CATEGORY */}
-          <section className="bg-white px-5 pb-5">
+          <section className="px-5 pb-5">
             <div className="hide-scrollbar flex gap-3 overflow-x-auto whitespace-nowrap scroll-smooth">
               {categories.map((category) => (
                 <button
@@ -88,7 +88,7 @@ function Katalog() {
           </section>
 
           {/* PRODUCT AREA */}
-          <main className="bg-[#f6f1eb] px-5 pb-6 pt-5">
+          <main className="px-5 pb-6 pt-5">
 
             {/* TITLE */}
             <div className="mb-4 flex items-center justify-between">

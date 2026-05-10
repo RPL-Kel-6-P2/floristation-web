@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MainLayout from "./layouts/MainLayout";
 
 // Pages Pelanggan
 import Katalog from "./pages/Katalog";
@@ -43,11 +44,13 @@ function App() {
   return (
     <Routes>
       {/* Sisi Pelanggan & Katalog Utama */}
-      <Route path="/" element={<Katalog />} />
-      <Route path="/draft" element={<Draft />} />
-      <Route path="/info" element={<Info />} />
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Katalog />} />
+        <Route path="/order" element={<OrderForm />} />
+        <Route path="/draft" element={<Draft />} />
+        <Route path="/info" element={<Info />} />
+        </Route>
 
-      
       {/* Rute Detail Produk Mobile */}
       <Route path="/detail-asteria" element={<ProductDetailAsteria />} /> 
       <Route path="/detail-rafaela" element={<ProductDetailRafaela />} />
@@ -70,9 +73,6 @@ function App() {
       <Route path="/detail-bba-liro" element={<ProductDetailBbaLiro />} />
 
 
-      {/* Sisi Order & Pembayaran */}
-      <Route path="/order" element={<OrderForm />} />
-      
       {/* Sisi Admin Panel */}
       <Route path="/admin" element={<LoginAwal />} />
       <Route path="/admin/login-error" element={<LoginError />} />

@@ -43,6 +43,11 @@ function ProductCard({ product }) {
           {product.name}
         </h3>
 
+        {/* KATEGORI */}
+        <p className="mt-1 text-[12px] uppercase tracking-[0.08em] text-slate-500">
+          {product.category}
+        </p>
+
         {/* HARGA */}
         <p className="mt-3 text-[18px] font-bold text-[#2f435e]">
           {product.price}

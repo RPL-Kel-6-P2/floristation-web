@@ -182,3 +182,17 @@
     border-right-color: var(--border);
   }
 }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
