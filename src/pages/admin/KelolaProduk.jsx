@@ -29,6 +29,15 @@ const emptyForm = {
   price: "",
 };
 
+// Durasi undo dalam milidetik
+const UNDO_DURATION = 5000;
+
+const KETERSEDIAAN_OPTIONS = [
+  { label: "Semua Stok", value: "Semua" },
+  { label: "✓ Tersedia", value: "Tersedia" },
+  { label: "✕ Habis", value: "Habis" },
+];
+
 export default function KelolaProduk() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -45,11 +54,25 @@ export default function KelolaProduk() {
   const [formData, setFormData] = useState(emptyForm);
   const [previewUrl, setPreviewUrl] = useState(null);
 
+  // Notifikasi global (di luar modal)
   const [notif, setNotif] = useState({ msg: "", type: "success" });
+  // Notifikasi di dalam modal
+  const [modalError, setModalError] = useState("");
+
   const [search, setSearch] = useState("");
   const [katFilter, setKatFilter] = useState("Semua Kategori");
+  // ✅ BARU: Filter ketersediaan
+  const [ketersediaanFilter, setKetersediaanFilter] = useState("Semua");
   const [page, setPage] = useState(1);
   const perPage = 8;
+
+  // State modal konfirmasi hapus
+  const [confirmDelete, setConfirmDelete] = useState(null); // { id, nama }
+
+  // State untuk undo delete (setelah dikonfirmasi)
+  const [pendingDelete, setPendingDelete] = useState(null); // { id, nama, timeoutId }
+  const [undoCountdown, setUndoCountdown] = useState(0);
+  const undoIntervalRef = useRef(null);
 
   useEffect(() => {
     const unsub = listenProducts((data) => {
@@ -57,6 +80,13 @@ export default function KelolaProduk() {
       setLoading(false);
     });
     return () => unsub();
+  }, []);
+
+  // Cleanup undo interval on unmount
+  useEffect(() => {
+    return () => {
+      if (undoIntervalRef.current) clearInterval(undoIntervalRef.current);
+    };
   }, []);
 
   const showNotif = (msg, type = "success") => {
@@ -69,12 +99,16 @@ export default function KelolaProduk() {
       .toLowerCase()
       .includes(search.toLowerCase());
     const matchKat = katFilter === "Semua Kategori" || p.kategori === katFilter;
-    return matchSearch && matchKat;
+    // ✅ BARU: Filter ketersediaan
+    const matchKetersediaan =
+      ketersediaanFilter === "Semua" ||
+      (ketersediaanFilter === "Tersedia" && p.ketersediaan === true) ||
+      (ketersediaanFilter === "Habis" && p.ketersediaan === false);
+    return matchSearch && matchKat && matchKetersediaan;
   });
   const totalPages = Math.ceil(filtered.length / perPage);
   const currentItems = filtered.slice((page - 1) * perPage, page * perPage);
 
-  
   const addKomposisi = () =>
     setFormData((f) => ({ ...f, komposisi: [...f.komposisi, ""] }));
   const removeKomposisi = (i) =>
@@ -89,23 +123,21 @@ export default function KelolaProduk() {
       return { ...f, komposisi: k };
     });
 
-  
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!allowedTypes.includes(file.type)) {
-      showNotif("Format foto harus JPG, PNG, atau WEBP", "error");
+      setModalError("Format foto harus JPG, PNG, atau WEBP");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      showNotif("Ukuran foto maksimal 5MB", "error");
+      setModalError("Ukuran foto maksimal 5MB");
       return;
     }
 
-    
+    setModalError("");
     setFormData((f) => ({ ...f, _file: file }));
     setPreviewUrl(URL.createObjectURL(file));
   };
@@ -116,6 +148,7 @@ export default function KelolaProduk() {
     setFormData(emptyForm);
     setPreviewUrl(null);
     setUploadProgress(0);
+    setModalError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(true);
   };
@@ -139,19 +172,20 @@ export default function KelolaProduk() {
     });
     setPreviewUrl(p.image_url || null);
     setUploadProgress(0);
+    setModalError("");
     if (fileInputRef.current) fileInputRef.current.value = "";
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setModalError("");
     setSaving(true);
 
     try {
       let image_url = formData.image_url;
       let image_public_id = formData.image_public_id;
 
-      
       if (formData._file) {
         setIsUploading(true);
         setUploadProgress(0);
@@ -164,7 +198,8 @@ export default function KelolaProduk() {
       }
 
       if (!image_url) {
-        showNotif("Foto produk wajib diupload", "error");
+        // ✅ Error muncul di dalam modal
+        setModalError("Foto produk wajib diupload");
         setSaving(false);
         return;
       }
@@ -178,7 +213,8 @@ export default function KelolaProduk() {
       };
 
       if (payload.komposisi.length === 0) {
-        showNotif("Komposisi minimal 1 baris", "error");
+        // ✅ Error muncul di dalam modal
+        setModalError("Komposisi minimal 1 baris");
         setSaving(false);
         return;
       }
@@ -194,21 +230,70 @@ export default function KelolaProduk() {
       setIsModalOpen(false);
     } catch (err) {
       setIsUploading(false);
-      showNotif(err.message, "error");
+      // ✅ Error dari service muncul di dalam modal
+      setModalError(err.message);
     } finally {
       setSaving(false);
       setUploadProgress(0);
     }
   };
 
-  const handleDelete = async (p) => {
-    if (!confirm(`Hapus produk "${p.nama}"?`)) return;
-    try {
-      await deleteProduct(p.id);
-      showNotif("Produk berhasil dihapus");
-    } catch (err) {
-      showNotif("Gagal: " + err.message, "error");
+  // Step 1: Klik Hapus → buka modal konfirmasi
+  const handleDelete = (p) => {
+    setConfirmDelete({ id: p.id, nama: p.nama });
+  };
+
+  // Step 2: Klik OK di modal → tutup modal, masuk undo countdown
+  const handleConfirmDelete = () => {
+    const p = confirmDelete;
+    setConfirmDelete(null);
+
+    // Jika ada pending delete sebelumnya, eksekusi langsung dulu
+    if (pendingDelete) {
+      clearTimeout(pendingDelete.timeoutId);
+      clearInterval(undoIntervalRef.current);
+      deleteProduct(pendingDelete.id).catch((err) =>
+        showNotif("Gagal hapus: " + err.message, "error"),
+      );
     }
+
+    // Mulai countdown
+    setUndoCountdown(Math.ceil(UNDO_DURATION / 1000));
+
+    undoIntervalRef.current = setInterval(() => {
+      setUndoCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(undoIntervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    const timeoutId = setTimeout(async () => {
+      clearInterval(undoIntervalRef.current);
+      setPendingDelete(null);
+      setUndoCountdown(0);
+      try {
+        await deleteProduct(p.id);
+        showNotif(`"${p.nama}" berhasil dihapus`);
+      } catch (err) {
+        showNotif("Gagal hapus: " + err.message, "error");
+      }
+    }, UNDO_DURATION);
+
+    setPendingDelete({ id: p.id, nama: p.nama, timeoutId });
+  };
+
+  // Batalkan penghapusan (undo)
+  const handleUndoDelete = () => {
+    if (!pendingDelete) return;
+    clearTimeout(pendingDelete.timeoutId);
+    clearInterval(undoIntervalRef.current);
+    const nama = pendingDelete.nama;
+    setPendingDelete(null);
+    setUndoCountdown(0);
+    showNotif(`Penghapusan "${nama}" dibatalkan`);
   };
 
   const handleLogout = async () => {
@@ -218,6 +303,7 @@ export default function KelolaProduk() {
 
   return (
     <div className="flex h-screen bg-[#f5f1ed] font-sans text-[#334155] overflow-hidden">
+      {/* SIDEBAR */}
       <aside className="w-64 bg-[#1e2d3d] text-white flex flex-col p-6 fixed h-full shadow-xl">
         <div className="mb-10">
           <h1 className="text-2xl font-serif italic tracking-wide">
@@ -291,17 +377,42 @@ export default function KelolaProduk() {
           </button>
         </header>
 
+        {/* ✅ Notifikasi global (sukses/error biasa) */}
         {notif.msg && (
           <div
-            className={`px-6 py-4 rounded-2xl mb-4 text-sm font-bold flex-shrink-0 ${notif.type === "error" ? "bg-red-500" : "bg-[#40c057]"} text-white`}
+            className={`px-6 py-4 rounded-2xl mb-4 text-sm font-bold flex-shrink-0 ${
+              notif.type === "error" ? "bg-red-500" : "bg-[#40c057]"
+            } text-white`}
           >
             {notif.msg}
           </div>
         )}
 
+        {/* ✅ BARU: Banner undo delete */}
+        {pendingDelete && (
+          <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 flex-shrink-0 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-sm font-black">
+                {undoCountdown}
+              </div>
+              <p className="text-sm font-semibold">
+                Menghapus{" "}
+                <span className="font-black">"{pendingDelete.nama}"</span>...
+              </p>
+            </div>
+            <button
+              onClick={handleUndoDelete}
+              className="bg-white text-[#1e2d3d] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+            >
+              ↩ Urungkan
+            </button>
+          </div>
+        )}
+
         {/* Filter */}
-        <section className="flex gap-4 mb-6 flex-shrink-0">
-          <div className="relative w-64">
+        <section className="flex gap-4 mb-6 flex-shrink-0 flex-wrap">
+          {/* Search */}
+          <div className="relative w-56">
             <input
               type="text"
               placeholder="Nama bunga..."
@@ -327,6 +438,8 @@ export default function KelolaProduk() {
               />
             </svg>
           </div>
+
+          {/* Filter Kategori */}
           <select
             value={katFilter}
             onChange={(e) => {
@@ -339,6 +452,22 @@ export default function KelolaProduk() {
             {KATEGORI_OPTIONS.map((k) => (
               <option key={k} value={k}>
                 {k}
+              </option>
+            ))}
+          </select>
+
+          {/* Filter Ketersediaan — dropdown, seragam dengan kategori */}
+          <select
+            value={ketersediaanFilter}
+            onChange={(e) => {
+              setKetersediaanFilter(e.target.value);
+              setPage(1);
+            }}
+            className="bg-white border border-gray-200 px-4 py-2.5 rounded-xl text-xs font-bold outline-none min-w-[150px] shadow-sm"
+          >
+            {KETERSEDIAAN_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
               </option>
             ))}
           </select>
@@ -358,74 +487,94 @@ export default function KelolaProduk() {
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-4 pb-4">
-              {currentItems.map((p) => (
-                <div
-                  key={p.id}
-                  className="bg-white rounded-2xl shadow-sm flex flex-col border border-gray-100 p-4 h-fit"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1 min-w-0">
-                      <span className="text-gray-400 text-[8px] font-black uppercase tracking-widest block truncate mb-1">
-                        {p.kategori}
-                      </span>
-                      <h3 className="text-[11px] font-black text-[#1e2d3d] uppercase truncate">
-                        {p.nama}
-                      </h3>
-                    </div>
-                    <span
-                      className={`ml-2 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase whitespace-nowrap ${p.ketersediaan ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"}`}
-                    >
-                      {p.ketersediaan ? "Tersedia" : "Habis"}
-                    </span>
-                  </div>
-
-                  <div className="mb-4 rounded-xl bg-[#fcfaf8] p-1.5">
-                    <div className="aspect-[3/4] w-full overflow-hidden rounded-md bg-gray-100">
-                      <img
-                        src={p.image_url}
-                        className="h-full w-full object-cover"
-                        alt={p.nama}
-                        onError={(e) =>
-                          (e.target.src =
-                            "https://via.placeholder.com/300x400?text=No+Image")
-                        }
-                      />
-                    </div>
-                    <p className="mt-2 line-clamp-1 text-[8px] italic text-[#5c524f] px-0.5">
-                      {Array.isArray(p.komposisi)
-                        ? p.komposisi.join(", ")
-                        : p.komposisi}
-                    </p>
-                  </div>
-
-                  <div className="mt-auto">
-                    <div className="flex justify-between items-center mb-3">
-                      <p className="text-sm font-black text-[#1e2d3d]">
-                        Rp{Number(p.price).toLocaleString("id-ID")}
-                      </p>
-                      {p.size && (
-                        <span className="bg-[#1e2d3d] text-white px-2 py-0.5 rounded text-[9px] font-bold">
-                          {p.size}
+              {currentItems.map((p) => {
+                const isBeingDeleted = pendingDelete?.id === p.id;
+                return (
+                  <div
+                    key={p.id}
+                    className={`bg-white rounded-2xl shadow-sm flex flex-col border p-4 h-fit transition-all ${
+                      isBeingDeleted
+                        ? "border-red-300 opacity-50 scale-95"
+                        : "border-gray-100"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-gray-400 text-[8px] font-black uppercase tracking-widest block truncate mb-1">
+                          {p.kategori}
                         </span>
-                      )}
+                        <h3 className="text-[11px] font-black text-[#1e2d3d] uppercase truncate">
+                          {p.nama}
+                        </h3>
+                      </div>
+                      <span
+                        className={`ml-2 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase whitespace-nowrap ${
+                          p.ketersediaan
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-500"
+                        }`}
+                      >
+                        {p.ketersediaan ? "Tersedia" : "Habis"}
+                      </span>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => openEdit(p)}
-                        className="flex-1 rounded-md bg-[#1e2d3d] py-2 text-[8px] font-black uppercase text-white hover:bg-black transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p)}
-                        className="flex-1 rounded-md bg-[#e03131] py-2 text-[8px] font-black uppercase text-white hover:bg-[#c92a2a] transition-colors"
-                      >
-                        Hapus
-                      </button>
+
+                    <div className="mb-4 rounded-xl bg-[#fcfaf8] p-1.5">
+                      <div className="aspect-[3/4] w-full overflow-hidden rounded-md bg-gray-100">
+                        <img
+                          src={p.image_url}
+                          className="h-full w-full object-cover"
+                          alt={p.nama}
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://via.placeholder.com/300x400?text=No+Image")
+                          }
+                        />
+                      </div>
+                      <p className="mt-2 line-clamp-1 text-[8px] italic text-[#5c524f] px-0.5">
+                        {Array.isArray(p.komposisi)
+                          ? p.komposisi.join(", ")
+                          : p.komposisi}
+                      </p>
+                    </div>
+
+                    <div className="mt-auto">
+                      <div className="flex justify-between items-center mb-3">
+                        <p className="text-sm font-black text-[#1e2d3d]">
+                          Rp{Number(p.price).toLocaleString("id-ID")}
+                        </p>
+                        {p.size && (
+                          <span className="bg-[#1e2d3d] text-white px-2 py-0.5 rounded text-[9px] font-bold">
+                            {p.size}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openEdit(p)}
+                          disabled={isBeingDeleted}
+                          className="flex-1 rounded-md bg-[#1e2d3d] py-2 text-[8px] font-black uppercase text-white hover:bg-black transition-colors disabled:opacity-40"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() =>
+                            isBeingDeleted
+                              ? handleUndoDelete()
+                              : handleDelete(p)
+                          }
+                          className={`flex-1 rounded-md py-2 text-[8px] font-black uppercase text-white transition-colors ${
+                            isBeingDeleted
+                              ? "bg-orange-400 hover:bg-orange-500"
+                              : "bg-[#e03131] hover:bg-[#c92a2a]"
+                          }`}
+                        >
+                          {isBeingDeleted ? "↩ Urungkan" : "Hapus"}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -439,7 +588,11 @@ export default function KelolaProduk() {
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${page === 1 ? "bg-gray-100 text-gray-300" : "bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]"}`}
+              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${
+                page === 1
+                  ? "bg-gray-100 text-gray-300"
+                  : "bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]"
+              }`}
             >
               ← Back
             </button>
@@ -449,7 +602,11 @@ export default function KelolaProduk() {
             <button
               disabled={page === totalPages || totalPages === 0}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${page === totalPages || totalPages === 0 ? "bg-gray-100 text-gray-300" : "bg-[#1e2d3d] text-white hover:bg-black"}`}
+              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${
+                page === totalPages || totalPages === 0
+                  ? "bg-gray-100 text-gray-300"
+                  : "bg-[#1e2d3d] text-white hover:bg-black"
+              }`}
             >
               Next →
             </button>
@@ -457,7 +614,7 @@ export default function KelolaProduk() {
         </footer>
       </main>
 
-      {/* ===== MODAL TAMBAH / EDIT — SESUAI GAMBAR ===== */}
+      {/* ===== MODAL TAMBAH / EDIT ===== */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl rounded-[2rem] shadow-2xl relative max-h-[92vh] overflow-y-auto">
@@ -473,6 +630,27 @@ export default function KelolaProduk() {
                 ×
               </button>
             </div>
+
+            {/* ✅ Error di dalam modal — tepat di bawah header, sebelum form */}
+            {modalError && (
+              <div className="mx-10 mt-5 flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl px-5 py-4">
+                <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-[10px] font-black">!</span>
+                </div>
+                <div>
+                  <p className="text-red-700 text-sm font-bold">
+                    Terjadi Kesalahan
+                  </p>
+                  <p className="text-red-600 text-xs mt-0.5">{modalError}</p>
+                </div>
+                <button
+                  onClick={() => setModalError("")}
+                  className="ml-auto text-red-400 hover:text-red-600 font-bold text-lg leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-0">
@@ -727,10 +905,8 @@ export default function KelolaProduk() {
                     </label>
                   </div>
 
-                  
                   <div className="flex-1" />
 
-                  
                   <div className="flex flex-col gap-3 pt-4 border-t border-gray-100">
                     <button
                       type="submit"
@@ -757,6 +933,62 @@ export default function KelolaProduk() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL KONFIRMASI HAPUS ===== */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 z-[1000] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl overflow-hidden">
+            {/* Icon */}
+            <div className="flex flex-col items-center px-8 pt-8 pb-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-7 w-7 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base font-black text-[#1e2d3d] uppercase tracking-tight mb-2">
+                Hapus Produk
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Yakin ingin menghapus{" "}
+                <span className="font-black text-[#1e2d3d]">
+                  "{confirmDelete.nama}"
+                </span>
+                ?
+              </p>
+              <p className="text-[11px] text-gray-400 mt-1">
+                Kamu masih bisa urungkan dalam beberapa detik setelah
+                dikonfirmasi.
+              </p>
+            </div>
+            {/* Actions */}
+            <div className="flex gap-3 px-8 pb-8">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-3.5 rounded-xl bg-[#f5f1ed] text-[#334155] text-xs font-black uppercase tracking-widest hover:bg-[#ede8e3] transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 py-3.5 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-colors"
+              >
+                Ya, Hapus
+              </button>
+            </div>
           </div>
         </div>
       )}
