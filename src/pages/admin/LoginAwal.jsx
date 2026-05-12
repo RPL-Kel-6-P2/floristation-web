@@ -75,7 +75,7 @@ const LoginAwal = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@floristation.id"
+              placeholder="admin123@floristation.id"
               className="w-full px-5 py-4 bg-[#f4f0ec] rounded-xl outline-none text-gray-700 placeholder:text-gray-400 border border-transparent focus:border-gray-200 transition-all"
               required
             />
@@ -118,8 +118,8 @@ const LoginAwal = () => {
           </p>
           <div className="bg-[#e5ddd2] p-4 rounded-2xl border border-[#d6ccbf]">
             <p className="text-[#5c524f] text-sm leading-relaxed">
-              Email: <span className="font-bold">admin@floristation.id</span><br />
-              Password: <span className="font-bold">Fl0r1st@tion_id</span>
+              Email: <span className="font-bold">admin123@floristation.id</span><br />
+              Password: <span className="font-bold">admin123</span>
             </p>
           </div>
         </div>
