@@ -16,7 +16,7 @@ const KATEGORI_OPTIONS = [
   "Graduation Bouquet",
   "Bloom Box Arrangement",
 ];
-const SIZE_OPTIONS = ["Tidak Ada", "XS", "S", "M", "L"];
+const SIZE_OPTIONS = ["Tidak Ada", "XS", "S", "M", "L", "XL"];
 
 const emptyForm = {
   nama: "",
