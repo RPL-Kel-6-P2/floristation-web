@@ -20,7 +20,7 @@ const VALID_KATEGORI = [
   "Graduation Bouquet",
   "Bloom Box Arrangement",
 ];
-const VALID_SIZE = [null, "XS", "S", "M", "L"];
+const VALID_SIZE = [null, "XS", "S", "M", "L", "XL"];
 
 function validate(data) {
   const errors = [];
