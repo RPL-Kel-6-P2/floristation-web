@@ -29,7 +29,6 @@ const emptyForm = {
   price: "",
 };
 
-// Durasi undo dalam milidetik
 const UNDO_DURATION = 5000;
 
 const KETERSEDIAAN_OPTIONS = [
@@ -37,6 +36,11 @@ const KETERSEDIAAN_OPTIONS = [
   { label: "✓ Tersedia", value: "Tersedia" },
   { label: "✕ Habis", value: "Habis" },
 ];
+
+// Format harga: angka → "1.000.000"
+function formatHarga(n) {
+  return Number(n).toLocaleString("id-ID");
+}
 
 export default function KelolaProduk() {
   const navigate = useNavigate();
@@ -54,25 +58,30 @@ export default function KelolaProduk() {
   const [formData, setFormData] = useState(emptyForm);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  // Notifikasi global (di luar modal)
   const [notif, setNotif] = useState({ msg: "", type: "success" });
-  // Notifikasi di dalam modal
   const [modalError, setModalError] = useState("");
 
   const [search, setSearch] = useState("");
   const [katFilter, setKatFilter] = useState("Semua Kategori");
-  // ✅ BARU: Filter ketersediaan
   const [ketersediaanFilter, setKetersediaanFilter] = useState("Semua");
   const [page, setPage] = useState(1);
   const perPage = 8;
 
-  // State modal konfirmasi hapus
-  const [confirmDelete, setConfirmDelete] = useState(null); // { id, nama }
+  // ── DELETE undo (sudah ada) ──
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [undoDeleteCountdown, setUndoDeleteCountdown] = useState(0);
+  const undoDeleteIntervalRef = useRef(null);
 
-  // State untuk undo delete (setelah dikonfirmasi)
-  const [pendingDelete, setPendingDelete] = useState(null); // { id, nama, timeoutId }
-  const [undoCountdown, setUndoCountdown] = useState(0);
-  const undoIntervalRef = useRef(null);
+  // ── CREATE undo ──
+  const [pendingCreate, setPendingCreate] = useState(null); // { id, nama, timeoutId }
+  const [undoCreateCountdown, setUndoCreateCountdown] = useState(0);
+  const undoCreateIntervalRef = useRef(null);
+
+  // ── UPDATE undo ──
+  const [pendingUpdate, setPendingUpdate] = useState(null); // { id, nama, prevData, timeoutId }
+  const [undoUpdateCountdown, setUndoUpdateCountdown] = useState(0);
+  const undoUpdateIntervalRef = useRef(null);
 
   useEffect(() => {
     const unsub = listenProducts((data) => {
@@ -82,10 +91,14 @@ export default function KelolaProduk() {
     return () => unsub();
   }, []);
 
-  // Cleanup undo interval on unmount
   useEffect(() => {
     return () => {
-      if (undoIntervalRef.current) clearInterval(undoIntervalRef.current);
+      if (undoDeleteIntervalRef.current)
+        clearInterval(undoDeleteIntervalRef.current);
+      if (undoCreateIntervalRef.current)
+        clearInterval(undoCreateIntervalRef.current);
+      if (undoUpdateIntervalRef.current)
+        clearInterval(undoUpdateIntervalRef.current);
     };
   }, []);
 
@@ -94,12 +107,30 @@ export default function KelolaProduk() {
     setTimeout(() => setNotif({ msg: "", type: "success" }), 4000);
   };
 
+  // ── Helpers countdown ──
+  function startCountdown(setCountdown, intervalRef) {
+    setCountdown(Math.ceil(UNDO_DURATION / 1000));
+    intervalRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  function clearCountdown(setCountdown, intervalRef) {
+    clearInterval(intervalRef.current);
+    setCountdown(0);
+  }
+
   const filtered = products.filter((p) => {
     const matchSearch = (p.nama || "")
       .toLowerCase()
       .includes(search.toLowerCase());
     const matchKat = katFilter === "Semua Kategori" || p.kategori === katFilter;
-    // ✅ BARU: Filter ketersediaan
     const matchKetersediaan =
       ketersediaanFilter === "Semua" ||
       (ketersediaanFilter === "Tersedia" && p.ketersediaan === true) ||
@@ -126,7 +157,6 @@ export default function KelolaProduk() {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!allowedTypes.includes(file.type)) {
       setModalError("Format foto harus JPG, PNG, atau WEBP");
@@ -136,7 +166,6 @@ export default function KelolaProduk() {
       setModalError("Ukuran foto maksimal 5MB");
       return;
     }
-
     setModalError("");
     setFormData((f) => ({ ...f, _file: file }));
     setPreviewUrl(URL.createObjectURL(file));
@@ -169,6 +198,7 @@ export default function KelolaProduk() {
       size: p.size ?? null,
       price: p.price || "",
       _file: null,
+      _prevData: p, // simpan data lama untuk undo
     });
     setPreviewUrl(p.image_url || null);
     setUploadProgress(0);
@@ -177,6 +207,7 @@ export default function KelolaProduk() {
     setIsModalOpen(true);
   };
 
+  // ── SUBMIT (create / update) ──
   const handleSubmit = async (e) => {
     e.preventDefault();
     setModalError("");
@@ -189,16 +220,15 @@ export default function KelolaProduk() {
       if (formData._file) {
         setIsUploading(true);
         setUploadProgress(0);
-        const result = await uploadToCloudinary(formData._file, (pct) => {
-          setUploadProgress(pct);
-        });
+        const result = await uploadToCloudinary(formData._file, (pct) =>
+          setUploadProgress(pct),
+        );
         image_url = result.url;
         image_public_id = result.public_id;
         setIsUploading(false);
       }
 
       if (!image_url) {
-        // ✅ Error muncul di dalam modal
         setModalError("Foto produk wajib diupload");
         setSaving(false);
         return;
@@ -213,24 +243,70 @@ export default function KelolaProduk() {
       };
 
       if (payload.komposisi.length === 0) {
-        // ✅ Error muncul di dalam modal
         setModalError("Komposisi minimal 1 baris");
         setSaving(false);
         return;
       }
 
       if (isEditMode) {
+        // Simpan data lama dulu sebelum update
+        const prevData = formData._prevData;
         await updateProduct(editingId, payload);
-        showNotif("Produk berhasil diperbarui ✓");
-      } else {
-        await createProduct(payload);
-        showNotif("Produk berhasil ditambahkan ✓");
-      }
+        setIsModalOpen(false);
 
-      setIsModalOpen(false);
+        // Mulai undo countdown untuk UPDATE
+        if (pendingUpdate) {
+          clearTimeout(pendingUpdate.timeoutId);
+          clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+        }
+
+        startCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+
+        const timeoutId = setTimeout(async () => {
+          clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+          setPendingUpdate(null);
+          showNotif(
+            `Produk "${payload.nama.trim().toUpperCase()}" berhasil diperbarui ✓`,
+          );
+        }, UNDO_DURATION);
+
+        setPendingUpdate({
+          id: editingId,
+          nama: payload.nama.trim().toUpperCase(),
+          prevData,
+          timeoutId,
+        });
+      } else {
+        // CREATE
+        const docRef = await createProduct(payload);
+        const newId = docRef.id;
+        setIsModalOpen(false);
+
+        // Eksekusi pending create sebelumnya jika ada
+        if (pendingCreate) {
+          clearTimeout(pendingCreate.timeoutId);
+          clearCountdown(setUndoCreateCountdown, undoCreateIntervalRef);
+          showNotif(`Produk "${pendingCreate.nama}" berhasil ditambahkan ✓`);
+        }
+
+        startCountdown(setUndoCreateCountdown, undoCreateIntervalRef);
+
+        const timeoutId = setTimeout(async () => {
+          clearCountdown(setUndoCreateCountdown, undoCreateIntervalRef);
+          setPendingCreate(null);
+          showNotif(
+            `Produk "${payload.nama.trim().toUpperCase()}" berhasil ditambahkan ✓`,
+          );
+        }, UNDO_DURATION);
+
+        setPendingCreate({
+          id: newId,
+          nama: payload.nama.trim().toUpperCase(),
+          timeoutId,
+        });
+      }
     } catch (err) {
       setIsUploading(false);
-      // ✅ Error dari service muncul di dalam modal
       setModalError(err.message);
     } finally {
       setSaving(false);
@@ -238,42 +314,68 @@ export default function KelolaProduk() {
     }
   };
 
-  // Step 1: Klik Hapus → buka modal konfirmasi
+  // ── UNDO CREATE ──
+  const handleUndoCreate = async () => {
+    if (!pendingCreate) return;
+    clearTimeout(pendingCreate.timeoutId);
+    clearCountdown(setUndoCreateCountdown, undoCreateIntervalRef);
+    const nama = pendingCreate.nama;
+    const id = pendingCreate.id;
+    setPendingCreate(null);
+    try {
+      await deleteProduct(id);
+      showNotif(`Penambahan produk "${nama}" dibatalkan`);
+    } catch (err) {
+      showNotif("Gagal membatalkan: " + err.message, "error");
+    }
+  };
+
+  // ── UNDO UPDATE ──
+  const handleUndoUpdate = async () => {
+    if (!pendingUpdate) return;
+    clearTimeout(pendingUpdate.timeoutId);
+    clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+    const { id, nama, prevData } = pendingUpdate;
+    setPendingUpdate(null);
+    try {
+      await updateProduct(id, {
+        nama: prevData.nama,
+        image_url: prevData.image_url,
+        image_public_id: prevData.image_public_id || "",
+        kategori: prevData.kategori,
+        komposisi: prevData.komposisi,
+        ketersediaan: prevData.ketersediaan,
+        size: prevData.size,
+        price: prevData.price,
+      });
+      showNotif(`Perubahan produk "${nama}" dibatalkan`);
+    } catch (err) {
+      showNotif("Gagal membatalkan: " + err.message, "error");
+    }
+  };
+
+  // ── DELETE (sudah ada, tidak berubah) ──
   const handleDelete = (p) => {
     setConfirmDelete({ id: p.id, nama: p.nama });
   };
 
-  // Step 2: Klik OK di modal → tutup modal, masuk undo countdown
   const handleConfirmDelete = () => {
     const p = confirmDelete;
     setConfirmDelete(null);
 
-    // Jika ada pending delete sebelumnya, eksekusi langsung dulu
     if (pendingDelete) {
       clearTimeout(pendingDelete.timeoutId);
-      clearInterval(undoIntervalRef.current);
+      clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
       deleteProduct(pendingDelete.id).catch((err) =>
         showNotif("Gagal hapus: " + err.message, "error"),
       );
     }
 
-    // Mulai countdown
-    setUndoCountdown(Math.ceil(UNDO_DURATION / 1000));
-
-    undoIntervalRef.current = setInterval(() => {
-      setUndoCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(undoIntervalRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    startCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
 
     const timeoutId = setTimeout(async () => {
-      clearInterval(undoIntervalRef.current);
+      clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
       setPendingDelete(null);
-      setUndoCountdown(0);
       try {
         await deleteProduct(p.id);
         showNotif(`"${p.nama}" berhasil dihapus`);
@@ -285,14 +387,12 @@ export default function KelolaProduk() {
     setPendingDelete({ id: p.id, nama: p.nama, timeoutId });
   };
 
-  // Batalkan penghapusan (undo)
   const handleUndoDelete = () => {
     if (!pendingDelete) return;
     clearTimeout(pendingDelete.timeoutId);
-    clearInterval(undoIntervalRef.current);
+    clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
     const nama = pendingDelete.nama;
     setPendingDelete(null);
-    setUndoCountdown(0);
     showNotif(`Penghapusan "${nama}" dibatalkan`);
   };
 
@@ -377,23 +477,63 @@ export default function KelolaProduk() {
           </button>
         </header>
 
-        {/* ✅ Notifikasi global (sukses/error biasa) */}
+        {/* Notifikasi global */}
         {notif.msg && (
           <div
-            className={`px-6 py-4 rounded-2xl mb-4 text-sm font-bold flex-shrink-0 ${
-              notif.type === "error" ? "bg-red-500" : "bg-[#40c057]"
-            } text-white`}
+            className={`px-6 py-4 rounded-2xl mb-4 text-sm font-bold flex-shrink-0 ${notif.type === "error" ? "bg-red-500" : "bg-[#40c057]"} text-white`}
           >
             {notif.msg}
           </div>
         )}
 
-        {/* ✅ BARU: Banner undo delete */}
+        {/* Banner undo CREATE */}
+        {pendingCreate && (
+          <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 flex-shrink-0 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#40c057] flex items-center justify-center text-sm font-black">
+                {undoCreateCountdown}
+              </div>
+              <p className="text-sm font-semibold">
+                Menambahkan{" "}
+                <span className="font-black">"{pendingCreate.nama}"</span>...
+              </p>
+            </div>
+            <button
+              onClick={handleUndoCreate}
+              className="bg-white text-[#1e2d3d] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+            >
+              ↩ Urungkan
+            </button>
+          </div>
+        )}
+
+        {/* Banner undo UPDATE */}
+        {pendingUpdate && (
+          <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 flex-shrink-0 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#228be6] flex items-center justify-center text-sm font-black">
+                {undoUpdateCountdown}
+              </div>
+              <p className="text-sm font-semibold">
+                Memperbarui{" "}
+                <span className="font-black">"{pendingUpdate.nama}"</span>...
+              </p>
+            </div>
+            <button
+              onClick={handleUndoUpdate}
+              className="bg-white text-[#1e2d3d] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+            >
+              ↩ Urungkan
+            </button>
+          </div>
+        )}
+
+        {/* Banner undo DELETE */}
         {pendingDelete && (
           <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 flex-shrink-0 shadow-lg">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-sm font-black">
-                {undoCountdown}
+                {undoDeleteCountdown}
               </div>
               <p className="text-sm font-semibold">
                 Menghapus{" "}
@@ -411,7 +551,6 @@ export default function KelolaProduk() {
 
         {/* Filter */}
         <section className="flex gap-4 mb-6 flex-shrink-0 flex-wrap">
-          {/* Search */}
           <div className="relative w-56">
             <input
               type="text"
@@ -438,8 +577,6 @@ export default function KelolaProduk() {
               />
             </svg>
           </div>
-
-          {/* Filter Kategori */}
           <select
             value={katFilter}
             onChange={(e) => {
@@ -455,8 +592,6 @@ export default function KelolaProduk() {
               </option>
             ))}
           </select>
-
-          {/* Filter Ketersediaan — dropdown, seragam dengan kategori */}
           <select
             value={ketersediaanFilter}
             onChange={(e) => {
@@ -489,13 +624,19 @@ export default function KelolaProduk() {
             <div className="grid grid-cols-4 gap-4 pb-4">
               {currentItems.map((p) => {
                 const isBeingDeleted = pendingDelete?.id === p.id;
+                const isBeingUpdated = pendingUpdate?.id === p.id;
+                const isBeingCreated = pendingCreate?.id === p.id;
                 return (
                   <div
                     key={p.id}
                     className={`bg-white rounded-2xl shadow-sm flex flex-col border p-4 h-fit transition-all ${
                       isBeingDeleted
                         ? "border-red-300 opacity-50 scale-95"
-                        : "border-gray-100"
+                        : isBeingUpdated
+                          ? "border-blue-300 opacity-70"
+                          : isBeingCreated
+                            ? "border-green-300 opacity-70"
+                            : "border-gray-100"
                     }`}
                   >
                     <div className="flex justify-between items-start mb-3">
@@ -508,11 +649,7 @@ export default function KelolaProduk() {
                         </h3>
                       </div>
                       <span
-                        className={`ml-2 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase whitespace-nowrap ${
-                          p.ketersediaan
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-500"
-                        }`}
+                        className={`ml-2 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase whitespace-nowrap ${p.ketersediaan ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"}`}
                       >
                         {p.ketersediaan ? "Tersedia" : "Habis"}
                       </span>
@@ -540,7 +677,7 @@ export default function KelolaProduk() {
                     <div className="mt-auto">
                       <div className="flex justify-between items-center mb-3">
                         <p className="text-sm font-black text-[#1e2d3d]">
-                          Rp{Number(p.price).toLocaleString("id-ID")}
+                          Rp{formatHarga(p.price)}
                         </p>
                         {p.size && (
                           <span className="bg-[#1e2d3d] text-white px-2 py-0.5 rounded text-[9px] font-bold">
@@ -588,11 +725,7 @@ export default function KelolaProduk() {
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${
-                page === 1
-                  ? "bg-gray-100 text-gray-300"
-                  : "bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]"
-              }`}
+              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${page === 1 ? "bg-gray-100 text-gray-300" : "bg-[#e8e2dc] text-[#1e2d3d] hover:bg-[#dcd5cf]"}`}
             >
               ← Back
             </button>
@@ -602,11 +735,7 @@ export default function KelolaProduk() {
             <button
               disabled={page === totalPages || totalPages === 0}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${
-                page === totalPages || totalPages === 0
-                  ? "bg-gray-100 text-gray-300"
-                  : "bg-[#1e2d3d] text-white hover:bg-black"
-              }`}
+              className={`px-4 py-2 rounded-xl text-[10px] font-bold ${page === totalPages || totalPages === 0 ? "bg-gray-100 text-gray-300" : "bg-[#1e2d3d] text-white hover:bg-black"}`}
             >
               Next →
             </button>
@@ -618,7 +747,6 @@ export default function KelolaProduk() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl rounded-[2rem] shadow-2xl relative max-h-[92vh] overflow-y-auto">
-            {/* Header modal */}
             <div className="flex justify-between items-center px-10 pt-8 pb-6 border-b border-gray-100">
               <h3 className="text-2xl font-black text-[#1e2d3d] uppercase tracking-tight">
                 {isEditMode ? "Edit Detail Produk" : "Tambah Produk Baru"}
@@ -631,7 +759,6 @@ export default function KelolaProduk() {
               </button>
             </div>
 
-            {/* ✅ Error di dalam modal — tepat di bawah header, sebelum form */}
             {modalError && (
               <div className="mx-10 mt-5 flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl px-5 py-4">
                 <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -654,9 +781,8 @@ export default function KelolaProduk() {
 
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-0">
-                {/* ── KOLOM KIRI: Foto + Komposisi ── */}
+                {/* KOLOM KIRI */}
                 <div className="px-10 py-8 border-r border-gray-100">
-                  {/* Preview foto */}
                   <div className="mb-4">
                     <label className="block text-[11px] font-bold mb-3 uppercase text-gray-400 tracking-widest">
                       Preview Foto (Portrait) :
@@ -701,7 +827,6 @@ export default function KelolaProduk() {
                     </div>
                   </div>
 
-                  {/* Ganti Foto */}
                   <div className="mb-6">
                     <label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">
                       Ganti Foto :
@@ -711,19 +836,11 @@ export default function KelolaProduk() {
                       type="file"
                       accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleFileSelect}
-                      className="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-5
-                        file:rounded-xl file:border-0
-                        file:text-sm file:font-bold
-                        file:bg-[#1e2d3d] file:text-white
-                        hover:file:bg-black file:cursor-pointer
-                        cursor-pointer transition-all"
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#1e2d3d] file:text-white hover:file:bg-black file:cursor-pointer cursor-pointer transition-all"
                     />
                     <p className="text-[10px] text-gray-400 mt-1.5">
                       Format: JPG, PNG, WEBP • Maks 5MB
                     </p>
-
-                    {/* Progress bar upload */}
                     {isUploading && (
                       <div className="mt-3">
                         <div className="flex justify-between text-[10px] font-bold text-gray-400 mb-1">
@@ -740,7 +857,6 @@ export default function KelolaProduk() {
                     )}
                   </div>
 
-                  {/* Komposisi */}
                   <div>
                     <label className="block text-[11px] font-bold mb-3 uppercase text-gray-400 tracking-widest">
                       Komposisi Bahan
@@ -777,9 +893,8 @@ export default function KelolaProduk() {
                   </div>
                 </div>
 
-                {/* ── KOLOM KANAN: Detail Produk ── */}
+                {/* KOLOM KANAN */}
                 <div className="px-10 py-8 flex flex-col gap-5">
-                  {/* Nama Produk */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-[#1e2d3d] tracking-widest">
                       Nama Produk :
@@ -796,7 +911,6 @@ export default function KelolaProduk() {
                     />
                   </div>
 
-                  {/* Harga */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-[#1e2d3d] tracking-widest">
                       Harga :
@@ -817,9 +931,13 @@ export default function KelolaProduk() {
                         required
                       />
                     </div>
+                    {formData.price && (
+                      <p className="text-[11px] text-gray-400 mt-1 ml-1">
+                        Preview: Rp{formatHarga(formData.price)}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Kategori */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-[#1e2d3d] tracking-widest">
                       Kategori Produk :
@@ -839,7 +957,6 @@ export default function KelolaProduk() {
                     </select>
                   </div>
 
-                  {/* Ukuran */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-[#1e2d3d] tracking-widest">
                       Ukuran :
@@ -865,7 +982,6 @@ export default function KelolaProduk() {
                     </select>
                   </div>
 
-                  {/* Nama File System (readonly) */}
                   <div>
                     <label className="block text-[11px] font-bold mb-2 uppercase text-gray-400 tracking-widest">
                       Nama File (System) :
@@ -883,7 +999,6 @@ export default function KelolaProduk() {
                     />
                   </div>
 
-                  {/* Status Tersedia */}
                   <div className="flex items-center gap-4 bg-[#f7f3f0] px-5 py-4 rounded-2xl">
                     <input
                       type="checkbox"
@@ -941,7 +1056,6 @@ export default function KelolaProduk() {
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 z-[1000] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl overflow-hidden">
-            {/* Icon */}
             <div className="flex flex-col items-center px-8 pt-8 pb-6 text-center">
               <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
                 <svg
@@ -974,7 +1088,6 @@ export default function KelolaProduk() {
                 dikonfirmasi.
               </p>
             </div>
-            {/* Actions */}
             <div className="flex gap-3 px-8 pb-8">
               <button
                 onClick={() => setConfirmDelete(null)}

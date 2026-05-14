@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   listenOrders,
@@ -39,6 +39,13 @@ function getStyle(status) {
   return STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[0];
 }
 
+// Format harga: angka → "1.000.000"
+function formatRupiah(n) {
+  return "Rp" + Number(n || 0).toLocaleString("id-ID");
+}
+
+const UNDO_DURATION = 5000;
+
 const emptyEditForm = {
   namaPemesan: "",
   noPemesan: "",
@@ -68,6 +75,19 @@ export default function KelolaPesanan() {
   const [page, setPage] = useState(1);
   const perPage = 8;
 
+  const [notif, setNotif] = useState({ msg: "", type: "success" });
+
+  // ── DELETE undo ──
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [undoDeleteCountdown, setUndoDeleteCountdown] = useState(0);
+  const undoDeleteIntervalRef = useRef(null);
+
+  // ── UPDATE undo ──
+  const [pendingUpdate, setPendingUpdate] = useState(null); // { id, orderId, prevData, timeoutId }
+  const [undoUpdateCountdown, setUndoUpdateCountdown] = useState(0);
+  const undoUpdateIntervalRef = useRef(null);
+
   useEffect(() => {
     const unsub = listenOrders((data) => {
       setOrders(data);
@@ -75,6 +95,38 @@ export default function KelolaPesanan() {
     });
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (undoDeleteIntervalRef.current)
+        clearInterval(undoDeleteIntervalRef.current);
+      if (undoUpdateIntervalRef.current)
+        clearInterval(undoUpdateIntervalRef.current);
+    };
+  }, []);
+
+  const showNotif = (msg, type = "success") => {
+    setNotif({ msg, type });
+    setTimeout(() => setNotif({ msg: "", type: "success" }), 4000);
+  };
+
+  function startCountdown(setCountdown, intervalRef) {
+    setCountdown(Math.ceil(UNDO_DURATION / 1000));
+    intervalRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  function clearCountdown(setCountdown, intervalRef) {
+    clearInterval(intervalRef.current);
+    setCountdown(0);
+  }
 
   const filtered = orders.filter((o) => {
     const matchStatus = !statusFilter || o.status === statusFilter;
@@ -113,135 +165,173 @@ export default function KelolaPesanan() {
     });
   };
 
-  const handleSaveEdit = async (e) => {
-    e.preventDefault();
-
-    // Required field
-    if (!editForm.tanggal) {
-      alert("Tanggal wajib diisi");
-      return;
-    }
-
-    if (!editForm.jam) {
-      alert("Jam wajib diisi");
-      return;
-    }
-
-    if (!editForm.namaPemesan) {
-      alert("Nama wajib diisi");
-      return;
-    }
-
-    if (!editForm.noPemesan) {
-      alert("WhatsApp wajib diisi");
-      return;
-    }
-
-    if (!editForm.namaPenerima) {
-      alert("Nama penerima wajib diisi");
-      return;
-    }
-
-    if (!editForm.noTeleponPenerima) {
-      alert("Telepon penerima wajib diisi");
-      return;
-    }
-
-    // Validasi nama
+  // ── VALIDASI sama seperti sebelumnya ──
+  function validateEditForm(form, inputDate) {
     const regexHuruf = /^[a-zA-Z\s]+$/;
-
-    if (
-      editForm.namaPemesan.length < 3 ||
-      !regexHuruf.test(editForm.namaPemesan)
-    ) {
-      alert("Nama pemesan minimal 3 huruf dan tanpa angka/simbol");
-      return;
-    }
-
-    if (
-      editForm.namaPenerima.length < 3 ||
-      !regexHuruf.test(editForm.namaPenerima)
-    ) {
-      alert("Nama penerima minimal 3 huruf dan tanpa angka/simbol");
-      return;
-    }
-
-    // Validasi nomor
     const regexAngka = /^[0-9]+$/;
 
-    if (
-      !regexAngka.test(editForm.noPemesan) ||
-      editForm.noPemesan.length < 10 ||
-      editForm.noPemesan.length > 13
-    ) {
-      alert("Nomor WA harus 10-13 digit angka");
-      return;
-    }
+    if (!form.tanggal) return "Tanggal wajib diisi";
+    if (!form.jam) return "Jam wajib diisi";
+    if (!form.namaPemesan) return "Nama wajib diisi";
+    if (!form.noPemesan) return "WhatsApp wajib diisi";
+    if (!form.namaPenerima) return "Nama penerima wajib diisi";
+    if (!form.noTeleponPenerima) return "Telepon penerima wajib diisi";
 
+    if (form.namaPemesan.length < 3 || !regexHuruf.test(form.namaPemesan))
+      return "Nama pemesan minimal 3 huruf dan tanpa angka/simbol";
+    if (form.namaPenerima.length < 3 || !regexHuruf.test(form.namaPenerima))
+      return "Nama penerima minimal 3 huruf dan tanpa angka/simbol";
     if (
-      !regexAngka.test(editForm.noTeleponPenerima) ||
-      editForm.noTeleponPenerima.length < 10 ||
-      editForm.noTeleponPenerima.length > 13
-    ) {
-      alert("Nomor telepon harus 10-13 digit angka");
-      return;
-    }
+      !regexAngka.test(form.noPemesan) ||
+      form.noPemesan.length < 10 ||
+      form.noPemesan.length > 13
+    )
+      return "Nomor WA harus 10-13 digit angka";
+    if (
+      !regexAngka.test(form.noTeleponPenerima) ||
+      form.noTeleponPenerima.length < 10 ||
+      form.noTeleponPenerima.length > 13
+    )
+      return "Nomor telepon harus 10-13 digit angka";
 
-    // Validasi tanggal
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const maxDate = new Date(today);
     maxDate.setDate(maxDate.getDate() + 7);
+    if (inputDate < today) return "Tanggal tidak boleh di masa lalu";
+    if (inputDate > maxDate) return "Pemesanan maksimal 7 hari ke depan";
+
+    const jamAngka = parseFloat(form.jam.replace(":", "."));
+    const isWeekend = inputDate.getDay() === 0 || inputDate.getDay() === 6;
+    if (isWeekend && (jamAngka < 10 || jamAngka > 21))
+      return "Weekend hanya 10:00 - 21:00";
+    if (!isWeekend && (jamAngka < 9 || jamAngka > 20))
+      return "Weekday hanya 09:00 - 20:00";
+
+    return null;
+  }
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
 
     const inputDate = new Date(editForm.tanggal);
     inputDate.setHours(0, 0, 0, 0);
 
-    if (inputDate < today) {
-      alert("Tanggal tidak boleh di masa lalu");
-      return;
-    }
-
-    if (inputDate > maxDate) {
-      alert("Pemesanan maksimal 7 hari ke depan");
-      return;
-    }
-
-    // Validasi jam
-    const jamAngka = parseFloat(editForm.jam.replace(":", "."));
-
-    const isWeekend = inputDate.getDay() === 0 || inputDate.getDay() === 6;
-
-    if (isWeekend && (jamAngka < 10 || jamAngka > 21)) {
-      alert("Weekend hanya 10:00 - 21:00");
-      return;
-    }
-
-    if (!isWeekend && (jamAngka < 9 || jamAngka > 20)) {
-      alert("Weekday hanya 09:00 - 20:00");
+    const errMsg = validateEditForm(editForm, inputDate);
+    if (errMsg) {
+      alert(errMsg);
       return;
     }
 
     setSaving(true);
 
+    // Simpan data lama sebelum update
+    const prevOrder = editOrder;
+
     try {
       await updateOrderFull(editOrder.id, editForm);
       setEditOrder(null);
+
+      // Eksekusi pending update sebelumnya jika ada
+      if (pendingUpdate) {
+        clearTimeout(pendingUpdate.timeoutId);
+        clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+        showNotif(`Pesanan "${pendingUpdate.orderId}" berhasil diperbarui ✓`);
+      }
+
+      startCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+
+      const timeoutId = setTimeout(() => {
+        clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+        setPendingUpdate(null);
+        showNotif(`Pesanan "${prevOrder.order_id}" berhasil diperbarui ✓`);
+      }, UNDO_DURATION);
+
+      setPendingUpdate({
+        id: prevOrder.id,
+        orderId: prevOrder.order_id,
+        prevData: prevOrder,
+        timeoutId,
+      });
     } catch (err) {
       alert("Gagal menyimpan: " + err.message);
     } finally {
       setSaving(false);
     }
-  };;
+  };
 
-  const handleDelete = async (order) => {
-    if (!confirm(`Hapus pesanan "${order.order_id}"? Tidak dapat dibatalkan.`))
-      return;
+  // ── UNDO UPDATE pesanan ──
+  const handleUndoUpdate = async () => {
+    if (!pendingUpdate) return;
+    clearTimeout(pendingUpdate.timeoutId);
+    clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
+    const { id, orderId, prevData } = pendingUpdate;
+    setPendingUpdate(null);
     try {
-      await deleteOrder(order.id);
+      await updateOrderFull(id, {
+        namaPemesan: prevData.namaPemesan,
+        noPemesan: prevData.noPemesan,
+        namaPenerima: prevData.namaPenerima,
+        noTeleponPenerima: prevData.noTeleponPenerima,
+        tanggal: prevData.tanggal,
+        jam: prevData.jam,
+        metodePengambilan: prevData.metodePengambilan,
+        metodePembayaran: prevData.metodePembayaran,
+        goodieBag: prevData.goodieBag,
+        greetingCard: prevData.greetingCard || "",
+        status: prevData.status,
+        produk: {
+          name: prevData.produk?.name || "",
+          price: prevData.produk?.price || "",
+          image: prevData.produk?.image || "",
+        },
+      });
+      showNotif(`Perubahan pesanan "${orderId}" dibatalkan`);
     } catch (err) {
-      alert("Gagal hapus: " + err.message);
+      showNotif("Gagal membatalkan: " + err.message, "error");
     }
+  };
+
+  // ── DELETE dengan konfirmasi lalu undo ──
+  const handleDelete = (order) => {
+    setConfirmDelete({ id: order.id, orderId: order.order_id });
+  };
+
+  const handleConfirmDelete = () => {
+    const p = confirmDelete;
+    setConfirmDelete(null);
+
+    if (pendingDelete) {
+      clearTimeout(pendingDelete.timeoutId);
+      clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
+      deleteOrder(pendingDelete.id).catch((err) =>
+        showNotif("Gagal hapus: " + err.message, "error"),
+      );
+    }
+
+    startCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
+
+    const timeoutId = setTimeout(async () => {
+      clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
+      setPendingDelete(null);
+      try {
+        await deleteOrder(p.id);
+        showNotif(`Pesanan "${p.orderId}" berhasil dihapus`);
+      } catch (err) {
+        showNotif("Gagal hapus: " + err.message, "error");
+      }
+    }, UNDO_DURATION);
+
+    setPendingDelete({ id: p.id, orderId: p.orderId, timeoutId });
+  };
+
+  const handleUndoDelete = () => {
+    if (!pendingDelete) return;
+    clearTimeout(pendingDelete.timeoutId);
+    clearCountdown(setUndoDeleteCountdown, undoDeleteIntervalRef);
+    const orderId = pendingDelete.orderId;
+    setPendingDelete(null);
+    showNotif(`Penghapusan pesanan "${orderId}" dibatalkan`);
   };
 
   const handleLogout = async () => {
@@ -249,7 +339,6 @@ export default function KelolaPesanan() {
     navigate("/admin");
   };
 
-  const formatRupiah = (n) => "Rp" + Number(n || 0).toLocaleString("id-ID");
   const formatDate = (ts) => {
     if (!ts) return "-";
     const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -330,6 +419,57 @@ export default function KelolaPesanan() {
             Manajemen pesanan pelanggan — realtime
           </p>
         </header>
+
+        {/* Notifikasi global */}
+        {notif.msg && (
+          <div
+            className={`px-6 py-4 rounded-2xl mb-4 text-sm font-bold ${notif.type === "error" ? "bg-red-500" : "bg-[#40c057]"} text-white`}
+          >
+            {notif.msg}
+          </div>
+        )}
+
+        {/* Banner undo UPDATE */}
+        {pendingUpdate && (
+          <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#228be6] flex items-center justify-center text-sm font-black">
+                {undoUpdateCountdown}
+              </div>
+              <p className="text-sm font-semibold">
+                Memperbarui pesanan{" "}
+                <span className="font-black">"{pendingUpdate.orderId}"</span>...
+              </p>
+            </div>
+            <button
+              onClick={handleUndoUpdate}
+              className="bg-white text-[#1e2d3d] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+            >
+              ↩ Urungkan
+            </button>
+          </div>
+        )}
+
+        {/* Banner undo DELETE */}
+        {pendingDelete && (
+          <div className="flex items-center justify-between bg-[#1e2d3d] text-white px-6 py-4 rounded-2xl mb-4 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-sm font-black">
+                {undoDeleteCountdown}
+              </div>
+              <p className="text-sm font-semibold">
+                Menghapus pesanan{" "}
+                <span className="font-black">"{pendingDelete.orderId}"</span>...
+              </p>
+            </div>
+            <button
+              onClick={handleUndoDelete}
+              className="bg-white text-[#1e2d3d] px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-colors"
+            >
+              ↩ Urungkan
+            </button>
+          </div>
+        )}
 
         {/* FILTER */}
         <section className="bg-white p-6 rounded-[2rem] shadow-sm mb-8 border border-gray-50">
@@ -437,10 +577,12 @@ export default function KelolaPesanan() {
                   ) : (
                     currentItems.map((order) => {
                       const style = getStyle(order.status);
+                      const isBeingDeleted = pendingDelete?.id === order.id;
+                      const isBeingUpdated = pendingUpdate?.id === order.id;
                       return (
                         <tr
                           key={order.id}
-                          className="hover:bg-gray-50 transition-colors"
+                          className={`transition-colors ${isBeingDeleted ? "opacity-50 bg-red-50" : isBeingUpdated ? "bg-blue-50" : "hover:bg-gray-50"}`}
                         >
                           <td className="py-4 px-2 font-bold text-xs">
                             {order.order_id || order.id.slice(0, 8)}
@@ -496,44 +638,64 @@ export default function KelolaPesanan() {
                                 </svg>
                               </button>
                               <button
-                                onClick={() => openEdit(order)}
-                                className="bg-[#f0e8dc] text-[#334155] p-2 rounded-xl hover:bg-[#e6dbcc] transition-colors"
-                                title="Edit"
+                                onClick={() =>
+                                  isBeingUpdated
+                                    ? handleUndoUpdate()
+                                    : openEdit(order)
+                                }
+                                className={`p-2 rounded-xl transition-colors ${isBeingUpdated ? "bg-orange-400 text-white hover:bg-orange-500" : "bg-[#f0e8dc] text-[#334155] hover:bg-[#e6dbcc]"}`}
+                                title={isBeingUpdated ? "Urungkan" : "Edit"}
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-3.5 w-3.5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                  />
-                                </svg>
+                                {isBeingUpdated ? (
+                                  <span className="text-[9px] font-black px-1">
+                                    ↩
+                                  </span>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-3.5 w-3.5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                    />
+                                  </svg>
+                                )}
                               </button>
                               <button
-                                onClick={() => handleDelete(order)}
-                                className="bg-red-50 text-red-500 p-2 rounded-xl hover:bg-red-100 transition-colors"
-                                title="Hapus"
+                                onClick={() =>
+                                  isBeingDeleted
+                                    ? handleUndoDelete()
+                                    : handleDelete(order)
+                                }
+                                className={`p-2 rounded-xl transition-colors ${isBeingDeleted ? "bg-orange-400 text-white hover:bg-orange-500" : "bg-red-50 text-red-500 hover:bg-red-100"}`}
+                                title={isBeingDeleted ? "Urungkan" : "Hapus"}
                               >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-3.5 w-3.5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
+                                {isBeingDeleted ? (
+                                  <span className="text-[9px] font-black px-1">
+                                    ↩
+                                  </span>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-3.5 w-3.5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                    />
+                                  </svg>
+                                )}
                               </button>
                             </div>
                           </td>
@@ -1021,6 +1183,60 @@ export default function KelolaPesanan() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL KONFIRMASI HAPUS PESANAN */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 z-[1000] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl overflow-hidden">
+            <div className="flex flex-col items-center px-8 pt-8 pb-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-7 w-7 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base font-black text-[#1e2d3d] uppercase tracking-tight mb-2">
+                Hapus Pesanan
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Yakin ingin menghapus pesanan{" "}
+                <span className="font-black text-[#1e2d3d]">
+                  "{confirmDelete.orderId}"
+                </span>
+                ?
+              </p>
+              <p className="text-[11px] text-gray-400 mt-1">
+                Kamu masih bisa urungkan dalam beberapa detik setelah
+                dikonfirmasi.
+              </p>
+            </div>
+            <div className="flex gap-3 px-8 pb-8">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-3.5 rounded-xl bg-[#f5f1ed] text-[#334155] text-xs font-black uppercase tracking-widest hover:bg-[#ede8e3] transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="flex-1 py-3.5 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-colors"
+              >
+                Ya, Hapus
+              </button>
+            </div>
           </div>
         </div>
       )}
