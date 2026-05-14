@@ -37,9 +37,23 @@ const KETERSEDIAAN_OPTIONS = [
   { label: "✕ Habis", value: "Habis" },
 ];
 
-// Format harga: angka → "1.000.000"
+// Format angka → "1.000.000" (untuk tampil di input)
+function formatHargaInput(n) {
+  if (!n && n !== 0) return "";
+  // Hapus semua non-digit, lalu format dengan titik
+  const raw = String(n).replace(/\D/g, "");
+  if (!raw) return "";
+  return Number(raw).toLocaleString("id-ID");
+}
+
+// Format angka → "1.000.000" (untuk tampil di kartu produk)
 function formatHarga(n) {
   return Number(n).toLocaleString("id-ID");
+}
+
+// Dari string formatted "1.000.000" → Number 1000000
+function parsePriceInput(str) {
+  return Number(String(str).replace(/\./g, "").replace(/\D/g, ""));
 }
 
 export default function KelolaProduk() {
@@ -196,7 +210,8 @@ export default function KelolaProduk() {
           : [""],
       ketersediaan: p.ketersediaan ?? true,
       size: p.size ?? null,
-      price: p.price || "",
+      // simpan sebagai string formatted untuk tampil di input
+      price: formatHargaInput(p.price),
       _file: null,
       _prevData: p, // simpan data lama untuk undo
     });
@@ -240,6 +255,8 @@ export default function KelolaProduk() {
         image_public_id,
         size: formData.size === "Tidak Ada" ? null : formData.size,
         komposisi: formData.komposisi.filter((k) => k.trim() !== ""),
+        // parse harga dari "1.000.000" → Number 1000000
+        price: parsePriceInput(formData.price),
       };
 
       if (payload.komposisi.length === 0) {
@@ -920,22 +937,22 @@ export default function KelolaProduk() {
                         Rp
                       </span>
                       <input
-                        type="number"
-                        min="1"
+                        type="text"
+                        inputMode="numeric"
                         placeholder="0"
                         className="w-full pl-12 pr-5 py-4 bg-[#f7f3f0] rounded-2xl outline-none text-sm font-black border border-transparent focus:border-[#1e2d3d]/20 transition-all"
                         value={formData.price}
-                        onChange={(e) =>
-                          setFormData({ ...formData, price: e.target.value })
-                        }
+                        onChange={(e) => {
+                          // strip semua non-digit, lalu format ulang dengan titik
+                          const raw = e.target.value.replace(/\D/g, "");
+                          const formatted = raw
+                            ? Number(raw).toLocaleString("id-ID")
+                            : "";
+                          setFormData({ ...formData, price: formatted });
+                        }}
                         required
                       />
                     </div>
-                    {formData.price && (
-                      <p className="text-[11px] text-gray-400 mt-1 ml-1">
-                        Preview: Rp{formatHarga(formData.price)}
-                      </p>
-                    )}
                   </div>
 
                   <div>

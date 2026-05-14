@@ -39,9 +39,26 @@ function getStyle(status) {
   return STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[0];
 }
 
-// Format harga: angka → "1.000.000"
+// Format harga untuk tampil di tabel/detail: angka → "Rp1.000.000"
 function formatRupiah(n) {
   return "Rp" + Number(n || 0).toLocaleString("id-ID");
+}
+
+// Konversi string harga produk (bisa "Rp10.000" atau "10000") → angka digit saja
+function stripRpToDigits(str) {
+  return String(str || "").replace(/\D/g, "");
+}
+
+// Format digits → "100.000" (tanpa prefix Rp, untuk tampil di input)
+function formatDigitsWithDots(digits) {
+  if (!digits) return "";
+  return Number(digits).toLocaleString("id-ID");
+}
+
+// Dari digits → string "Rp100.000" untuk simpan ke DB
+function digitsToRpString(digits) {
+  if (!digits) return "";
+  return "Rp" + Number(digits).toLocaleString("id-ID");
 }
 
 const UNDO_DURATION = 5000;
@@ -145,6 +162,8 @@ export default function KelolaPesanan() {
 
   const openEdit = (order) => {
     setEditOrder(order);
+    // price di DB adalah "Rp165.000" → extract digit saja untuk input
+    const priceDigits = stripRpToDigits(order.produk?.price || "");
     setEditForm({
       namaPemesan: order.namaPemesan || "",
       noPemesan: order.noPemesan || "",
@@ -157,9 +176,10 @@ export default function KelolaPesanan() {
       goodieBag: order.goodieBag || false,
       greetingCard: order.greetingCard || "",
       status: order.status || "Pending",
+      // simpan digit saja di state, konversi ke "Rp..." saat submit
       produk: {
         name: order.produk?.name || "",
-        price: order.produk?.price || "",
+        price: priceDigits,
         image: order.produk?.image || "",
       },
     });
@@ -228,8 +248,15 @@ export default function KelolaPesanan() {
     // Simpan data lama sebelum update
     const prevOrder = editOrder;
 
+    // Konversi price dari digits → "Rp10.000" untuk DB
+    const priceForDB = digitsToRpString(editForm.produk.price);
+    const formToSave = {
+      ...editForm,
+      produk: { ...editForm.produk, price: priceForDB },
+    };
+
     try {
-      await updateOrderFull(editOrder.id, editForm);
+      await updateOrderFull(editOrder.id, formToSave);
       setEditOrder(null);
 
       // Eksekusi pending update sebelumnya jika ada
@@ -1113,20 +1140,25 @@ export default function KelolaPesanan() {
                       <label className="text-xs text-gray-400 font-bold mb-1 block">
                         Harga
                       </label>
-                      <input
-                        type="text"
-                        className="w-full px-4 py-2.5 bg-[#f7f3f0] rounded-xl outline-none text-sm"
-                        value={editForm.produk.price}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            produk: {
-                              ...editForm.produk,
-                              price: e.target.value,
-                            },
-                          })
-                        }
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 pointer-events-none">
+                          Rp
+                        </span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="0"
+                          className="w-full pl-9 pr-3 py-2.5 bg-[#f7f3f0] rounded-xl outline-none text-sm"
+                          value={formatDigitsWithDots(editForm.produk.price)}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "");
+                            setEditForm({
+                              ...editForm,
+                              produk: { ...editForm.produk, price: digits },
+                            });
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="mt-4 flex items-center gap-3 bg-[#f7f3f0] px-4 py-3 rounded-xl">
