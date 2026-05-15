@@ -62,7 +62,7 @@ function Katalog() {
       </section>
 
       {/* SEARCH */}
-      <section className="px-6 py-3">
+      <section className="px-5 py-3">
         <div className="flex h-[55px] items-center rounded-[22px] border border-[#ded8d1] bg-[#f8f4ef] px-5">
           <span className="mr-3 text-[16px] text-slate-400">🔍</span>
           <input

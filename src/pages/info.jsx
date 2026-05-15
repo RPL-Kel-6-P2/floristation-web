@@ -29,7 +29,7 @@ function Info() {
             dan acara lainnya.
           </p>
 
-          <div className="mt-4 bg-[#e9dfd5] rounded-xl p-3 text-center text-sm italic text-[#2f435e]">
+          <div className="mt-2 bg-[#e9dfd5] rounded-xl p-3 text-center text-sm italic text-[#2f435e]">
             "Keindahan untuk Setiap Momen"
           </div>
         </div>

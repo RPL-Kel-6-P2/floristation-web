@@ -4,26 +4,23 @@ import { useNavigate } from "react-router-dom";
 function ProductCard({ product }) {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
-
-  // ✅ Data dari Firestore pakai field: id, nama, image_url, kategori, price, size, ketersediaan
   const isAvailable = product.ketersediaan === true;
   const hargaFormatted = `Rp${Number(product.price).toLocaleString("id-ID")}`;
 
   const handleDetailClick = () => {
-    // Navigasi ke halaman detail dinamis pakai Firestore doc ID
     navigate(`/produk/${product.id}`);
   };
 
   return (
     <div className="overflow-hidden rounded-[12px] bg-white shadow-[0_3px_10px_rgba(0,0,0,0.12)]">
       {/* IMAGE */}
-      <div className="h-[190px] w-full bg-[#f1ede8]">
+      <div className="h-[195px] w-full bg-[#f1ede8] flex items-center justify-center">
         {!imageError ? (
           <img
             src={product.image_url}
             alt={product.nama}
             onError={() => setImageError(true)}
-            className="h-full w-full object-cover"
+            className="w-full h-full object-cover"
             style={{
               objectPosition: product.imagePosition || "center center",
             }}

@@ -4,7 +4,7 @@ function MainLayout() {
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6 overflow-hidden">
       
-      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl">
+      <div className="relative h-[932px] w-[430px] max-w-full rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden">
         
         <div className="h-full overflow-y-auto pb-[120px] hide-scrollbar">
           <Outlet />

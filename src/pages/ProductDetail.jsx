@@ -127,7 +127,7 @@ function ProductDetail() {
         </header>
 
         {/* CONTENT */}
-        <main className="h-full overflow-y-auto pb-[105px]">
+        <main className="h-full overflow-y-auto pb-[150px] hide-scrollbar">
           {/* IMAGE */}
           <div className="h-[392px] w-full bg-[#f1ede8]">
             {!imageError ? (
@@ -135,7 +135,7 @@ function ProductDetail() {
                 src={produk.image_url}
                 alt={produk.nama}
                 onError={() => setImageError(true)}
-                className="h-full w-full object-cover object-center"
+                className="h-full w-full object-cover "
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-[14px] text-slate-400">
@@ -148,7 +148,7 @@ function ProductDetail() {
           </div>
 
           {/* CARD INFO */}
-          <section className="mx-5 mt-3 bg-white px-6 py-5 rounded-[16px] shadow-sm">
+          <section className="mx-5 mt-3 mb-6 bg-white px-6 py-5 rounded-[16px] shadow-sm">
             {/* NAMA */}
             <h2 className="text-[26px] font-medium tracking-wide text-[#2f435e]">
               {produk.nama}
