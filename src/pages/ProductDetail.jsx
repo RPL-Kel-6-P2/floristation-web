@@ -37,8 +37,8 @@ function ProductDetail() {
   }, [id]);
 
   const handlePesan = () => {
-    // Format data produk agar kompatibel dengan OrderForm & Draft
-    // OrderForm membaca: produk.name, produk.price, produk.image
+    if (!produk) return;
+
     const produkForOrder = {
       name: produk.nama,
       price: `Rp${Number(produk.price).toLocaleString("id-ID")}`,
@@ -49,16 +49,29 @@ function ProductDetail() {
     navigate("/order", { state: produkForOrder });
   };
 
+  const hargaFormatted = produk
+    ? `Rp${Number(produk.price || 0).toLocaleString("id-ID")}`
+    : "Rp0";
+
+  const komposisiList = produk
+    ? Array.isArray(produk.komposisi)
+      ? produk.komposisi.filter(Boolean)
+      : String(produk.komposisi || "")
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+    : [];
+
+  const isAvailable = produk ? produk.ketersediaan === true : false;
+
   // ============ LOADING ============
   if (loading) {
     return (
       <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-        <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl flex items-center justify-center">
+        <div className="relative w-full max-w-[430px] h-[90vh] md:h-[932px] rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden mx-auto">
           <div className="text-center text-[#2f435e]">
             <div className="text-4xl mb-4 animate-pulse">🌸</div>
-            <p className="text-[15px] text-slate-400">
-              Memuat detail produk...
-            </p>
+            <p className="text-[15px] text-slate-400">Memuat detail produk...</p>
           </div>
         </div>
       </div>
@@ -69,7 +82,7 @@ function ProductDetail() {
   if (notFound || !produk) {
     return (
       <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-        <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl">
+        <div className="relative w-full max-w-[430px] h-[90vh] md:h-[932px] rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden mx-auto">
           <header className="bg-[#2f435e] px-5 py-5 text-white">
             <div className="flex items-center gap-4">
               <button
@@ -82,37 +95,29 @@ function ProductDetail() {
               <h1 className="text-[20px] font-medium">Detail Produk</h1>
             </div>
           </header>
-          <div className="flex h-full items-center justify-center px-6 text-center pb-[120px]">
+
+          <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
             <div>
-              <div className="text-5xl mb-4">🌿</div>
-              <h2 className="text-[18px] font-semibold text-[#2f435e] mb-2">
-                Produk Tidak Ditemukan
-              </h2>
-              <p className="text-[14px] text-slate-400 mb-6">
-                Produk ini mungkin sudah tidak tersedia atau telah dihapus.
-              </p>
+              <div className="text-4xl mb-4">😢</div>
+              <h2 className="text-[22px] font-semibold text-[#2f435e]">Produk tidak ditemukan</h2>
+              <p className="mt-2 text-sm text-slate-500">Silakan kembali ke katalog atau coba lagi nanti.</p>
               <button
-                onClick={() => navigate("/")}
-                className="bg-[#2f435e] text-white px-6 py-3 rounded-xl text-[15px]"
+                type="button"
+                onClick={() => navigate(-1)}
+                className="mt-6 rounded-[14px] bg-[#2f435e] px-6 py-3 text-white"
               >
-                Kembali ke Katalog
+                Kembali
               </button>
             </div>
-          </div>
+          </main>
         </div>
       </div>
     );
   }
 
-  // ============ HELPER ============
-  const isAvailable = produk.ketersediaan === true;
-  const hargaFormatted = `Rp${Number(produk.price).toLocaleString("id-ID")}`;
-  const komposisiList = Array.isArray(produk.komposisi) ? produk.komposisi : [];
-
   return (
     <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6">
-      <div className="relative h-[932px] w-[430px] max-w-full overflow-hidden rounded-[38px] bg-[#f7f2ec] shadow-2xl">
-        {/* HEADER */}
+      <div className="relative w-full max-w-[430px] h-[90vh] md:h-[932px] rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden mx-auto">
         <header className="bg-[#2f435e] px-5 py-5 text-white">
           <div className="flex items-center gap-4">
             <button
@@ -126,16 +131,14 @@ function ProductDetail() {
           </div>
         </header>
 
-        {/* CONTENT */}
-        <main className="h-full overflow-y-auto pb-[150px] hide-scrollbar">
-          {/* IMAGE */}
+        <main className="flex-1 overflow-y-auto pb-[150px] hide-scrollbar">
           <div className="h-[392px] w-full bg-[#f1ede8]">
             {!imageError ? (
               <img
                 src={produk.image_url}
                 alt={produk.nama}
                 onError={() => setImageError(true)}
-                className="h-full w-full object-cover "
+                className="h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-[14px] text-slate-400">
@@ -147,50 +150,30 @@ function ProductDetail() {
             )}
           </div>
 
-          {/* CARD INFO */}
           <section className="mx-5 mt-3 mb-6 bg-white px-6 py-5 rounded-[16px] shadow-sm">
-            {/* NAMA */}
-            <h2 className="text-[26px] font-medium tracking-wide text-[#2f435e]">
-              {produk.nama}
-            </h2>
+            <h2 className="text-[26px] font-medium text-[#2f435e]">{produk.nama}</h2>
+            <p className="mt-1 text-[13px] uppercase text-slate-400">{produk.kategori}</p>
 
-            {/* KATEGORI */}
-            <p className="mt-1 text-[13px] uppercase tracking-[0.08em] text-slate-400">
-              {produk.kategori}
-            </p>
+            <p className="mt-3 text-[22px] font-bold text-[#2f435e]">{hargaFormatted}</p>
 
-            {/* HARGA */}
-            <p className="mt-3 text-[22px] font-bold text-[#2f435e]">
-              {hargaFormatted}
-            </p>
-
-            {/* KOMPOSISI */}
             {komposisiList.length > 0 && (
               <div className="mt-4">
                 <p className="text-[16px] text-slate-400">Komposisi:</p>
-                <p className="mt-1 text-[16px] tracking-wide text-[#2f435e]">
-                  {komposisiList.join(", ")}
-                </p>
+                <p className="mt-1 text-[16px] text-[#2f435e]">{komposisiList.join(", ")}</p>
               </div>
             )}
 
-            {/* SIZE */}
             {produk.size && (
               <div className="mt-4">
                 <p className="text-[16px] text-slate-400">Ukuran:</p>
-                <div className="mt-2 flex h-11 w-14 items-center justify-center rounded-[12px] bg-[#2f435e] text-[16px] font-medium text-white">
-                  {produk.size}
-                </div>
+                <div className="mt-2 flex h-11 w-14 items-center justify-center rounded-[12px] bg-[#2f435e] text-white">{produk.size}</div>
               </div>
             )}
 
-            {/* STATUS */}
             <div className="mt-4">
               <span
-                className={`inline-flex items-center rounded-[12px] px-4 py-2 text-[16px] font-medium ${
-                  isAvailable
-                    ? "bg-green-100 text-green-600"
-                    : "bg-red-100 text-red-600"
+                className={`px-4 py-2 rounded-[12px] text-[16px] ${
+                  isAvailable ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
                 }`}
               >
                 {isAvailable ? "✓ Tersedia" : "✕ Stok Habis"}
@@ -199,25 +182,16 @@ function ProductDetail() {
           </section>
         </main>
 
-        {/* BUTTON PESAN */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4">
-          {isAvailable ? (
-            <button
-              type="button"
-              onClick={handlePesan}
-              className="w-full rounded-[14px] bg-[#2f435e] py-4 text-[17px] font-medium text-white active:scale-95 transition-transform"
-            >
-              Pesan Sekarang
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="w-full rounded-[14px] bg-gray-300 py-4 text-[17px] font-medium text-gray-500 cursor-not-allowed"
-            >
-              Stok Habis
-            </button>
-          )}
+        <div className="bg-white px-6 py-4">
+          <button
+            onClick={handlePesan}
+            disabled={!isAvailable}
+            className={`w-full py-4 rounded-[14px] text-white ${
+              isAvailable ? "bg-[#2f435e]" : "bg-gray-300 text-gray-500"
+            }`}
+          >
+            {isAvailable ? "Pesan Sekarang" : "Stok Habis"}
+          </button>
         </div>
       </div>
     </div>

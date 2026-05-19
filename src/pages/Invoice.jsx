@@ -14,6 +14,12 @@ function Invoice() {
 
   const formatRupiah = (n) => "Rp" + n.toLocaleString("id-ID");
 
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
+  };
+
   const hargaProduk = Number(
     (data.produk?.price || "Rp0").replace(/[^0-9]/g, "")
   );
@@ -32,6 +38,7 @@ function Invoice() {
     semplak: "6285778684728",
   };
 
+  const tanggalDisplay = formatDateDisplay(data.tanggal);
   const message = `Halo Admin Floristation.id, saya ingin konfirmasi pesanan:
 
 *DETAIL PESANAN*
@@ -43,7 +50,7 @@ Goodie Bag: ${data.goodieBag ? "+Rp5.000" : "-"}
 *DATA PEMESAN*
 Nama: ${data.nama}
 Penerima: ${data.namaPenerima}
-Tanggal: ${data.tanggal} ${data.jam}
+Tanggal: ${tanggalDisplay} ${data.jam}
 
 Metode: ${data.metodeAmbil}
 Pembayaran: ${data.metodeBayar}
@@ -120,7 +127,7 @@ Pembayaran: ${data.metodeBayar}
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Tanggal & Jam</span>
-                  <span>{data.tanggal} {data.jam}</span>
+                  <span>{tanggalDisplay} {data.jam}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Pengambilan</span>

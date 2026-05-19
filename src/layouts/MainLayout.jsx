@@ -2,9 +2,9 @@ import { NavLink, Outlet } from "react-router-dom";
 
 function MainLayout() {
   return (
-    <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-6 overflow-hidden">
+    <div className="min-h-screen bg-[#e8edf3] flex justify-center items-start py-4">
       
-      <div className="relative h-[932px] w-[430px] max-w-full rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden">
+     <div className="relative w-full max-w-[430px] h-[90vh] md:h-[932px] rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden mx-auto">
         
         <div className="h-full overflow-y-auto pb-[120px] hide-scrollbar">
           <Outlet />

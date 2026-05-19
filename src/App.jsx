@@ -10,7 +10,6 @@ import Info from "./pages/info";
 import OrderForm from "./pages/OrderForm";
 import Invoice from "./pages/Invoice";
 
-// ✅ SATU komponen dinamis menggantikan 19 halaman detail manual
 import ProductDetail from "./pages/ProductDetail";
 
 // --- ADMIN PAGES ---
@@ -24,7 +23,7 @@ import Rekap from "./pages/admin/Rekap";
 function App() {
   return (
     <Routes>
-      {/* 🟢 CUSTOMER SECTION — Menggunakan MainLayout (Navbar & Footer) */}
+      {/*  CUSTOMER SECTION — Menggunakan MainLayout (Navbar & Footer) */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Katalog />} />
         <Route path="/draft" element={<Draft />} />
@@ -32,14 +31,14 @@ function App() {
         <Route path="/order" element={<OrderForm />} />
       </Route>
 
-      {/* 🟢 INVOICE — Tanpa Layout */}
+      {/* INVOICE — Tanpa Layout */}
       <Route path="/invoice" element={<Invoice />} />
 
-      {/* ✅ DETAIL PRODUK DINAMIS — Satu route untuk semua produk dari Firestore */}
+      {/* DETAIL PRODUK DINAMIS — Satu route untuk semua produk dari Firestore */}
       {/* Route: /produk/:id  →  id = Firestore document ID */}
       <Route path="/produk/:id" element={<ProductDetail />} />
 
-      {/* 🔴 ADMIN SECTION */}
+      {/* ADMIN SECTION */}
       <Route path="/admin" element={<LoginAwal />} />
       <Route path="/admin/login-error" element={<LoginError />} />
 
@@ -76,7 +75,7 @@ function App() {
         }
       />
 
-      {/* 🔄 REDIRECT OTOMATIS */}
+      {/* REDIRECT OTOMATIS */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

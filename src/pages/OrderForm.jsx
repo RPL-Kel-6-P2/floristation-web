@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -28,6 +28,13 @@ function OrderForm() {
   const [jam, setJam] = useState("");
   const [greeting, setGreeting] = useState("");
   const [errors, setErrors] = useState({});
+
+  const tanggalRef = useRef(null);
+  const jamRef = useRef(null);
+  const namaRef = useRef(null);
+  const waRef = useRef(null);
+  const namaPenerimaRef = useRef(null);
+  const teleponPenerimaRef = useRef(null);
 
   useEffect(() => {
     const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
@@ -119,6 +126,12 @@ function OrderForm() {
   const hargaGoodie = 5000;
   const total = hargaProduk + (goodieBag ? hargaGoodie : 0);
 
+  const today = new Date();
+  const minDate = today.toISOString().slice(0, 10);
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 7);
+  const maxDateIso = maxDate.toISOString().slice(0, 10);
+
   const formatRupiah = (n) => "Rp" + n.toLocaleString("id-ID");
 
   const handleSubmit = async () => {
@@ -135,12 +148,20 @@ function OrderForm() {
     // --- TAMBAHAN VALIDASI BARU ---
 
     // 2. Validasi Jam Operasional (Mencegah pesan di luar jam)
-    if (jam) {
-      // Ubah jam jadi angka biar gampang dicek (misal "09:30" jadi 9.5)
-      const jamAngka = parseFloat(jam.replace(":", "."));
-      const isWeekend = new Date(tanggal).getDay() === 0 || new Date(tanggal).getDay() === 6;
-      
-      if (isWeekend && (jamAngka < 10 || jamAngka > 21)) {
+    if (tanggal && jam) {
+      const selectedDateTime = new Date(`${tanggal}T${jam}:00`);
+      const now = new Date();
+      const selectedDate = new Date(tanggal);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      const [hourStr, minuteStr] = jam.split(":");
+      const jamAngka = Number(hourStr) + Number(minuteStr || 0) / 60;
+      const day = selectedDate.getDay();
+      const isWeekend = day === 0 || day === 6;
+
+      if (selectedDate.toDateString() === now.toDateString() && selectedDateTime <= now) {
+        newErrors.jam = "Jam harus setelah waktu sekarang";
+      } else if (isWeekend && (jamAngka < 10 || jamAngka > 21)) {
         newErrors.jam = "Pilih jam antara 10:00 - 21:00 (Weekend)";
       } else if (!isWeekend && (jamAngka < 9 || jamAngka > 20)) {
         newErrors.jam = "Pilih jam antara 09:00 - 20:00 (Weekday)";
@@ -174,19 +195,36 @@ function OrderForm() {
       }
     }
 
-    // 4. Validasi Nama Pemesan & Penerima (Tanpa angka, minimal 3 huruf)
-    const regexHuruf = /^[a-zA-Z\s]+$/;
+    // 4. Validasi Nama Pemesan & Penerima (Apostrophe dan dash diizinkan)
+    const regexHuruf = /^[a-zA-ZÀ-ÖØ-öø-ÿ' -]+$/;
     if (nama && (nama.length < 3 || !regexHuruf.test(nama))) {
-      newErrors.nama = "Nama minimal 3 huruf dan tidak boleh mengandung angka/simbol";
+      newErrors.nama = "Nama minimal 3 huruf dan boleh menggunakan ' atau -";
     }
     if (namaPenerima && (namaPenerima.length < 3 || !regexHuruf.test(namaPenerima))) {
-      newErrors.namaPenerima = "Nama minimal 3 huruf dan tidak boleh mengandung angka/simbol";
+      newErrors.namaPenerima = "Nama minimal 3 huruf dan boleh menggunakan ' atau -";
     }
 
     // --- AKHIR TAMBAHAN VALIDASI BARU ---
 
     setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      const order = ["tanggal", "jam", "nama", "wa", "namaPenerima", "teleponPenerima"];
+      const firstKey = order.find((key) => newErrors[key]);
+      const refMap = {
+        tanggal: tanggalRef,
+        jam: jamRef,
+        nama: namaRef,
+        wa: waRef,
+        namaPenerima: namaPenerimaRef,
+        teleponPenerima: teleponPenerimaRef,
+      };
+      const scrollRef = refMap[firstKey];
+      if (scrollRef?.current) {
+        scrollRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrollRef.current.focus?.();
+      }
+      return;
+    }
 
     // Generate ID pesanan
     const now = new Date();
@@ -308,8 +346,11 @@ function OrderForm() {
               📅 Tanggal Pengambilan *
             </label>
             <input
+              ref={tanggalRef}
               type="date"
-              className="mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px] text-[#2f435e]"
+              min={minDate}
+              max={maxDateIso}
+              className={`mb-1 w-full rounded-xl p-3 text-[15px] text-[#2f435e] bg-[#f7f1eb] outline-none transition border ${errors.tanggal ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={tanggal}
               onChange={(e) => setTanggal(e.target.value)}
             />
@@ -321,8 +362,9 @@ function OrderForm() {
               🕐 Jam Pengambilan *
             </label>
             <input
+              ref={jamRef}
               type="time"
-              className="mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px] text-[#2f435e]"
+              className={`mb-1 w-full rounded-xl p-3 text-[15px] text-[#2f435e] bg-[#f7f1eb] outline-none transition border ${errors.jam ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={jam}
               onChange={(e) => setJam(e.target.value)}
             />
@@ -341,15 +383,17 @@ function OrderForm() {
             <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Pemesan</h3>
             <label className="text-[13px] text-slate-500">Nama Pemesan *</label>
             <input
-              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              ref={namaRef}
+              className={`mt-1 mb-1 w-full rounded-xl p-3 text-[15px] outline-none transition bg-[#f7f1eb] border ${errors.nama ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={nama}
               onChange={(e) => setNama(e.target.value)}
             />
             {errors.nama && <p className="text-red-500 text-xs mb-3">{errors.nama}</p>}
             <label className="text-[13px] text-slate-500">No WhatsApp *</label>
             <input
+              ref={waRef}
               placeholder="08xxxxxxxxxx"
-              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              className={`mt-1 mb-1 w-full rounded-xl p-3 text-[15px] outline-none transition bg-[#f7f1eb] border ${errors.wa ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={wa}
               onChange={(e) => setWa(e.target.value)}
             />
@@ -361,7 +405,8 @@ function OrderForm() {
             <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Penerima</h3>
             <label className="text-[13px] text-slate-500">Nama Penerima *</label>
             <input
-              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              ref={namaPenerimaRef}
+              className={`mt-1 mb-1 w-full rounded-xl p-3 text-[15px] outline-none transition bg-[#f7f1eb] border ${errors.namaPenerima ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={namaPenerima}
               onChange={(e) => setNamaPenerima(e.target.value)}
             />
@@ -369,8 +414,9 @@ function OrderForm() {
             <p className="text-[11px] text-slate-400 mb-4">*isi nama yang akan mengambil florist yaa</p>
             <label className="text-[13px] text-slate-500">No Telepon Penerima *</label>
             <input
+              ref={teleponPenerimaRef}
               placeholder="08xxxxxxxxxx"
-              className="mt-1 mb-1 w-full rounded-xl border border-[#e0d9d1] bg-[#f7f1eb] p-3 text-[15px]"
+              className={`mt-1 mb-1 w-full rounded-xl p-3 text-[15px] outline-none transition bg-[#f7f1eb] border ${errors.teleponPenerima ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={teleponPenerima}
               onChange={(e) => setTeleponPenerima(e.target.value)}
             />
@@ -429,19 +475,22 @@ function OrderForm() {
           {/* RINGKASAN HARGA */}
           <section className="rounded-2xl bg-[#2f435e] p-4 text-white">
             <p className="text-[13px] text-slate-300 mb-2">Ringkasan Harga</p>
-            <div className="flex justify-between text-[14px] mb-1">
+            <div className="flex justify-between text-[14px] mb-1 text-slate-100">
               <span>Harga Produk</span>
               <span>{formatRupiah(hargaProduk)}</span>
             </div>
             {goodieBag && (
-              <div className="flex justify-between text-[14px] mb-1">
+              <div className="flex justify-between text-[14px] mb-1 text-slate-100">
                 <span>Goodie Bag</span>
                 <span>{formatRupiah(hargaGoodie)}</span>
               </div>
             )}
-            <div className="flex justify-between text-[17px] font-bold mt-2 border-t border-slate-500 pt-2">
-              <span>Total</span>
-              <span>{formatRupiah(total)}</span>
+            <div className="mt-5 rounded-[20px] bg-white/10 p-4">
+              <div className="flex justify-between items-center text-[18px] font-semibold text-yellow-100 mb-2">
+                <span>Total Pesanan</span>
+                <span className="text-[22px] font-black text-yellow-200">{formatRupiah(total)}</span>
+              </div>
+              <p className="text-[12px] text-slate-200">Total sudah termasuk Goodie Bag jika dipilih.</p>
             </div>
           </section>
 
