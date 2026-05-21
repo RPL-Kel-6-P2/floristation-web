@@ -264,7 +264,7 @@ export default function Dashboard() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-gray-400 border-b border-gray-100 italic">
-                  <th className="pb-6 font-bold text-center w-28">ID</th>
+                  <th className="pb-6 font-bold text-center w-28">ID Pesanan</th>
                   <th className="pb-6 font-bold px-4">Pelanggan</th>
                   <th className="pb-6 font-bold px-4">Produk</th>
                   <th className="pb-6 font-bold px-4">Tgl Pesan</th>
