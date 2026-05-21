@@ -133,6 +133,8 @@ export async function updateOrderFull(id, data) {
       name: data.produk?.name || "",
       price: data.produk?.price || "",
       image: data.produk?.image || "",
+      kategori: data.produk?.kategori || "",
+      size: data.produk?.size || null,
     },
   });
 }

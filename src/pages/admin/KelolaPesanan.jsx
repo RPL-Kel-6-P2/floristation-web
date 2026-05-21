@@ -35,27 +35,33 @@ const STATUS_OPTIONS = [
   },
 ];
 
+const KATEGORI_OPTIONS = [
+  "Fresh Flowers",
+  "Artificial Flowers",
+  "Snack Bouquet",
+  "Graduation Bouquet",
+  "Bloom Box Arrangement",
+];
+
+const SIZE_OPTIONS = ["Tidak Ada", "XS", "S", "M", "L", "XL"];
+
 function getStyle(status) {
   return STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[0];
 }
 
-// Format harga untuk tampil di tabel/detail: angka → "Rp1.000.000"
 function formatRupiah(n) {
   return "Rp" + Number(n || 0).toLocaleString("id-ID");
 }
 
-// Konversi string harga produk (bisa "Rp10.000" atau "10000") → angka digit saja
 function stripRpToDigits(str) {
   return String(str || "").replace(/\D/g, "");
 }
 
-// Format digits → "100.000" (tanpa prefix Rp, untuk tampil di input)
 function formatDigitsWithDots(digits) {
   if (!digits) return "";
   return Number(digits).toLocaleString("id-ID");
 }
 
-// Dari digits → string "Rp100.000" untuk simpan ke DB
 function digitsToRpString(digits) {
   if (!digits) return "";
   return "Rp" + Number(digits).toLocaleString("id-ID");
@@ -75,7 +81,7 @@ const emptyEditForm = {
   goodieBag: false,
   greetingCard: "",
   status: "Pending",
-  produk: { name: "", price: "", image: "" },
+  produk: { name: "", price: "", image: "", kategori: "", size: null },
 };
 
 export default function KelolaPesanan() {
@@ -94,14 +100,12 @@ export default function KelolaPesanan() {
 
   const [notif, setNotif] = useState({ msg: "", type: "success" });
 
-  // ── DELETE undo ──
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [undoDeleteCountdown, setUndoDeleteCountdown] = useState(0);
   const undoDeleteIntervalRef = useRef(null);
 
-  // ── UPDATE undo ──
-  const [pendingUpdate, setPendingUpdate] = useState(null); // { id, orderId, prevData, timeoutId }
+  const [pendingUpdate, setPendingUpdate] = useState(null);
   const [undoUpdateCountdown, setUndoUpdateCountdown] = useState(0);
   const undoUpdateIntervalRef = useRef(null);
 
@@ -162,7 +166,6 @@ export default function KelolaPesanan() {
 
   const openEdit = (order) => {
     setEditOrder(order);
-    // price di DB adalah "Rp165.000" → extract digit saja untuk input
     const priceDigits = stripRpToDigits(order.produk?.price || "");
     setEditForm({
       namaPemesan: order.namaPemesan || "",
@@ -176,16 +179,16 @@ export default function KelolaPesanan() {
       goodieBag: order.goodieBag || false,
       greetingCard: order.greetingCard || "",
       status: order.status || "Pending",
-      // simpan digit saja di state, konversi ke "Rp..." saat submit
       produk: {
         name: order.produk?.name || "",
         price: priceDigits,
         image: order.produk?.image || "",
+        kategori: order.produk?.kategori || "",
+        size: order.produk?.size || null,
       },
     });
   };
 
-  // ── VALIDASI sama seperti sebelumnya ──
   function validateEditForm(form, inputDate) {
     const regexHuruf = /^[a-zA-Z\s]+$/;
     const regexAngka = /^[0-9]+$/;
@@ -245,21 +248,23 @@ export default function KelolaPesanan() {
 
     setSaving(true);
 
-    // Simpan data lama sebelum update
     const prevOrder = editOrder;
 
-    // Konversi price dari digits → "Rp10.000" untuk DB
     const priceForDB = digitsToRpString(editForm.produk.price);
     const formToSave = {
       ...editForm,
-      produk: { ...editForm.produk, price: priceForDB },
+      produk: {
+        ...editForm.produk,
+        price: priceForDB,
+        size:
+          editForm.produk.size === "Tidak Ada" ? null : editForm.produk.size,
+      },
     };
 
     try {
       await updateOrderFull(editOrder.id, formToSave);
       setEditOrder(null);
 
-      // Eksekusi pending update sebelumnya jika ada
       if (pendingUpdate) {
         clearTimeout(pendingUpdate.timeoutId);
         clearCountdown(setUndoUpdateCountdown, undoUpdateIntervalRef);
@@ -287,7 +292,6 @@ export default function KelolaPesanan() {
     }
   };
 
-  // ── UNDO UPDATE pesanan ──
   const handleUndoUpdate = async () => {
     if (!pendingUpdate) return;
     clearTimeout(pendingUpdate.timeoutId);
@@ -311,6 +315,8 @@ export default function KelolaPesanan() {
           name: prevData.produk?.name || "",
           price: prevData.produk?.price || "",
           image: prevData.produk?.image || "",
+          kategori: prevData.produk?.kategori || "",
+          size: prevData.produk?.size || null,
         },
       });
       showNotif(`Perubahan pesanan "${orderId}" dibatalkan`);
@@ -319,7 +325,6 @@ export default function KelolaPesanan() {
     }
   };
 
-  // ── DELETE dengan konfirmasi lalu undo ──
   const handleDelete = (order) => {
     setConfirmDelete({ id: order.id, orderId: order.order_id });
   };
@@ -839,12 +844,15 @@ export default function KelolaPesanan() {
                   </div>
                 </div>
               </div>
+              {/* ── Detail Pesanan: tambah Kategori & Size ── */}
               <div className="pt-4 border-t border-gray-100 space-y-3">
                 <p className="font-bold text-sm text-[#1e2d3d] mb-1 uppercase tracking-wider">
                   Detail Pesanan
                 </p>
                 {[
                   ["Produk", detailOrder.produk?.name],
+                  ["Kategori", detailOrder.produk?.kategori || "-"],
+                  ["Size", detailOrder.produk?.size || "-"],
                   ["Tanggal", detailOrder.tanggal],
                   ["Waktu", detailOrder.jam],
                   ["Metode", metodeLabel(detailOrder.metodePengambilan)],
@@ -1111,7 +1119,7 @@ export default function KelolaPesanan() {
                     </div>
                   </div>
                 </div>
-                {/* Produk */}
+                {/* ── Produk: tambah Kategori & Size sebagai select ── */}
                 <div className="pt-4 border-t border-gray-100">
                   <p className="text-[11px] font-bold mb-3 uppercase text-gray-400 tracking-widest">
                     Produk
@@ -1159,6 +1167,58 @@ export default function KelolaPesanan() {
                           }}
                         />
                       </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400 font-bold mb-1 block">
+                        Kategori
+                      </label>
+                      <select
+                        className="w-full px-4 py-2.5 bg-[#f7f3f0] rounded-xl outline-none text-sm font-medium"
+                        value={editForm.produk.kategori}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            produk: {
+                              ...editForm.produk,
+                              kategori: e.target.value,
+                            },
+                          })
+                        }
+                      >
+                        <option value="">— Pilih Kategori —</option>
+                        {KATEGORI_OPTIONS.map((k) => (
+                          <option key={k} value={k}>
+                            {k}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400 font-bold mb-1 block">
+                        Size
+                      </label>
+                      <select
+                        className="w-full px-4 py-2.5 bg-[#f7f3f0] rounded-xl outline-none text-sm font-medium"
+                        value={editForm.produk.size ?? "Tidak Ada"}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            produk: {
+                              ...editForm.produk,
+                              size:
+                                e.target.value === "Tidak Ada"
+                                  ? null
+                                  : e.target.value,
+                            },
+                          })
+                        }
+                      >
+                        {SIZE_OPTIONS.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className="mt-4 flex items-center gap-3 bg-[#f7f3f0] px-4 py-3 rounded-xl">
