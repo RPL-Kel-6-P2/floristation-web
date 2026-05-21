@@ -480,13 +480,22 @@ export default function Dashboard() {
                         ? "Transfer BCA"
                         : detailOrder.metodePembayaran,
                   ],
+                  ["Goodie Bag", detailOrder.goodieBag ? "Ya" : "Tidak"],
                 ].map(([label, val]) => (
                   <div
                     key={label}
                     className="flex justify-between text-sm items-center"
                   >
                     <span className="text-gray-400 font-medium">{label}</span>
-                    <span className="font-semibold text-[#334155]">
+                    <span
+                      className={`font-semibold ${
+                        label === "Goodie Bag"
+                          ? detailOrder.goodieBag
+                            ? "text-[#334155]"
+                            : "text-gray-400"
+                          : "text-[#334155]"
+                      }`}
+                    >
                       {val || "-"}
                     </span>
                   </div>

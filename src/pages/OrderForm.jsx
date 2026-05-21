@@ -55,7 +55,9 @@ function OrderForm() {
       loadedDraft = savedDrafts.find(
         (item) =>
           item.produk?.name === stateProduk.name &&
-          item.produk?.price === stateProduk.price,
+          item.produk?.price === stateProduk.price &&
+          item.produk?.kategori === stateProduk.kategori &&
+          item.produk?.size === stateProduk.size,
       );
     }
 
@@ -95,7 +97,9 @@ function OrderForm() {
     const existingDraft = savedDrafts.find(
       (item) =>
         item.produk?.name === produk.name &&
-        item.produk?.price === produk.price,
+        item.produk?.price === produk.price &&
+        item.produk?.kategori === produk.kategori &&
+        item.produk?.size === produk.size,
     );
     const id = draftId || existingDraft?.id || `draft-${Date.now()}`;
 

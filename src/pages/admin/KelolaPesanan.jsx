@@ -857,10 +857,21 @@ export default function KelolaPesanan() {
                   ["Waktu", detailOrder.jam],
                   ["Metode", metodeLabel(detailOrder.metodePengambilan)],
                   ["Pembayaran", bayarLabel(detailOrder.metodePembayaran)],
+                  ["Goodie Bag", detailOrder.goodieBag ? "Ya" : "Tidak"],
                 ].map(([label, val]) => (
                   <div key={label} className="flex justify-between text-sm">
                     <span className="text-gray-400">{label}</span>
-                    <span className="font-semibold">{val || "-"}</span>
+                    <span
+                      className={`font-semibold ${
+                        label === "Goodie Bag"
+                          ? detailOrder.goodieBag
+                            ? "text-[#334155]"
+                            : "text-gray-400"
+                          : "text-[#334155]"
+                      }`}
+                    >
+                      {val || "-"}
+                    </span>
                   </div>
                 ))}
               </div>
