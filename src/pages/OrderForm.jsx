@@ -9,9 +9,13 @@ const draftKey = "draftOrders";
 function OrderForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const savedProduct = JSON.parse(localStorage.getItem("selectedProduct") || "null");
+  const savedProduct = JSON.parse(
+    localStorage.getItem("selectedProduct") || "null",
+  );
   const locationState = location.state;
-  const stateProduk = locationState?.produk || (locationState?.name ? locationState : savedProduct);
+  const stateProduk =
+    locationState?.produk ||
+    (locationState?.name ? locationState : savedProduct);
 
   const [draftId, setDraftId] = useState(null);
   const [produk, setProduk] = useState(stateProduk || {});
@@ -39,7 +43,9 @@ function OrderForm() {
   useEffect(() => {
     const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
     const stateDraftId = locationState?.draftId;
-    const stateProduk = locationState?.produk || (locationState?.name ? locationState : savedProduct);
+    const stateProduk =
+      locationState?.produk ||
+      (locationState?.name ? locationState : savedProduct);
 
     let loadedDraft = null;
 
@@ -49,7 +55,7 @@ function OrderForm() {
       loadedDraft = savedDrafts.find(
         (item) =>
           item.produk?.name === stateProduk.name &&
-          item.produk?.price === stateProduk.price
+          item.produk?.price === stateProduk.price,
       );
     }
 
@@ -75,14 +81,21 @@ function OrderForm() {
 
     // VALIDASI: Draft hanya dibuat jika user sudah isi minimal 2 field
     // Hitung berapa field yang sudah terisi (dari 6 field penting)
-    const filledFields = [nama, wa, tanggal, jam, namaPenerima, teleponPenerima].filter(Boolean).length;
+    const filledFields = [
+      nama,
+      wa,
+      tanggal,
+      jam,
+      namaPenerima,
+      teleponPenerima,
+    ].filter(Boolean).length;
     const hasRequiredFields = filledFields >= 2;
 
     const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
     const existingDraft = savedDrafts.find(
       (item) =>
         item.produk?.name === produk.name &&
-        item.produk?.price === produk.price
+        item.produk?.price === produk.price,
     );
     const id = draftId || existingDraft?.id || `draft-${Date.now()}`;
 
@@ -118,10 +131,22 @@ function OrderForm() {
     }
 
     setDraftId(id);
-  }, [produk, nama, wa, namaPenerima, teleponPenerima, tanggal, jam, metodeAmbil, metodeBayar, goodieBag, draftId]);
+  }, [
+    produk,
+    nama,
+    wa,
+    namaPenerima,
+    teleponPenerima,
+    tanggal,
+    jam,
+    metodeAmbil,
+    metodeBayar,
+    goodieBag,
+    draftId,
+  ]);
 
   const hargaProduk = Number(
-    (produk?.price || "Rp50.000").replace(/[^0-9]/g, "")
+    (produk?.price || "Rp50.000").replace(/[^0-9]/g, ""),
   );
   const hargaGoodie = 5000;
   const total = hargaProduk + (goodieBag ? hargaGoodie : 0);
@@ -143,7 +168,8 @@ function OrderForm() {
     if (!nama) newErrors.nama = "Nama wajib diisi";
     if (!wa) newErrors.wa = "WhatsApp wajib diisi";
     if (!namaPenerima) newErrors.namaPenerima = "Nama penerima wajib diisi";
-    if (!teleponPenerima) newErrors.teleponPenerima = "Telepon penerima wajib diisi";
+    if (!teleponPenerima)
+      newErrors.teleponPenerima = "Telepon penerima wajib diisi";
 
     // --- TAMBAHAN VALIDASI BARU ---
 
@@ -159,7 +185,10 @@ function OrderForm() {
       const day = selectedDate.getDay();
       const isWeekend = day === 0 || day === 6;
 
-      if (selectedDate.toDateString() === now.toDateString() && selectedDateTime <= now) {
+      if (
+        selectedDate.toDateString() === now.toDateString() &&
+        selectedDateTime <= now
+      ) {
         newErrors.jam = "Jam harus setelah waktu sekarang";
       } else if (isWeekend && (jamAngka < 10 || jamAngka > 21)) {
         newErrors.jam = "Pilih jam antara 10:00 - 21:00 (Weekend)";
@@ -173,8 +202,14 @@ function OrderForm() {
     if (wa && (!regexAngka.test(wa) || wa.length < 10 || wa.length > 13)) {
       newErrors.wa = "Nomor WA harus berupa angka (10-13 digit)";
     }
-    if (teleponPenerima && (!regexAngka.test(teleponPenerima) || teleponPenerima.length < 10 || teleponPenerima.length > 13)) {
-      newErrors.teleponPenerima = "Nomor Telepon harus berupa angka (10-13 digit)";
+    if (
+      teleponPenerima &&
+      (!regexAngka.test(teleponPenerima) ||
+        teleponPenerima.length < 10 ||
+        teleponPenerima.length > 13)
+    ) {
+      newErrors.teleponPenerima =
+        "Nomor Telepon harus berupa angka (10-13 digit)";
     }
 
     // 5. Validasi Tanggal Pemesanan (Maksimal 7 Hari ke Depan)
@@ -200,15 +235,26 @@ function OrderForm() {
     if (nama && (nama.length < 3 || !regexHuruf.test(nama))) {
       newErrors.nama = "Nama minimal 3 huruf dan boleh menggunakan ' atau -";
     }
-    if (namaPenerima && (namaPenerima.length < 3 || !regexHuruf.test(namaPenerima))) {
-      newErrors.namaPenerima = "Nama minimal 3 huruf dan boleh menggunakan ' atau -";
+    if (
+      namaPenerima &&
+      (namaPenerima.length < 3 || !regexHuruf.test(namaPenerima))
+    ) {
+      newErrors.namaPenerima =
+        "Nama minimal 3 huruf dan boleh menggunakan ' atau -";
     }
 
     // --- AKHIR TAMBAHAN VALIDASI BARU ---
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
-      const order = ["tanggal", "jam", "nama", "wa", "namaPenerima", "teleponPenerima"];
+      const order = [
+        "tanggal",
+        "jam",
+        "nama",
+        "wa",
+        "namaPenerima",
+        "teleponPenerima",
+      ];
       const firstKey = order.find((key) => newErrors[key]);
       const refMap = {
         tanggal: tanggalRef,
@@ -220,7 +266,10 @@ function OrderForm() {
       };
       const scrollRef = refMap[firstKey];
       if (scrollRef?.current) {
-        scrollRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrollRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
         scrollRef.current.focus?.();
       }
       return;
@@ -256,6 +305,8 @@ function OrderForm() {
           name: produk?.name,
           price: produk?.price,
           image: produk?.image,
+          kategori: produk?.kategori || "",
+          size: produk?.size || null,
         },
         createdAt: serverTimestamp(),
       });
@@ -265,7 +316,7 @@ function OrderForm() {
       const savedDrafts = JSON.parse(localStorage.getItem(draftKey) || "[]");
       localStorage.setItem(
         draftKey,
-        JSON.stringify(savedDrafts.filter((item) => item.id !== draftId))
+        JSON.stringify(savedDrafts.filter((item) => item.id !== draftId)),
       );
 
       // Navigate ke invoice
@@ -294,17 +345,21 @@ function OrderForm() {
   return (
     <div className="min-h-full bg-[#e8edf3] flex justify-center items-start py-6">
       <div className="relative w-full max-w-[430px] bg-[#f7f1eb] shadow-[0_18px_45px_rgba(39,55,77,0.22)] rounded-[38px] overflow-hidden">
-
         {/* HEADER */}
         <header className="bg-[#2f435e] px-5 py-5 text-white">
           <div className="flex items-center gap-4">
-            <button type="button" onClick={() => navigate(-1)} className="text-[26px] leading-none">←</button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="text-[26px] leading-none"
+            >
+              ←
+            </button>
             <h1 className="text-[20px] font-medium">Form Pemesanan</h1>
           </div>
         </header>
 
         <main className="space-y-4 px-4 py-5 pb-10">
-
           {/* PRODUK */}
           <section className="flex gap-4 rounded-2xl bg-white p-4 items-center">
             <img
@@ -323,7 +378,9 @@ function OrderForm() {
 
           {/* METODE PENGAMBILAN */}
           <section className="rounded-2xl bg-white p-4">
-            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Metode Pengambilan</h3>
+            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">
+              Metode Pengambilan
+            </h3>
             <div className="grid grid-cols-2 gap-3 mb-4">
               <button
                 type="button"
@@ -354,8 +411,12 @@ function OrderForm() {
               value={tanggal}
               onChange={(e) => setTanggal(e.target.value)}
             />
-            <p className="text-[11px] text-slate-400 mb-4">🗓 Klik untuk memilih tanggal</p>
-            {errors.tanggal && <p className="text-red-500 text-xs">{errors.tanggal}</p>}
+            <p className="text-[11px] text-slate-400 mb-4">
+              🗓 Klik untuk memilih tanggal
+            </p>
+            {errors.tanggal && (
+              <p className="text-red-500 text-xs">{errors.tanggal}</p>
+            )}
 
             {/* JAM */}
             <label className="text-[13px] text-slate-500 flex items-center gap-1 mb-1">
@@ -368,19 +429,29 @@ function OrderForm() {
               value={jam}
               onChange={(e) => setJam(e.target.value)}
             />
-            <p className="text-[11px] text-slate-400 mb-4">🕐 Klik untuk memilih jam</p>
+            <p className="text-[11px] text-slate-400 mb-4">
+              🕐 Klik untuk memilih jam
+            </p>
             {errors.jam && <p className="text-red-500 text-xs">{errors.jam}</p>}
             {/* INFO JAM OPERASIONAL */}
             <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3">
-              <p className="text-[13px] font-semibold text-blue-700">🕐 Jam Operasional Toko:</p>
-              <p className="text-[13px] text-blue-600 mt-1">Senin-Jumat: 09:00 - 20:00</p>
-              <p className="text-[13px] text-blue-600">Sabtu-Minggu: 10:00 - 21:00</p>
+              <p className="text-[13px] font-semibold text-blue-700">
+                🕐 Jam Operasional Toko:
+              </p>
+              <p className="text-[13px] text-blue-600 mt-1">
+                Senin-Jumat: 09:00 - 20:00
+              </p>
+              <p className="text-[13px] text-blue-600">
+                Sabtu-Minggu: 10:00 - 21:00
+              </p>
             </div>
           </section>
 
           {/* DATA PEMESAN */}
           <section className="rounded-2xl bg-white p-4">
-            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Pemesan</h3>
+            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">
+              Data Pemesan
+            </h3>
             <label className="text-[13px] text-slate-500">Nama Pemesan *</label>
             <input
               ref={namaRef}
@@ -388,7 +459,9 @@ function OrderForm() {
               value={nama}
               onChange={(e) => setNama(e.target.value)}
             />
-            {errors.nama && <p className="text-red-500 text-xs mb-3">{errors.nama}</p>}
+            {errors.nama && (
+              <p className="text-red-500 text-xs mb-3">{errors.nama}</p>
+            )}
             <label className="text-[13px] text-slate-500">No WhatsApp *</label>
             <input
               ref={waRef}
@@ -397,22 +470,34 @@ function OrderForm() {
               value={wa}
               onChange={(e) => setWa(e.target.value)}
             />
-            {errors.wa && <p className="text-red-500 text-xs mb-3">{errors.wa}</p>}
+            {errors.wa && (
+              <p className="text-red-500 text-xs mb-3">{errors.wa}</p>
+            )}
           </section>
 
           {/* DATA PENERIMA */}
           <section className="rounded-2xl bg-white p-4">
-            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Data Penerima</h3>
-            <label className="text-[13px] text-slate-500">Nama Penerima *</label>
+            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">
+              Data Penerima
+            </h3>
+            <label className="text-[13px] text-slate-500">
+              Nama Penerima *
+            </label>
             <input
               ref={namaPenerimaRef}
               className={`mt-1 mb-1 w-full rounded-xl p-3 text-[15px] outline-none transition bg-[#f7f1eb] border ${errors.namaPenerima ? "border-red-400" : "border-[#e0d9d1]"}`}
               value={namaPenerima}
               onChange={(e) => setNamaPenerima(e.target.value)}
             />
-            {errors.namaPenerima && <p className="text-red-500 text-xs mb-3">{errors.namaPenerima}</p>}
-            <p className="text-[11px] text-slate-400 mb-4">*isi nama yang akan mengambil florist yaa</p>
-            <label className="text-[13px] text-slate-500">No Telepon Penerima *</label>
+            {errors.namaPenerima && (
+              <p className="text-red-500 text-xs mb-3">{errors.namaPenerima}</p>
+            )}
+            <p className="text-[11px] text-slate-400 mb-4">
+              *isi nama yang akan mengambil florist yaa
+            </p>
+            <label className="text-[13px] text-slate-500">
+              No Telepon Penerima *
+            </label>
             <input
               ref={teleponPenerimaRef}
               placeholder="08xxxxxxxxxx"
@@ -420,12 +505,16 @@ function OrderForm() {
               value={teleponPenerima}
               onChange={(e) => setTeleponPenerima(e.target.value)}
             />
-            {errors.teleponPenerima && <p className="text-red-500 text-xs">{errors.teleponPenerima}</p>}
+            {errors.teleponPenerima && (
+              <p className="text-red-500 text-xs">{errors.teleponPenerima}</p>
+            )}
           </section>
 
           {/* GREETING */}
           <section className="rounded-2xl bg-white p-4">
-            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Greeting Card</h3>
+            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">
+              Greeting Card
+            </h3>
             <textarea
               placeholder="Tulis pesan untuk kartu ucapan (opsional)"
               value={greeting}
@@ -436,7 +525,9 @@ function OrderForm() {
 
           {/* METODE PEMBAYARAN */}
           <section className="rounded-2xl bg-white p-4">
-            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">Metode Pembayaran</h3>
+            <h3 className="mb-4 text-[17px] font-semibold text-[#2f435e]">
+              Metode Pembayaran
+            </h3>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -467,8 +558,13 @@ function OrderForm() {
               className="h-5 w-5 accent-[#2f435e]"
             />
             <div>
-              <p className="text-[15px] font-medium text-[#2f435e]">Tambah Goodie Bag <span className="text-[#c45f32]">(+Rp5.000)</span></p>
-              <p className="text-[12px] text-slate-400">Tas cantik untuk buket Anda</p>
+              <p className="text-[15px] font-medium text-[#2f435e]">
+                Tambah Goodie Bag{" "}
+                <span className="text-[#c45f32]">(+Rp5.000)</span>
+              </p>
+              <p className="text-[12px] text-slate-400">
+                Tas cantik untuk buket Anda
+              </p>
             </div>
           </section>
 
@@ -488,9 +584,13 @@ function OrderForm() {
             <div className="mt-5 rounded-[20px] bg-white/10 p-4">
               <div className="flex justify-between items-center text-[18px] font-semibold text-yellow-100 mb-2">
                 <span>Total Pesanan</span>
-                <span className="text-[22px] font-black text-yellow-200">{formatRupiah(total)}</span>
+                <span className="text-[22px] font-black text-yellow-200">
+                  {formatRupiah(total)}
+                </span>
               </div>
-              <p className="text-[12px] text-slate-200">Total sudah termasuk Goodie Bag jika dipilih.</p>
+              <p className="text-[12px] text-slate-200">
+                Total sudah termasuk Goodie Bag jika dipilih.
+              </p>
             </div>
           </section>
 
@@ -502,11 +602,10 @@ function OrderForm() {
           >
             Kirim Pesanan →
           </button>
-
         </main>
       </div>
     </div>
   );
 }
 
-export default OrderForm
+export default OrderForm;

@@ -43,6 +43,8 @@ function ProductDetail() {
       name: produk.nama,
       price: `Rp${Number(produk.price).toLocaleString("id-ID")}`,
       image: produk.image_url,
+      kategori: produk.kategori || "",
+      size: produk.size || null,
     };
 
     localStorage.setItem("selectedProduct", JSON.stringify(produkForOrder));
@@ -71,7 +73,9 @@ function ProductDetail() {
         <div className="relative w-full max-w-[430px] h-[90vh] md:h-[932px] rounded-[38px] bg-[#f7f2ec] shadow-2xl flex flex-col overflow-hidden mx-auto">
           <div className="text-center text-[#2f435e]">
             <div className="text-4xl mb-4 animate-pulse">🌸</div>
-            <p className="text-[15px] text-slate-400">Memuat detail produk...</p>
+            <p className="text-[15px] text-slate-400">
+              Memuat detail produk...
+            </p>
           </div>
         </div>
       </div>
@@ -99,8 +103,12 @@ function ProductDetail() {
           <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
             <div>
               <div className="text-4xl mb-4">😢</div>
-              <h2 className="text-[22px] font-semibold text-[#2f435e]">Produk tidak ditemukan</h2>
-              <p className="mt-2 text-sm text-slate-500">Silakan kembali ke katalog atau coba lagi nanti.</p>
+              <h2 className="text-[22px] font-semibold text-[#2f435e]">
+                Produk tidak ditemukan
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Silakan kembali ke katalog atau coba lagi nanti.
+              </p>
               <button
                 type="button"
                 onClick={() => navigate(-1)}
@@ -151,29 +159,41 @@ function ProductDetail() {
           </div>
 
           <section className="mx-5 mt-3 mb-6 bg-white px-6 py-5 rounded-[16px] shadow-sm">
-            <h2 className="text-[26px] font-medium text-[#2f435e]">{produk.nama}</h2>
-            <p className="mt-1 text-[13px] uppercase text-slate-400">{produk.kategori}</p>
+            <h2 className="text-[26px] font-medium text-[#2f435e]">
+              {produk.nama}
+            </h2>
+            <p className="mt-1 text-[13px] uppercase text-slate-400">
+              {produk.kategori}
+            </p>
 
-            <p className="mt-3 text-[22px] font-bold text-[#2f435e]">{hargaFormatted}</p>
+            <p className="mt-3 text-[22px] font-bold text-[#2f435e]">
+              {hargaFormatted}
+            </p>
 
             {komposisiList.length > 0 && (
               <div className="mt-4">
                 <p className="text-[16px] text-slate-400">Komposisi:</p>
-                <p className="mt-1 text-[16px] text-[#2f435e]">{komposisiList.join(", ")}</p>
+                <p className="mt-1 text-[16px] text-[#2f435e]">
+                  {komposisiList.join(", ")}
+                </p>
               </div>
             )}
 
             {produk.size && (
               <div className="mt-4">
                 <p className="text-[16px] text-slate-400">Ukuran:</p>
-                <div className="mt-2 flex h-11 w-14 items-center justify-center rounded-[12px] bg-[#2f435e] text-white">{produk.size}</div>
+                <div className="mt-2 flex h-11 w-14 items-center justify-center rounded-[12px] bg-[#2f435e] text-white">
+                  {produk.size}
+                </div>
               </div>
             )}
 
             <div className="mt-4">
               <span
                 className={`px-4 py-2 rounded-[12px] text-[16px] ${
-                  isAvailable ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
+                  isAvailable
+                    ? "bg-green-100 text-green-600"
+                    : "bg-red-100 text-red-600"
                 }`}
               >
                 {isAvailable ? "✓ Tersedia" : "✕ Stok Habis"}
