@@ -114,7 +114,7 @@ export default function Rekap() {
     {
       label: "Pesanan Aktif",
       value: totalAktif,
-      change: "Pending + Proses",
+      change: "Pending, Konfirmasi, Diproses",
       color: "#7950f2",
       bg: "bg-[#f3f0ff]",
     },
